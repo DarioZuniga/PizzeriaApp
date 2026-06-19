@@ -1,0 +1,6 @@
+C:\Users\josed\Desktop\NETFORUM\NetForum\NetForum.Business\bin\Debug\NetForum.Business.dll
+C:\Users\josed\Desktop\NETFORUM\NetForum\NetForum.Business\bin\Debug\NetForum.Business.pdb
+C:\Users\josed\Desktop\NETFORUM\NetForum\NetForum.Business\obj\Debug\NetForum.Business.csproj.AssemblyReference.cache
+C:\Users\josed\Desktop\NETFORUM\NetForum\NetForum.Business\obj\Debug\NetForum.Business.csproj.CoreCompileInputs.cache
+C:\Users\josed\Desktop\NETFORUM\NetForum\NetForum.Business\obj\Debug\NetForum.Business.dll
+C:\Users\josed\Desktop\NETFORUM\NetForum\NetForum.Business\obj\Debug\NetForum.Business.pdb

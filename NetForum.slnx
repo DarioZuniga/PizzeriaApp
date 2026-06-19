@@ -1,3 +1,6 @@
 <Solution>
-  <Project Path="NetForum.MVC/NetForum.MVC.csproj" />
+  <Project Path="NetForum.Business/NetForum.Business.csproj" Id="c881ad53-a01d-4aac-a381-e433912199c7" />
+  <Project Path="NetForum.Data/NetForum.Data.csproj" Id="5aef2432-5e1c-4b9a-b33e-af3d8787e88c" />
+  <Project Path="NetForum.MVC/NetForum.MVC.csproj" Id="3653ef37-f4fc-470d-8f8d-e25f33f3db9c" />
+  <Project Path="NetForum.Repository/NetForum.Repository.csproj" Id="b2d58639-698b-455d-8b30-46756f6bc716" />
 </Solution>

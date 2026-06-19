@@ -1,0 +1,6 @@
+C:\Users\josed\Desktop\NETFORUM\NetForum\NetForum.Repository\bin\Debug\NetForum.Repository.dll
+C:\Users\josed\Desktop\NETFORUM\NetForum\NetForum.Repository\bin\Debug\NetForum.Repository.pdb
+C:\Users\josed\Desktop\NETFORUM\NetForum\NetForum.Repository\obj\Debug\NetForum.Repository.csproj.AssemblyReference.cache
+C:\Users\josed\Desktop\NETFORUM\NetForum\NetForum.Repository\obj\Debug\NetForum.Repository.csproj.CoreCompileInputs.cache
+C:\Users\josed\Desktop\NETFORUM\NetForum\NetForum.Repository\obj\Debug\NetForum.Repository.dll
+C:\Users\josed\Desktop\NETFORUM\NetForum\NetForum.Repository\obj\Debug\NetForum.Repository.pdb

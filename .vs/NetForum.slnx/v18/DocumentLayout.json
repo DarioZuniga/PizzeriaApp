@@ -3,20 +3,32 @@
   "WorkspaceRootPath": "C:\\Users\\josed\\Desktop\\NETFORUM\\NetForum\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{3653EF37-F4FC-470D-8F8D-E25F33F3DB9C}|NetForum.MVC\\NetForum.MVC.csproj|c:\\users\\josed\\desktop\\netforum\\netforum\\netforum.mvc\\views\\home\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{3653EF37-F4FC-470D-8F8D-E25F33F3DB9C}|NetForum.MVC\\NetForum.MVC.csproj|solutionrelative:netforum.mvc\\views\\home\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{C8EB8F8D-F2EE-4623-860F-849AA93D4835}|NetForum.MVC\\NetForum.MVC.csproj|c:\\users\\josed\\desktop\\netforum\\netforum\\netforum.mvc\\netforum.mvc.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{C8EB8F8D-F2EE-4623-860F-849AA93D4835}|NetForum.MVC\\NetForum.MVC.csproj|solutionrelative:netforum.mvc\\netforum.mvc.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{3653EF37-F4FC-470D-8F8D-E25F33F3DB9C}|NetForum.MVC\\NetForum.MVC.csproj|c:\\users\\josed\\desktop\\netforum\\netforum\\netforum.mvc\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{3653EF37-F4FC-470D-8F8D-E25F33F3DB9C}|NetForum.MVC\\NetForum.MVC.csproj|solutionrelative:netforum.mvc\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{C8EB8F8D-F2EE-4623-860F-849AA93D4835}|NetForum.MVC\\NetForum.MVC.csproj|c:\\users\\josed\\desktop\\netforum\\netforum\\netforum.mvc\\controllers\\accountcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C8EB8F8D-F2EE-4623-860F-849AA93D4835}|NetForum.MVC\\NetForum.MVC.csproj|solutionrelative:netforum.mvc\\controllers\\accountcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C8EB8F8D-F2EE-4623-860F-849AA93D4835}|NetForum.MVC\\NetForum.MVC.csproj|c:\\users\\josed\\desktop\\netforum\\netforum\\netforum.mvc\\models\\loginviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C8EB8F8D-F2EE-4623-860F-849AA93D4835}|NetForum.MVC\\NetForum.MVC.csproj|solutionrelative:netforum.mvc\\models\\loginviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C8EB8F8D-F2EE-4623-860F-849AA93D4835}|NetForum.MVC\\NetForum.MVC.csproj|c:\\users\\josed\\desktop\\netforum\\netforum\\netforum.mvc\\views\\account\\login.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{C8EB8F8D-F2EE-4623-860F-849AA93D4835}|NetForum.MVC\\NetForum.MVC.csproj|solutionrelative:netforum.mvc\\views\\account\\login.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C8EB8F8D-F2EE-4623-860F-849AA93D4835}|NetForum.MVC\\NetForum.MVC.csproj|c:\\users\\josed\\desktop\\netforum\\netforum\\netforum.mvc\\views\\home\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{C8EB8F8D-F2EE-4623-860F-849AA93D4835}|NetForum.MVC\\NetForum.MVC.csproj|solutionrelative:netforum.mvc\\views\\home\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C8EB8F8D-F2EE-4623-860F-849AA93D4835}|NetForum.MVC\\NetForum.MVC.csproj|c:\\users\\josed\\desktop\\netforum\\netforum\\netforum.mvc\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{C8EB8F8D-F2EE-4623-860F-849AA93D4835}|NetForum.MVC\\NetForum.MVC.csproj|solutionrelative:netforum.mvc\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A35FD5C7-2C8F-42DF-AB9D-C41D0E622307}|NetForum.Repository\\NetForum.Repository.csproj|c:\\users\\josed\\desktop\\netforum\\netforum\\netforum.repository\\interfaces\\iusuariorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{A35FD5C7-2C8F-42DF-AB9D-C41D0E622307}|NetForum.Repository\\NetForum.Repository.csproj|solutionrelative:netforum.repository\\interfaces\\iusuariorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{3653EF37-F4FC-470D-8F8D-E25F33F3DB9C}|NetForum.MVC\\NetForum.MVC.csproj|C:\\Users\\josed\\Desktop\\NETFORUM\\NetForum\\netforum.mvc\\models\\loginviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{3653EF37-F4FC-470D-8F8D-E25F33F3DB9C}|NetForum.MVC\\NetForum.MVC.csproj|solutionrelative:netforum.mvc\\models\\loginviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{F53A5B04-9B90-4FBC-B108-CE1538FE1042}|NetForum.Business\\NetForum.Business.csproj|c:\\users\\josed\\desktop\\netforum\\netforum\\netforum.business\\services\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -51,14 +63,66 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "NetForum.MVC",
+              "DocumentMoniker": "C:\\Users\\josed\\Desktop\\NETFORUM\\NetForum\\NetForum.MVC\\NetForum.MVC.csproj",
+              "RelativeDocumentMoniker": "NetForum.MVC\\NetForum.MVC.csproj",
+              "ToolTip": "C:\\Users\\josed\\Desktop\\NETFORUM\\NetForum\\NetForum.MVC\\NetForum.MVC.csproj",
+              "RelativeToolTip": "NetForum.MVC\\NetForum.MVC.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-06-19T19:43:56.435Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "AccountController.cs",
+              "DocumentMoniker": "C:\\Users\\josed\\Desktop\\NETFORUM\\NetForum\\NetForum.MVC\\Controllers\\AccountController.cs",
+              "RelativeDocumentMoniker": "NetForum.MVC\\Controllers\\AccountController.cs",
+              "ToolTip": "C:\\Users\\josed\\Desktop\\NETFORUM\\NetForum\\NetForum.MVC\\Controllers\\AccountController.cs",
+              "RelativeToolTip": "NetForum.MVC\\Controllers\\AccountController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-19T19:42:40.357Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "LoginViewModel.cs",
+              "DocumentMoniker": "C:\\Users\\josed\\Desktop\\NETFORUM\\NetForum\\NetForum.MVC\\Models\\LoginViewModel.cs",
+              "RelativeDocumentMoniker": "NetForum.MVC\\Models\\LoginViewModel.cs",
+              "ToolTip": "C:\\Users\\josed\\Desktop\\NETFORUM\\NetForum\\NetForum.MVC\\Models\\LoginViewModel.cs",
+              "RelativeToolTip": "NetForum.MVC\\Models\\LoginViewModel.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-19T19:41:45.995Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Login.cshtml",
+              "DocumentMoniker": "C:\\Users\\josed\\Desktop\\NETFORUM\\NetForum\\NetForum.MVC\\Views\\Account\\Login.cshtml",
+              "RelativeDocumentMoniker": "NetForum.MVC\\Views\\Account\\Login.cshtml",
+              "ToolTip": "C:\\Users\\josed\\Desktop\\NETFORUM\\NetForum\\NetForum.MVC\\Views\\Account\\Login.cshtml",
+              "RelativeToolTip": "NetForum.MVC\\Views\\Account\\Login.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAApAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-06-19T19:36:21.285Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
               "Title": "Index.cshtml",
               "DocumentMoniker": "C:\\Users\\josed\\Desktop\\NETFORUM\\NetForum\\NetForum.MVC\\Views\\Home\\Index.cshtml",
               "RelativeDocumentMoniker": "NetForum.MVC\\Views\\Home\\Index.cshtml",
               "ToolTip": "C:\\Users\\josed\\Desktop\\NETFORUM\\NetForum\\NetForum.MVC\\Views\\Home\\Index.cshtml",
               "RelativeToolTip": "NetForum.MVC\\Views\\Home\\Index.cshtml",
-              "ViewState": "AgIAADEAAAAAAAAAAAAmwE0AAAAGAAAAAAAAAA==",
+              "ViewState": "AgIAADMAAAAAAAAAAADwv00AAAAGAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-06-19T18:33:35.318Z",
+              "WhenOpened": "2026-06-19T19:27:47.241Z",
               "EditorCaption": ""
             },
             {
@@ -87,32 +151,20 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 5,
               "Title": "_Layout.cshtml",
               "DocumentMoniker": "C:\\Users\\josed\\Desktop\\NETFORUM\\NetForum\\NetForum.MVC\\Views\\Shared\\_Layout.cshtml",
               "RelativeDocumentMoniker": "NetForum.MVC\\Views\\Shared\\_Layout.cshtml",
               "ToolTip": "C:\\Users\\josed\\Desktop\\NETFORUM\\NetForum\\NetForum.MVC\\Views\\Shared\\_Layout.cshtml",
               "RelativeToolTip": "NetForum.MVC\\Views\\Shared\\_Layout.cshtml",
-              "ViewState": "AgIAAE8AAAAAAAAAAAAkwGsAAAAHAAAAAAAAAA==",
+              "ViewState": "AgIAAEMAAAAAAAAAAADwv10AAAAHAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-06-19T18:30:06.847Z",
+              "WhenOpened": "2026-06-19T19:30:33.542Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "LoginViewModel.cs",
-              "DocumentMoniker": "C:\\Users\\josed\\Desktop\\NETFORUM\\NetForum\\NetForum.MVC\\Models\\LoginViewModel.cs",
-              "RelativeDocumentMoniker": "NetForum.MVC\\Models\\LoginViewModel.cs",
-              "ToolTip": "C:\\Users\\josed\\Desktop\\NETFORUM\\NetForum\\NetForum.MVC\\Models\\LoginViewModel.cs",
-              "RelativeToolTip": "NetForum.MVC\\Models\\LoginViewModel.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-19T17:48:44.995Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 6,
               "Title": "IUsuarioRepository.cs",
               "DocumentMoniker": "C:\\Users\\josed\\Desktop\\NETFORUM\\NetForum\\NetForum.Repository\\Interfaces\\IUsuarioRepository.cs",
               "RelativeDocumentMoniker": "NetForum.Repository\\Interfaces\\IUsuarioRepository.cs",
@@ -125,7 +177,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 7,
               "Title": "AuthService.cs",
               "DocumentMoniker": "C:\\Users\\josed\\Desktop\\NETFORUM\\NetForum\\NetForum.Business\\Services\\AuthService.cs",
               "RelativeDocumentMoniker": "NetForum.Business\\Services\\AuthService.cs",
@@ -137,7 +189,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 9,
               "Title": "Post.cs",
               "DocumentMoniker": "C:\\Users\\josed\\Desktop\\NETFORUM\\NetForum\\NetForum.Data\\Entities\\Post.cs",
               "RelativeDocumentMoniker": "NetForum.Data\\Entities\\Post.cs",
@@ -149,7 +201,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 10,
               "Title": "Usuario.cs",
               "DocumentMoniker": "C:\\Users\\josed\\Desktop\\NETFORUM\\NetForum\\NetForum.Data\\Entities\\Usuario.cs",
               "RelativeDocumentMoniker": "NetForum.Data\\Entities\\Usuario.cs",
@@ -161,7 +213,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 8,
               "Title": "NetForumDbContext.cs",
               "DocumentMoniker": "C:\\Users\\josed\\Desktop\\NETFORUM\\NetForum\\NetForum.Data\\NetForumDbContext.cs",
               "RelativeDocumentMoniker": "NetForum.Data\\NetForumDbContext.cs",
@@ -173,7 +225,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 11,
               "Title": "NetForum.Data.csproj",
               "DocumentMoniker": "C:\\Users\\josed\\Desktop\\NETFORUM\\NetForum\\NetForum.Data\\NetForum.Data.csproj",
               "RelativeDocumentMoniker": "NetForum.Data\\NetForum.Data.csproj",
@@ -181,7 +233,8 @@
               "RelativeToolTip": "NetForum.Data\\NetForum.Data.csproj",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2026-06-19T17:15:46.749Z"
+              "WhenOpened": "2026-06-19T17:15:46.749Z",
+              "EditorCaption": ""
             }
           ]
         },

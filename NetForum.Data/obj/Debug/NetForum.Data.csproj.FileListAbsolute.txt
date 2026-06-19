@@ -1,6 +1,0 @@
-C:\Users\josed\Desktop\NETFORUM\NetForum\NetForum.Data\bin\Debug\NetForum.Data.dll
-C:\Users\josed\Desktop\NETFORUM\NetForum\NetForum.Data\bin\Debug\NetForum.Data.pdb
-C:\Users\josed\Desktop\NETFORUM\NetForum\NetForum.Data\obj\Debug\NetForum.Data.csproj.AssemblyReference.cache
-C:\Users\josed\Desktop\NETFORUM\NetForum\NetForum.Data\obj\Debug\NetForum.Data.csproj.CoreCompileInputs.cache
-C:\Users\josed\Desktop\NETFORUM\NetForum\NetForum.Data\obj\Debug\NetForum.Data.dll
-C:\Users\josed\Desktop\NETFORUM\NetForum\NetForum.Data\obj\Debug\NetForum.Data.pdb

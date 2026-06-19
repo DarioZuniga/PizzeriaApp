@@ -1,0 +1,15 @@
+C:\Users\josed\Desktop\NETFORUM\NetForum\NetForum.Repository\bin\Debug\net10.0\NetForum.Repository.deps.json
+C:\Users\josed\Desktop\NETFORUM\NetForum\NetForum.Repository\bin\Debug\net10.0\NetForum.Repository.dll
+C:\Users\josed\Desktop\NETFORUM\NetForum\NetForum.Repository\bin\Debug\net10.0\NetForum.Repository.pdb
+C:\Users\josed\Desktop\NETFORUM\NetForum\NetForum.Repository\bin\Debug\net10.0\NetForum.Data.dll
+C:\Users\josed\Desktop\NETFORUM\NetForum\NetForum.Repository\bin\Debug\net10.0\NetForum.Data.pdb
+C:\Users\josed\Desktop\NETFORUM\NetForum\NetForum.Repository\obj\Debug\net10.0\NetForum.Repository.csproj.AssemblyReference.cache
+C:\Users\josed\Desktop\NETFORUM\NetForum\NetForum.Repository\obj\Debug\net10.0\NetForum.Repository.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\josed\Desktop\NETFORUM\NetForum\NetForum.Repository\obj\Debug\net10.0\NetForum.Repository.AssemblyInfoInputs.cache
+C:\Users\josed\Desktop\NETFORUM\NetForum\NetForum.Repository\obj\Debug\net10.0\NetForum.Repository.AssemblyInfo.cs
+C:\Users\josed\Desktop\NETFORUM\NetForum\NetForum.Repository\obj\Debug\net10.0\NetForum.Repository.csproj.CoreCompileInputs.cache
+C:\Users\josed\Desktop\NETFORUM\NetForum\NetForum.Repository\obj\Debug\net10.0\NetForum.045CCBA7.Up2Date
+C:\Users\josed\Desktop\NETFORUM\NetForum\NetForum.Repository\obj\Debug\net10.0\NetForum.Repository.dll
+C:\Users\josed\Desktop\NETFORUM\NetForum\NetForum.Repository\obj\Debug\net10.0\refint\NetForum.Repository.dll
+C:\Users\josed\Desktop\NETFORUM\NetForum\NetForum.Repository\obj\Debug\net10.0\NetForum.Repository.pdb
+C:\Users\josed\Desktop\NETFORUM\NetForum\NetForum.Repository\obj\Debug\net10.0\ref\NetForum.Repository.dll

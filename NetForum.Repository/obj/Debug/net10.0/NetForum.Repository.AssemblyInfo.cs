@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("NetForum.Repository")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c58fe7ce6f4118b222b3e6f77d065f8c2d5ab01d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+af40dcfff7b157aafdf196c7ec877ba6093bff77")]
 [assembly: System.Reflection.AssemblyProductAttribute("NetForum.Repository")]
 [assembly: System.Reflection.AssemblyTitleAttribute("NetForum.Repository")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

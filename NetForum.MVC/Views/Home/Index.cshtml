@@ -1,33 +1,78 @@
 ﻿@{
-    ViewBag.Title = "Home Page";
+    ViewBag.Title = "Feed Global";
 }
 
-<main>
-    <section class="row" aria-labelledby="aspnetTitle">
-        <h1 id="title">ASP.NET</h1>
-        <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
-        <p><a href="https://asp.net" class="btn btn-primary btn-md">Learn more &raquo;</a></p>
-    </section>
+<div class="container mt-4">
+    <div class="row g-4 justify-content-center">
 
-    <div class="row">
-        <section class="col-md-4" aria-labelledby="gettingStartedTitle">
-            <h2 id="gettingStartedTitle">Getting started</h2>
-            <p>
-                ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-                enables a clean separation of concerns and gives you full control over markup
-                for enjoyable, agile development.
-            </p>
-            <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
-        </section>
-        <section class="col-md-4" aria-labelledby="librariesTitle">
-            <h2 id="librariesTitle">Get more libraries</h2>
-            <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-            <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
-        </section>
-        <section class="col-md-4" aria-labelledby="hostingTitle">
-            <h2 id="hostingTitle">Web Hosting</h2>
-            <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-            <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
-        </section>
+        <div class="col-lg-7 col-md-9">
+
+            <div class="card bg-social-card border border-social mb-4" style="border-radius: 16px;">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="rounded-circle d-flex justify-content-center align-items-center fw-bold" style="width: 44px; height: 44px; background-color: #2E2E3A; color: #A78BFA;">?</div>
+                        <input type="text" class="form-control text-white border-0 py-2" placeholder="¿Qué tema de ingeniería quieres debatir hoy?..." style="border-radius: 24px; background-color: #0F0F12 !important;" readonly>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center border-top border-social pt-3">
+                        <span class="small text-secondary fw-semibold">Advanced Programming Workspace</span>
+                        <a class="btn btn-violet-neon btn-sm px-4 fw-bold" href="@Url.Action("Login", "Account")" style="border-radius: 18px;">Publicar</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mb-3 px-1">
+                <h6 class="text-uppercase text-secondary small fw-bold m-0" style="letter-spacing: 1px;">Tendencias de la comunidad</h6>
+                <span class="text-violet-neon small fw-bold">Hilos recientes</span>
+            </div>
+
+            <div class="card bg-social-card border border-social mb-3 shadow-sm" style="border-radius: 16px;">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="rounded-circle d-flex justify-content-center align-items-center fw-bold" style="width: 42px; height: 42px; background-color: #8B5CF6; color: #ffffff;">EF</div>
+                            <div>
+                                <h6 class="mb-0 fw-bold text-white">dev_persist_master</h6>
+                                <small class="text-secondary">Hace 14 minutos en <span class="text-violet-neon">#Architecture</span></small>
+                            </div>
+                        </div>
+                        <span class="badge bg-dark text-secondary border border-social font-monospace">EF_Core_10</span>
+                    </div>
+
+                    <h5 class="card-title fw-bold text-white mb-2">Diseño de Repositorios Genéricos: ¿Patrón óptimo o sobreingeniería?</h5>
+                    <p class="card-text text-secondary mb-3" style="font-size: 0.95rem; line-height: 1.6;">
+                        Estamos debatiendo en nuestro equipo si encapsular Entity Framework detrás de interfaces `IRepository<T>` realmente aporta valor en proyectos modulares, o si simplemente estamos agregando una capa de abstracción innecesaria. ¿Cuáles han sido sus experiencias?
+                    </p>
+
+                    <div class="d-flex gap-2 border-top border-social pt-3 mt-3">
+                        <button class="btn btn-sm btn-outline-neon px-3 py-1.5 d-flex align-items-center gap-2" style="border-radius: 20px;" disabled>
+                            <span>▲</span> <span class="fw-bold">42</span>
+                        </button>
+                        <button class="btn btn-sm btn-outline-neon px-3 py-1.5 d-flex align-items-center gap-2" style="border-radius: 20px;" disabled>
+                            <span>💬</span> <span class="fw-bold">12</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-lg-3 d-none d-lg-block">
+            <div class="card bg-social-card border border-social mb-4" style="border-radius: 16px;">
+                <div class="card-body p-4">
+                    <h6 class="text-white fw-bold mb-3">Canales populares</h6>
+                    <ul class="list-unstyled mb-0 small">
+                        <li class="mb-3 d-flex justify-content-between align-items-center">
+                            <span class="text-secondary">#dotnet_framework</span>
+                            <span class="badge bg-dark border border-social text-secondary">4.8</span>
+                        </li>
+                        <li class="mb-3 d-flex justify-content-between align-items-center">
+                            <span class="text-secondary">#clean_architecture</span>
+                            <span class="badge bg-dark border border-social text-secondary">840</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
     </div>
-</main>
+</div>

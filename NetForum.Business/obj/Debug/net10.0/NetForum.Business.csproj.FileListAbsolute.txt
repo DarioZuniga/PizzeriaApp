@@ -1,0 +1,12 @@
+C:\Users\josed\Desktop\NETFORUM\NetForum\NetForum.Business\bin\Debug\net10.0\NetForum.Business.deps.json
+C:\Users\josed\Desktop\NETFORUM\NetForum\NetForum.Business\bin\Debug\net10.0\NetForum.Business.dll
+C:\Users\josed\Desktop\NETFORUM\NetForum\NetForum.Business\bin\Debug\net10.0\NetForum.Business.pdb
+C:\Users\josed\Desktop\NETFORUM\NetForum\NetForum.Business\obj\Debug\net10.0\NetForum.Business.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\josed\Desktop\NETFORUM\NetForum\NetForum.Business\obj\Debug\net10.0\NetForum.Business.AssemblyInfoInputs.cache
+C:\Users\josed\Desktop\NETFORUM\NetForum\NetForum.Business\obj\Debug\net10.0\NetForum.Business.AssemblyInfo.cs
+C:\Users\josed\Desktop\NETFORUM\NetForum\NetForum.Business\obj\Debug\net10.0\NetForum.Business.csproj.CoreCompileInputs.cache
+C:\Users\josed\Desktop\NETFORUM\NetForum\NetForum.Business\obj\Debug\net10.0\NetForum.Business.sourcelink.json
+C:\Users\josed\Desktop\NETFORUM\NetForum\NetForum.Business\obj\Debug\net10.0\NetForum.Business.dll
+C:\Users\josed\Desktop\NETFORUM\NetForum\NetForum.Business\obj\Debug\net10.0\refint\NetForum.Business.dll
+C:\Users\josed\Desktop\NETFORUM\NetForum\NetForum.Business\obj\Debug\net10.0\NetForum.Business.pdb
+C:\Users\josed\Desktop\NETFORUM\NetForum\NetForum.Business\obj\Debug\net10.0\ref\NetForum.Business.dll

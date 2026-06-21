@@ -9,6 +9,21 @@ namespace NetForum.MVC
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            // =========================================================================
+            // 1. CONFIGURACIÓN DE AUTENTICACIÓN POR COOKIES (AGREGADO)
+            // =========================================================================
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = "CookieAuth";
+                options.DefaultSignInScheme = "CookieAuth";
+                options.DefaultChallengeScheme = "CookieAuth";
+            })
+            .AddCookie("CookieAuth", options =>
+            {
+                options.Cookie.Name = "UserLoginCookie";
+                options.LoginPath = "/Account/Login"; // Si intentan entrar al Home sin loguearse, los manda aquí
+            });
+
             builder.Services.AddControllersWithViews();
 
             builder.Services.AddDbContext<NetForumDbContext>(options =>
@@ -27,7 +42,12 @@ namespace NetForum.MVC
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
-            app.UseAuthorization();
+
+            // =========================================================================
+            // 2. ORDEN DE LOS PERMISOS (AGREGADO Y CORREGIDO)
+            // =========================================================================
+            app.UseAuthentication(); // <-- Primero el sistema pregunta: ¿Quién eres tú?
+            app.UseAuthorization();  // <-- Después el sistema revisa: ¿A qué tienes permiso?
 
             app.MapControllerRoute(
                 name: "default",

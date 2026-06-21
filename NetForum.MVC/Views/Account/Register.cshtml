@@ -1,0 +1,52 @@
+﻿@model NetForum.MVC.Models.RegisterViewModel
+@{
+    ViewData["Title"] = "Crear Cuenta";
+}
+
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 75vh;">
+    <div class="card bg-social-card border border-social p-4 shadow" style="width: 100%; max-width: 420px; border-radius: 16px;">
+        <div class="card-body">
+
+            <div class="text-center mb-4">
+                <h3 class="fw-bold text-white mb-1">Únete al Foro</h3>
+                <p class="small text-secondary">Crea tu cuenta para empezar a interactuar</p>
+            </div>
+
+            <form asp-controller="Account" asp-action="Register" method="post">
+                @Html.AntiForgeryToken()
+
+                <!-- Nombre de Usuario -->
+                <div class="mb-3">
+                    <label asp-for="NombreUsuario" class="form-label small fw-semibold text-secondary">Nombre de Usuario</label>
+                    <input asp-for="NombreUsuario" class="form-control text-white border-0 py-2.5" style="background-color: #0F0F12 !important; border-radius: 10px;" placeholder="TuUsuario123" />
+                    <span asp-validation-for="NombreUsuario" class="text-danger small mt-1 d-block"></span>
+                </div>
+
+                <!-- Correo Electrónico -->
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label small fw-semibold text-secondary">Correo Electrónico</label>
+                    <input asp-for="Email" class="form-control text-white border-0 py-2.5" style="background-color: #0F0F12 !important; border-radius: 10px;" placeholder="ejemplo@correo.com" />
+                    <span asp-validation-for="Email" class="text-danger small mt-1 d-block"></span>
+                </div>
+
+                <!-- Contraseña -->
+                <div class="mb-4">
+                    <label asp-for="Password" class="form-label small fw-semibold text-secondary">Contraseña</label>
+                    <input asp-for="Password" class="form-control text-white border-0 py-2.5" style="background-color: #0F0F12 !important; border-radius: 10px;" placeholder="••••••••" />
+                    <span asp-validation-for="Password" class="text-danger small mt-1 d-block"></span>
+                </div>
+
+                <button type="submit" class="btn btn-violet-neon w-100 fw-bold py-2.5 mb-3" style="border-radius: 10px;">
+                    Registrar Cuenta
+                </button>
+
+                <div class="text-center">
+                    <a asp-controller="Account" asp-action="Login" class="text-decoration-none small text-secondary">
+                        ¿Ya tienes cuenta? Inicia sesión aquí
+                    </a>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>

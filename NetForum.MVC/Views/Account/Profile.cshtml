@@ -1,0 +1,66 @@
+﻿@model NetForum.Data.Entities.Usuario
+@{
+    ViewData["Title"] = "Mi Cuenta";
+}
+
+<div class="container py-5 d-flex justify-content-center">
+    <div class="card bg-social-card border border-social p-4 shadow" style="width: 100%; max-width: 550px; border-radius: 16px;">
+        <div class="card-body">
+
+            <div class="text-center mb-4 border-bottom border-social pb-4">
+                <div class="d-inline-flex align-items-center justify-content-center bg-dark text-violet-neon rounded-circle mb-3 border border-social" style="width: 80px; height: 80px; font-size: 2rem;">
+                    👤
+                </div>
+                <h3 class="fw-bold text-white mb-1">Perfil de Usuario</h3>
+                <p class="small text-secondary">Datos de la cuenta conectados a NetForumDb</p>
+            </div>
+
+            <div class="space-y-4">
+
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold text-secondary d-block">ID de Usuario (Key)</label>
+                    <div class="p-2.5 text-white-50 small" style="background-color: #0F0F12; border-radius: 8px; border: 1px solid #23232F;">
+                        # @Model.UsuarioId
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold text-secondary d-block">Nombre de Usuario</label>
+                    <div class="p-3 text-white fw-bold" style="background-color: #0F0F12; border-radius: 8px;">
+                        @Model.NombreUsuario
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold text-secondary d-block">Correo Electrónico</label>
+                    <div class="p-3 text-white" style="background-color: #0F0F12; border-radius: 8px;">
+                        @Model.Correo
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-6">
+                        <label class="form-label small fw-semibold text-secondary d-block">Fecha de Registro</label>
+                        <div class="p-2.5 text-white small" style="background-color: #0F0F12; border-radius: 8px;">
+                            @Model.FechaRegistro.ToString("dd/MM/yyyy")
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label small fw-semibold text-secondary d-block">Identificador de Rol</label>
+                        <div class="p-2.5 text-white small" style="background-color: #0F0F12; border-radius: 8px;">
+                            <span class="badge bg-dark text-violet-neon border border-social">Rol ID: @Model.RolId</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="text-center pt-2">
+                <a asp-controller="Home" asp-action="Index" class="btn btn-outline-neon w-100 fw-bold py-2.5" style="border-radius: 10px;">
+                    Volver al Feed Principal
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>

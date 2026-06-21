@@ -3,8 +3,13 @@ using System.Threading.Tasks;
 
 namespace NetForum.Repository.Interfaces;
 
-public interface IUsuarioRepository
+// DP: Repository Pattern
+// SOLID: Interface Segregation Principle - contrato específico para Usuario.
+public interface IUsuarioRepository : IGenericRepository<Usuario>
 {
-    Task<Usuario?> ObtenerPorEmailAsync(string email);
-    Task InsertarUsuarioAsync(Usuario usuario);
+    Task<Usuario?> GetByCorreoAsync(string correo);
+
+    Task<Usuario?> GetByNombreUsuarioAsync(string nombreUsuario);
+
+    Task<bool> ExisteCorreoAsync(string correo);
 }

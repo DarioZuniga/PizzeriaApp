@@ -38,6 +38,7 @@ namespace NetForum.MVC
             //Su funcionalidad es registrar los repositorios 
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+            builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
 
             var app = builder.Build();
 

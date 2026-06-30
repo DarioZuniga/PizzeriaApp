@@ -1,0 +1,43 @@
+﻿@model IEnumerable<NetForum.Data.Entities.Categoria>
+
+@{
+    ViewData["Title"] = "Categorías";
+}
+
+<div class="container mt-5">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-white">Categorías del Foro</h2>
+
+        <a asp-action="Create"
+           class="btn btn-primary">
+            + Nueva Categoría
+        </a>
+    </div>
+
+    <table class="table table-dark table-hover">
+
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Descripción</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.CategoriaId</td>
+                    <td>@item.Nombre</td>
+                    <td>@item.Descripcion</td>
+                </tr>
+            }
+
+        </tbody>
+
+    </table>
+
+</div>

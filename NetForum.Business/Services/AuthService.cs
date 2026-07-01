@@ -1,12 +1,57 @@
-﻿using System.Threading.Tasks;
+﻿using NetForum.Business.Interfaces;
+using NetForum.Data.Entities;
+using NetForum.Repository.Interfaces;
 
 namespace NetForum.Business.Services;
 
-public class AuthService
+// DP: Service Layer Pattern
+// SOLID: Single Responsibility Principle - maneja únicamente reglas de autenticación.
+public class AuthService : IAuthService
 {
-    public async Task<bool> ValidarLoginAsync(string email, string password)
+    private readonly IUsuarioRepository _usuarioRepository;
+
+    public AuthService(IUsuarioRepository usuarioRepository)
     {
-        // Cascarón estructural para el Avance 1
-        return await Task.FromResult(false);
+        // SOLID: Dependency Inversion Principle
+        _usuarioRepository = usuarioRepository;
+    }
+
+    public async Task<Usuario?> LoginAsync(string correo, string password)
+    {
+        var usuario = await _usuarioRepository.GetByCorreoAsync(correo);
+
+        if (usuario is null)
+        {
+            return null;
+        }
+
+        var passwordValido = BCrypt.Net.BCrypt.Verify(password, usuario.PasswordHash);
+
+        if (!passwordValido)
+        {
+            return null;
+        }
+
+        return usuario;
+    }
+
+    public async Task<Usuario> RegistrarUsuarioAsync(Usuario usuario, string password)
+    {
+        var existeCorreo = await _usuarioRepository.ExisteCorreoAsync(usuario.Correo);
+
+        if (existeCorreo)
+        {
+            throw new InvalidOperationException("Ya existe un usuario registrado con ese correo.");
+        }
+
+        usuario.PasswordHash = BCrypt.Net.BCrypt.HashPassword(password);
+        usuario.FechaRegistro = DateTime.Now;
+
+        return await _usuarioRepository.AddAsync(usuario);
+    }
+
+    public async Task<bool> ExisteCorreoAsync(string correo)
+    {
+        return await _usuarioRepository.ExisteCorreoAsync(correo);
     }
 }

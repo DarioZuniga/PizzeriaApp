@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using NetForum.Business.Interfaces;
+using NetForum.Business.Services;
 using NetForum.Data;
 using NetForum.Repository.Interfaces;
 using NetForum.Repository.Repositories;
@@ -11,9 +13,7 @@ namespace NetForum.MVC
         {
             var builder = WebApplication.CreateBuilder(args);
 
-           
-            //CONFIGURACIÓN DE AUTENTICACIÓN POR COOKIES (AGREGADO)
-           
+            // CONFIGURACIÓN DE AUTENTICACIÓN POR COOKIES
             builder.Services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = "CookieAuth";
@@ -23,7 +23,8 @@ namespace NetForum.MVC
             .AddCookie("CookieAuth", options =>
             {
                 options.Cookie.Name = "UserLoginCookie";
-                options.LoginPath = "/Account/Login"; // Si intentan entrar al Home sin loguearse, los manda aquí
+                options.LoginPath = "/Account/Login";
+                options.AccessDeniedPath = "/Account/AccessDenied";
             });
 
             builder.Services.AddControllersWithViews();
@@ -35,10 +36,13 @@ namespace NetForum.MVC
 
             // DP: Dependency Injection
             // SOLID: Dependency Inversion Principle
-            //Su funcionalidad es registrar los repositorios 
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
             builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
+
+            // DP: Service Layer Pattern + Dependency Injection
+            // SOLID: Dependency Inversion Principle
+            builder.Services.AddScoped<IAuthService, AuthService>();
 
             var app = builder.Build();
 
@@ -50,11 +54,11 @@ namespace NetForum.MVC
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+
             app.UseRouting();
 
-           // 2. ORDEN DE LOS PERMISOS AGREGADO Y CORREGIDO
-            app.UseAuthentication(); //  Primero el sistema pregunta: ¿Quién eres tú?
-            app.UseAuthorization();  // Después el sistema revisa: ¿A qué tienes permiso?
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.MapControllerRoute(
                 name: "default",

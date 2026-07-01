@@ -25,7 +25,26 @@ public class AuthService : IAuthService
             return null;
         }
 
-        var passwordValido = BCrypt.Net.BCrypt.Verify(password, usuario.PasswordHash);
+        if (usuario.EstadoId != 1)
+        {
+            return null;
+        }
+
+        if (string.IsNullOrWhiteSpace(usuario.PasswordHash))
+        {
+            return null;
+        }
+
+        bool passwordValido;
+
+        try
+        {
+            passwordValido = BCrypt.Net.BCrypt.Verify(password, usuario.PasswordHash);
+        }
+        catch
+        {
+            return null;
+        }
 
         if (!passwordValido)
         {

@@ -1,28 +1,53 @@
-﻿using NetForum.Data.Entities;
+﻿using NetForum.Business.Interfaces;
+using NetForum.Data.Entities;
 using NetForum.Repository.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace NetForum.Business.Services
+namespace NetForum.Business.Services;
+
+// DP: Service Layer Pattern
+// SOLID: Single Responsibility Principle - centraliza la lógica de negocio de Categorías.
+public class CategoriaService : ICategoriaService
 {
-    public class CategoriaService
+    private readonly ICategoriaRepository _repository;
+
+    public CategoriaService(ICategoriaRepository repository)
     {
-        private readonly ICategoriaRepository _repository;
+        // SOLID: Dependency Inversion Principle
+        _repository = repository;
+    }
 
-        public CategoriaService(ICategoriaRepository repository)
-        {
-            _repository = repository;
-        }
+    public async Task<IEnumerable<Categoria>> ObtenerCategoriasAsync()
+    {
+        return await _repository.ObtenerCategoriasActivasAsync();
+    }
 
-        public List<Categoria> ObtenerCategorias()
-        {
-            return _repository.ObtenerTodas();
-        }
+    public async Task<IEnumerable<Categoria>> BuscarCategoriasAsync(string nombre)
+    {
+        return await _repository.BuscarPorNombreAsync(nombre);
+    }
 
-        public void Guardar(Categoria categoria)
-        {
-            _repository.Agregar(categoria);
-        }
+    public async Task<Categoria> GuardarAsync(Categoria categoria)
+    {
+        return await _repository.AddAsync(categoria);
+    }
+
+    public async Task ActualizarAsync(Categoria categoria)
+    {
+        await _repository.UpdateAsync(categoria);
+    }
+
+    public async Task EliminarAsync(int id)
+    {
+        await _repository.DeleteAsync(id);
+    }
+
+    public async Task<Categoria?> ObtenerPorIdAsync(int id)
+    {
+        return await _repository.GetByIdAsync(id);
+    }
+
+    public async Task<bool> ExisteAsync(int id)
+    {
+        return await _repository.ExistsAsync(id);
     }
 }

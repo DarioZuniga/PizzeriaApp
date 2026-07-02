@@ -1,27 +1,48 @@
 using System.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization; // 1. Agregamos este using para usar los permisos
+using NetForum.Business.Interfaces;
 using NetForum.MVC.Models;
 
-namespace NetForum.MVC.Controllers
+namespace NetForum.MVC.Controllers;
+
+[Authorize]
+public class HomeController : Controller
 {
-    [Authorize] // 2. Bloqueamos TODO el controlador. Si no están logueados, los manda al Login.
-    public class HomeController : Controller
+    private readonly IDashboardService _dashboardService;
+
+    public HomeController(IDashboardService dashboardService)
     {
-        public IActionResult Index()
-        {
-            return View();
-        }
+        // SOLID: Dependency Inversion Principle
+        _dashboardService = dashboardService;
+    }
 
-        public IActionResult Privacy()
+    public async Task<IActionResult> Index()
+    {
+        var model = new DashboardViewModel
         {
-            return View();
-        }
+            NombreUsuario = User.Identity?.Name ?? "Futbolero",
+            TotalUsuarios = await _dashboardService.ContarUsuariosAsync(),
+            TotalTemas = await _dashboardService.ContarTemasAsync(),
+            TotalRespuestas = await _dashboardService.ContarRespuestasAsync(),
+            TotalEquipos = await _dashboardService.ContarEquiposAsync(),
+            TotalLigas = await _dashboardService.ContarLigasAsync()
+        };
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        return View(model);
+    }
+
+    public IActionResult Privacy()
+    {
+        return View();
+    }
+
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    public IActionResult Error()
+    {
+        return View(new ErrorViewModel
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
+            RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+        });
     }
 }

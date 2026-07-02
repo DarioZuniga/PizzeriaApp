@@ -1,6 +1,7 @@
-﻿@{
+﻿@model NetForum.MVC.Models.DashboardViewModel
+@{
     ViewData["Title"] = "Dashboard";
-    var nombreUsuario = User.Identity?.Name ?? "Futbolero";
+    var nombreUsuario = Model.NombreUsuario;
 }
 
 <div class="container-fluid px-4 py-4">
@@ -38,7 +39,7 @@
             <div class="dashboard-stat-card">
                 <i class="fa-solid fa-users"></i>
                 <div>
-                    <h3>128</h3>
+                    <h3>@Model.TotalUsuarios</h3>  @*Con este código el dashboard muestra datos reales desde SQL Server*@
                     <span>Usuarios</span>
                 </div>
             </div>
@@ -48,7 +49,7 @@
             <div class="dashboard-stat-card">
                 <i class="fa-solid fa-comments"></i>
                 <div>
-                    <h3>342</h3>
+                    <h3>@Model.TotalTemas</h3>  @*Con este código el dashboard muestra datos reales desde SQL Server*@
                     <span>Temas</span>
                 </div>
             </div>
@@ -58,7 +59,7 @@
             <div class="dashboard-stat-card">
                 <i class="fa-solid fa-futbol"></i>
                 <div>
-                    <h3>64</h3>
+                    <h3>@Model.TotalEquipos</h3>  @*Con este código el dashboard muestra datos reales desde SQL Server*@
                     <span>Equipos</span>
                 </div>
             </div>
@@ -68,7 +69,7 @@
             <div class="dashboard-stat-card">
                 <i class="fa-solid fa-trophy"></i>
                 <div>
-                    <h3>12</h3>
+                    <h3>@Model.TotalLigas</h3>  @*Con este código el dashboard muestra datos reales desde SQL Server*@
                     <span>Ligas</span>
                 </div>
             </div>

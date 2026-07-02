@@ -1,50 +1,56 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using NetForum.Business.Services;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using NetForum.Business.Interfaces;
 using NetForum.Data.Entities;
 using NetForum.MVC.Models;
-using NetForum.Repository.Repositories;
-using NetForum.Repository.Interfaces;
 
-namespace NetForum.MVC.Controllers
+namespace NetForum.MVC.Controllers;
+
+[Authorize]
+public class CategoriaController : Controller
 {
-    public class CategoriaController : Controller
+    private readonly ICategoriaService _categoriaService;
+
+    public CategoriaController(ICategoriaService categoriaService)
     {
-        private readonly ICategoriaRepository _repository;
+        // SOLID: Dependency Inversion Principle
+        _categoriaService = categoriaService;
+    }
 
-        public CategoriaController(ICategoriaRepository repository)
+    public async Task<IActionResult> Index()
+    {
+        var categorias = await _categoriaService.ObtenerCategoriasAsync();
+        return View(categorias);
+    }
+
+    [HttpGet]
+    public IActionResult Create()
+    {
+        return View(new CategoriaViewModel
         {
-            _repository = repository;
+            Nombre = string.Empty,
+            Descripcion = string.Empty
+        });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(CategoriaViewModel vm)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(vm);
         }
 
-        public IActionResult Index()
+        var categoria = new Categoria
         {
-            var categorias = _repository.ObtenerTodas();
+            Nombre = vm.Nombre,
+            Descripcion = vm.Descripcion,
+            EstadoId = 1
+        };
 
-            return View(categorias);
-        }
+        await _categoriaService.GuardarAsync(categoria);
 
-        [HttpGet]
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        public IActionResult Create(CategoriaViewModel vm)
-        {
-            if (!ModelState.IsValid)
-                return View(vm);
-
-            Categoria categoria = new Categoria()
-            {
-                Nombre = vm.Nombre,
-                Descripcion = vm.Descripcion,
-                EstadoId = 1
-            };
-
-            _repository.Agregar(categoria);
-
-            return RedirectToAction(nameof(Index));
-        }
+        return RedirectToAction(nameof(Index));
     }
 }

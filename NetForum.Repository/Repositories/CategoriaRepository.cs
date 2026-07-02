@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using NetForum.Data;
 using NetForum.Data.Entities;
 using NetForum.Repository.Interfaces;
@@ -9,7 +6,7 @@ using NetForum.Repository.Interfaces;
 namespace NetForum.Repository.Repositories;
 
 // DP: Repository Pattern
-// SOLID: Single Responsibility Principle - esta clase solo maneja consultas específicas de Categoria.
+// SOLID: Single Responsibility Principle - maneja consultas específicas de Categoría.
 public class CategoriaRepository : GenericRepository<Categoria>, ICategoriaRepository
 {
     public CategoriaRepository(NetForumDbContext context)
@@ -17,15 +14,21 @@ public class CategoriaRepository : GenericRepository<Categoria>, ICategoriaRepos
     {
     }
 
-    public List<Categoria> ObtenerTodas()
+    public async Task<IEnumerable<Categoria>> ObtenerCategoriasActivasAsync()
     {
-        return _context.Categorias.ToList();
+        return await _context.Categorias
+            .Include(c => c.Estado)
+            .Where(c => c.EstadoId == 1)
+            .OrderBy(c => c.Nombre)
+            .ToListAsync();
     }
 
-    public void Agregar(Categoria categoria)
+    public async Task<IEnumerable<Categoria>> BuscarPorNombreAsync(string nombre)
     {
-        _context.Categorias.Add(categoria);
-        _context.SaveChanges();
+        return await _context.Categorias
+            .Include(c => c.Estado)
+            .Where(c => c.Nombre.Contains(nombre))
+            .OrderBy(c => c.Nombre)
+            .ToListAsync();
     }
-
 }

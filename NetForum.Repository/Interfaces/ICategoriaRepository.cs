@@ -1,15 +1,12 @@
 ﻿using NetForum.Data.Entities;
-using System.Threading.Tasks;
 
 namespace NetForum.Repository.Interfaces;
 
 // DP: Repository Pattern
-// SOLID: Interface Segregation Principle - contrato específico para Categoria.
+// SOLID: Interface Segregation Principle - solo declara operaciones específicas de Categoría.
 public interface ICategoriaRepository : IGenericRepository<Categoria>
 {
-    
-        List<Categoria> ObtenerTodas();
+    Task<IEnumerable<Categoria>> ObtenerCategoriasActivasAsync();
 
-        void Agregar(Categoria categoria);
-   
+    Task<IEnumerable<Categoria>> BuscarPorNombreAsync(string nombre);
 }

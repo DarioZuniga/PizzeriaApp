@@ -44,6 +44,14 @@ namespace NetForum.MVC
             // SOLID: Dependency Inversion Principle
             builder.Services.AddScoped<IAuthService, AuthService>();
 
+            // DP: Dependency Injection
+            // SOLID: Dependency Inversion Principle
+            builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
+            builder.Services.AddScoped<IDashboardService, DashboardService>();
+
+            builder.Services.AddScoped<ICategoriaService, CategoriaService>();
+            builder.Services.AddScoped<ICategoriaService, CategoriaService>();
+
             var app = builder.Build();
 
             if (!app.Environment.IsDevelopment())

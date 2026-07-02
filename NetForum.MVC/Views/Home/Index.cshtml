@@ -1,78 +1,198 @@
 ﻿@{
-    ViewData["Title"] = "Feed Global";
+    ViewData["Title"] = "Dashboard";
+    var nombreUsuario = User.Identity?.Name ?? "Futbolero";
 }
 
-<div class="container mt-4">
-    <div class="row g-4 justify-content-center">
+<div class="container-fluid px-4 py-4">
 
-        <div class="col-lg-7 col-md-9">
+    <section class="football-hero mb-4">
+        <div class="football-hero-content">
+            <span class="badge bg-success-subtle text-success border border-success mb-3">
+                ⚽ NetForum Football Community
+            </span>
 
-            <div class="card bg-social-card border border-social mb-4" style="border-radius: 16px;">
-                <div class="card-body p-4">
-                    <div class="d-flex align-items-center gap-3 mb-3">
-                        <div class="rounded-circle d-flex justify-content-center align-items-center fw-bold" style="width: 44px; height: 44px; background-color: #2E2E3A; color: #A78BFA;">?</div>
-                        <input type="text" class="form-control text-white border-0 py-2" placeholder="¿Qué tema de ingeniería quieres debatir hoy?..." style="border-radius: 24px; background-color: #0F0F12 !important;" readonly>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center border-top border-social pt-3">
-                        <span class="small text-secondary fw-semibold">Workspace de Programación Avanzada</span>
-                        <a class="btn btn-violet-neon btn-sm px-4 fw-bold" asp-controller="Account" asp-action="Login" style="border-radius: 18px;">Publicar</a>
-                    </div>
+            <h1 class="display-5 fw-bold text-white mb-3">
+                Bienvenido, @nombreUsuario
+            </h1>
+
+            <p class="lead text-light opacity-75 mb-4">
+                Debate partidos, fichajes, polémicas, jugadores, ligas y todo lo que mueve al mundo del fútbol.
+            </p>
+
+            <div class="d-flex flex-wrap gap-3">
+                <a class="btn btn-football px-4 py-2 fw-bold" href="#">
+                    <i class="fa-solid fa-fire me-2"></i>
+                    Explorar Temas
+                </a>
+
+                <a class="btn btn-outline-light px-4 py-2 fw-bold" href="#">
+                    <i class="fa-solid fa-plus me-2"></i>
+                    Crear Tema
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="row g-4 mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="dashboard-stat-card">
+                <i class="fa-solid fa-users"></i>
+                <div>
+                    <h3>128</h3>
+                    <span>Usuarios</span>
                 </div>
             </div>
+        </div>
 
-            <div class="d-flex justify-content-between align-items-center mb-3 px-1">
-                <h6 class="text-uppercase text-secondary small fw-bold m-0" style="letter-spacing: 1px;">Tendencias de la comunidad</h6>
-                <span class="text-violet-neon small fw-bold">Hilos recientes</span>
+        <div class="col-xl-3 col-md-6">
+            <div class="dashboard-stat-card">
+                <i class="fa-solid fa-comments"></i>
+                <div>
+                    <h3>342</h3>
+                    <span>Temas</span>
+                </div>
             </div>
+        </div>
 
-            <div class="card bg-social-card border border-social mb-3 shadow-sm" style="border-radius: 16px;">
-                <div class="card-body p-4">
-                    <div class="d-flex align-items-center justify-content-between mb-3">
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="rounded-circle d-flex justify-content-center align-items-center fw-bold" style="width: 42px; height: 42px; background-color: #8B5CF6; color: #ffffff;">EF</div>
-                            <div>
-                                <h6 class="mb-0 fw-bold text-white">dev_persist_master</h6>
-                                <small class="text-secondary">Hace 14 minutos en <span class="text-violet-neon">#Architecture</span></small>
-                            </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="dashboard-stat-card">
+                <i class="fa-solid fa-futbol"></i>
+                <div>
+                    <h3>64</h3>
+                    <span>Equipos</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="dashboard-stat-card">
+                <i class="fa-solid fa-trophy"></i>
+                <div>
+                    <h3>12</h3>
+                    <span>Ligas</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="row g-4">
+
+        <div class="col-lg-8">
+            <div class="dashboard-panel">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h4 class="fw-bold text-white mb-1">
+                            🔥 Temas destacados
+                        </h4>
+                        <p class="text-secondary mb-0">
+                            Conversaciones activas de la comunidad
+                        </p>
+                    </div>
+
+                    <span class="badge bg-dark border border-social text-success">
+                        En vivo
+                    </span>
+                </div>
+
+                <div class="topic-card">
+                    <div class="topic-avatar bg-success">
+                        RM
+                    </div>
+
+                    <div class="flex-grow-1">
+                        <h5 class="text-white fw-bold mb-1">
+                            ¿Real Madrid es favorito para ganar la Champions?
+                        </h5>
+                        <p class="text-secondary mb-2">
+                            Debate sobre plantilla, calendario, fichajes y rendimiento europeo.
+                        </p>
+
+                        <div class="d-flex gap-3 small text-secondary">
+                            <span><i class="fa-solid fa-comment me-1"></i> 32 respuestas</span>
+                            <span><i class="fa-solid fa-heart me-1"></i> 88 reacciones</span>
+                            <span><i class="fa-solid fa-clock me-1"></i> Hace 18 min</span>
                         </div>
-                        <span class="badge bg-dark text-secondary border border-social font-monospace">EF_Core_10</span>
-                    </div>
-
-                    <h5 class="card-title fw-bold text-white mb-2">Diseño de Repositorios Genéricos: ¿Patrón óptimo o sobreingeniería?</h5>
-                    <p class="card-text text-secondary mb-3" style="font-size: 0.95rem; line-height: 1.6;">
-                        Estamos debatiendo en nuestro equipo si encapsular Entity Framework detrás de interfaces `IRepository<T>` realmente aporta valor en proyectos modulares de .NET 10, o si simplemente limita el poder de LINQ. ¿Cuáles han sido sus experiencias?
-                    </p>
-
-                    <div class="d-flex gap-2 border-top border-social pt-3 mt-3">
-                        <button class="btn btn-sm btn-outline-neon px-3 py-1.5 d-flex align-items-center gap-2" style="border-radius: 20px;" disabled>
-                            <span>▲</span> <span class="fw-bold">42</span>
-                        </button>
-                        <button class="btn btn-sm btn-outline-neon px-3 py-1.5 d-flex align-items-center gap-2" style="border-radius: 20px;" disabled>
-                            <span>💬</span> <span class="fw-bold">12</span>
-                        </button>
                     </div>
                 </div>
-            </div>
 
+                <div class="topic-card">
+                    <div class="topic-avatar bg-warning text-dark">
+                        VAR
+                    </div>
+
+                    <div class="flex-grow-1">
+                        <h5 class="text-white fw-bold mb-1">
+                            ¿El VAR está mejorando o arruinando el fútbol?
+                        </h5>
+                        <p class="text-secondary mb-2">
+                            Una discusión caliente sobre arbitraje, justicia deportiva y emoción.
+                        </p>
+
+                        <div class="d-flex gap-3 small text-secondary">
+                            <span><i class="fa-solid fa-comment me-1"></i> 47 respuestas</span>
+                            <span><i class="fa-solid fa-heart me-1"></i> 120 reacciones</span>
+                            <span><i class="fa-solid fa-clock me-1"></i> Hace 45 min</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="topic-card">
+                    <div class="topic-avatar bg-primary">
+                        CR
+                    </div>
+
+                    <div class="flex-grow-1">
+                        <h5 class="text-white fw-bold mb-1">
+                            Liga Promerica: ¿quién llega más fuerte a semifinales?
+                        </h5>
+                        <p class="text-secondary mb-2">
+                            Opiniones sobre Saprissa, Alajuelense, Herediano y Cartaginés.
+                        </p>
+
+                        <div class="d-flex gap-3 small text-secondary">
+                            <span><i class="fa-solid fa-comment me-1"></i> 21 respuestas</span>
+                            <span><i class="fa-solid fa-heart me-1"></i> 54 reacciones</span>
+                            <span><i class="fa-solid fa-clock me-1"></i> Hace 1 hora</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
         </div>
 
-        <div class="col-lg-3 d-none d-lg-block">
-            <div class="card bg-social-card border border-social mb-4" style="border-radius: 16px;">
-                <div class="card-body p-4">
-                    <h6 class="text-white fw-bold mb-3">Infraestructura Real</h6>
-                    <ul class="list-unstyled mb-0 small">
-                        <li class="mb-3 d-flex justify-content-between align-items-center">
-                            <span class="text-secondary">Entorno:</span>
-                            <span class="badge bg-dark border border-social text-success">.NET 10.0 Native</span>
-                        </li>
-                        <li class="mb-3 d-flex justify-content-between align-items-center">
-                            <span class="text-secondary">Arquitectura:</span>
-                            <span class="badge bg-dark border border-social text-secondary">Desacoplada (4L)</span>
-                        </li>
-                    </ul>
+        <div class="col-lg-4">
+            <div class="dashboard-panel mb-4">
+                <h5 class="fw-bold text-white mb-3">
+                    🏆 Ligas populares
+                </h5>
+
+                <div class="league-pill">Premier League</div>
+                <div class="league-pill">La Liga</div>
+                <div class="league-pill">Champions League</div>
+                <div class="league-pill">Liga Promerica</div>
+            </div>
+
+            <div class="dashboard-panel">
+                <h5 class="fw-bold text-white mb-3">
+                    ⚡ Actividad reciente
+                </h5>
+
+                <div class="activity-item">
+                    <span>Nuevo usuario registrado</span>
+                    <small>Hace 5 min</small>
+                </div>
+
+                <div class="activity-item">
+                    <span>Nuevo tema en Champions</span>
+                    <small>Hace 12 min</small>
+                </div>
+
+                <div class="activity-item">
+                    <span>Reporte enviado a moderación</span>
+                    <small>Hace 30 min</small>
                 </div>
             </div>
         </div>
 
-    </div>
+    </section>
 </div>

@@ -1,3 +1,5 @@
+
+            /*INDEX NETFORUM*/
 html {
   font-size: 14px;
 }
@@ -160,3 +162,128 @@ body {
         transform: translateX(0);
     }
 }
+ /*LANDING PAGE*/
+.football-hero {
+    position: relative;
+    min-height: 360px;
+    border-radius: 28px;
+    overflow: hidden;
+    background: linear-gradient(90deg, rgba(0,0,0,.88), rgba(0,0,0,.35)), url('/images/stadium-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    box-shadow: 0 25px 70px rgba(0,0,0,.45);
+}
+
+.football-hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 760px;
+    padding: 4rem;
+}
+
+.dashboard-stat-card,
+.dashboard-panel,
+.topic-card {
+    background: rgba(22, 22, 29, .92);
+    border: 1px solid #23232F;
+    border-radius: 22px;
+    box-shadow: 0 18px 45px rgba(0,0,0,.25);
+}
+
+.dashboard-stat-card {
+    padding: 1.6rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: all .25s ease;
+}
+
+    .dashboard-stat-card:hover {
+        transform: translateY(-4px);
+        border-color: rgba(124, 255, 155, .55);
+    }
+
+    .dashboard-stat-card i {
+        width: 54px;
+        height: 54px;
+        display: grid;
+        place-items: center;
+        border-radius: 16px;
+        color: #07140c;
+        background: linear-gradient(135deg, #7cff9b, #198754);
+        font-size: 1.45rem;
+    }
+
+    .dashboard-stat-card h3 {
+        color: #ffffff;
+        font-weight: 800;
+        margin-bottom: 0;
+    }
+
+    .dashboard-stat-card span {
+        color: #A1A1AA;
+    }
+
+.dashboard-panel {
+    padding: 1.6rem;
+}
+
+.topic-card {
+    display: flex;
+    gap: 1rem;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    transition: all .25s ease;
+}
+
+    .topic-card:hover {
+        transform: translateX(5px);
+        border-color: rgba(255, 193, 7, .5);
+    }
+
+.topic-avatar {
+    min-width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    color: white;
+    font-weight: 800;
+}
+
+.league-pill {
+    padding: .85rem 1rem;
+    margin-bottom: .75rem;
+    border-radius: 14px;
+    background: #0F0F12;
+    color: #E4E4E7;
+    border: 1px solid #23232F;
+    font-weight: 600;
+    transition: all .2s ease;
+}
+
+    .league-pill:hover {
+        border-color: #198754;
+        color: #7cff9b;
+        transform: translateX(4px);
+    }
+
+.activity-item {
+    display: flex;
+    flex-direction: column;
+    gap: .2rem;
+    padding: .9rem 0;
+    border-bottom: 1px solid #23232F;
+}
+
+    .activity-item:last-child {
+        border-bottom: none;
+    }
+
+    .activity-item span {
+        color: #E4E4E7;
+    }
+
+    .activity-item small {
+        color: #A1A1AA;
+    }

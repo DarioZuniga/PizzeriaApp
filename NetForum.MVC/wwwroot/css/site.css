@@ -320,3 +320,45 @@ body {
 .btn-danger:hover {
     transform: scale(1.05);
 }
+
+/*admin / panel administrativo central*/
+.admin-module-card {
+    display: block;
+    height: 100%;
+    padding: 1.8rem;
+    border-radius: 22px;
+    background: rgba(22, 22, 29, .92);
+    border: 1px solid #23232F;
+    color: #E4E4E7;
+    text-decoration: none;
+    box-shadow: 0 18px 45px rgba(0,0,0,.25);
+    transition: all .25s ease;
+}
+
+    .admin-module-card:hover {
+        transform: translateY(-6px);
+        border-color: rgba(124,255,155,.55);
+        color: #ffffff;
+    }
+
+    .admin-module-card i {
+        width: 56px;
+        height: 56px;
+        display: grid;
+        place-items: center;
+        margin-bottom: 1rem;
+        border-radius: 18px;
+        color: #07140c;
+        background: linear-gradient(135deg, #7cff9b, #198754);
+        font-size: 1.5rem;
+    }
+
+    .admin-module-card h5 {
+        font-weight: 800;
+        margin-bottom: .35rem;
+    }
+
+    .admin-module-card span {
+        color: #A1A1AA;
+        font-size: .95rem;
+    }

@@ -17,20 +17,21 @@ public class CategoriaController : Controller
         _categoriaService = categoriaService;
     }
 
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(string? buscar)
     {
-        var categorias = await _categoriaService.ObtenerCategoriasAsync();
+        var categorias = string.IsNullOrWhiteSpace(buscar)
+            ? await _categoriaService.ObtenerCategoriasAsync()
+            : await _categoriaService.BuscarCategoriasAsync(buscar);
+
+        ViewBag.Buscar = buscar;
+
         return View(categorias);
     }
 
     [HttpGet]
     public IActionResult Create()
     {
-        return View(new CategoriaViewModel
-        {
-            Nombre = string.Empty,
-            Descripcion = string.Empty
-        });
+        return View(new CategoriaViewModel());
     }
 
     [HttpPost]
@@ -50,6 +51,80 @@ public class CategoriaController : Controller
         };
 
         await _categoriaService.GuardarAsync(categoria);
+
+        TempData["Success"] = "Categoría creada correctamente.";
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Edit(int id)
+    {
+        var categoria = await _categoriaService.ObtenerPorIdAsync(id);
+
+        if (categoria is null)
+        {
+            return NotFound();
+        }
+
+        var vm = new CategoriaViewModel
+        {
+            Nombre = categoria.Nombre,
+            Descripcion = categoria.Descripcion
+        };
+
+        ViewBag.CategoriaId = categoria.CategoriaId;
+
+        return View(vm);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(int id, CategoriaViewModel vm)
+    {
+        if (!ModelState.IsValid)
+        {
+            ViewBag.CategoriaId = id;
+            return View(vm);
+        }
+
+        var categoria = await _categoriaService.ObtenerPorIdAsync(id);
+
+        if (categoria is null)
+        {
+            return NotFound();
+        }
+
+        categoria.Nombre = vm.Nombre;
+        categoria.Descripcion = vm.Descripcion;
+
+        await _categoriaService.ActualizarAsync(categoria);
+
+        TempData["Success"] = "Categoría actualizada correctamente.";
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var categoria = await _categoriaService.ObtenerPorIdAsync(id);
+
+        if (categoria is null)
+        {
+            return NotFound();
+        }
+
+        return View(categoria);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteConfirmed(int id)
+    {
+        await _categoriaService.EliminarAsync(id);
+
+        TempData["Success"] = "Categoría eliminada correctamente.";
 
         return RedirectToAction(nameof(Index));
     }

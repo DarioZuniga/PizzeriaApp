@@ -287,3 +287,36 @@ body {
     .activity-item small {
         color: #A1A1AA;
     }
+    /*GESTIÓN DE CATEGORÍAS*/
+.table-dark {
+    --bs-table-bg: transparent;
+}
+
+    .table-dark tbody tr {
+        transition: all .20s ease;
+    }
+
+        .table-dark tbody tr:hover {
+            background-color: rgba(124,255,155,.08);
+        }
+
+    .table-dark th {
+        color: #7cff9b;
+        border-bottom: 2px solid #198754;
+    }
+
+    .table-dark td {
+        vertical-align: middle;
+    }
+
+.btn-warning {
+    color: #000;
+}
+
+    .btn-warning:hover {
+        transform: scale(1.05);
+    }
+
+.btn-danger:hover {
+    transform: scale(1.05);
+}

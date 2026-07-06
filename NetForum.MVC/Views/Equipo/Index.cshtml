@@ -1,0 +1,345 @@
+﻿@model IEnumerable<NetForum.Data.Entities.Equipo>
+
+@{
+    ViewData["Title"] = "Gestión de Equipos";
+    var ligas = ViewBag.Ligas as List<SelectListItem>;
+}
+
+@Html.AntiForgeryToken()
+
+<div class="container-fluid py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-white">
+                <i class="fa-solid fa-shield-halved text-success me-2"></i>
+                Gestión de Equipos
+            </h2>
+            <p class="text-secondary mb-0">
+                Administra clubes, país de origen y liga asociada.
+            </p>
+        </div>
+
+        <button class="btn btn-football px-4" data-bs-toggle="modal" data-bs-target="#equipoModal" onclick="abrirCrearEquipo()">
+            <i class="fa-solid fa-plus me-2"></i>
+            Nuevo Equipo
+        </button>
+    </div>
+
+    <div class="dashboard-panel">
+        <div class="table-responsive">
+            <table id="equiposTable" class="table table-dark table-hover align-middle w-100">
+                <thead>
+                    <tr>
+                        <th style="width:80px;">ID</th>
+                        <th>Nombre</th>
+                        <th>País</th>
+                        <th>Fundación</th>
+                        <th>Liga</th>
+                        <th style="width:170px;" class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr data-id="@item.EquipoId">
+                            <td>@item.EquipoId</td>
+                            <td class="fw-semibold">@item.Nombre</td>
+                            <td>@item.Pais</td>
+                            <td>@item.Fundacion</td>
+                            <td>@item.Liga.Nombre</td>
+                            <td class="text-center">
+                                <button class="btn btn-warning btn-sm" onclick="abrirEditarEquipo(@item.EquipoId)">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
+
+                                <button class="btn btn-danger btn-sm" onclick="eliminarEquipo(@item.EquipoId, '@item.Nombre')">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="equipoModal" tabindex="-1" aria-labelledby="equipoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-social-card border border-social text-white" style="border-radius: 18px;">
+            <div class="modal-header border-social">
+                <h5 class="modal-title fw-bold" id="equipoModalLabel">
+                    Nuevo Equipo
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <input type="hidden" id="equipoId" />
+
+                <div class="mb-3">
+                    <label class="form-label text-secondary fw-semibold">Liga</label>
+                    <select id="ligaIdEquipo" class="form-select bg-dark text-white border-secondary">
+                        <option value="">Seleccione una liga</option>
+                        @foreach (var liga in ligas!)
+                        {
+                            <option value="@liga.Value">@liga.Text</option>
+                        }
+                    </select>
+                    <span id="ligaEquipoError" class="text-warning small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-secondary fw-semibold">Nombre</label>
+                    <input type="text" id="nombreEquipo" class="form-control bg-dark text-white border-secondary" placeholder="Ej: Real Madrid" />
+                    <span id="nombreEquipoError" class="text-warning small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-secondary fw-semibold">País</label>
+                    <input type="text" id="paisEquipo" class="form-control bg-dark text-white border-secondary" placeholder="Ej: España" />
+                    <span id="paisEquipoError" class="text-warning small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-secondary fw-semibold">Año de Fundación</label>
+                    <input type="number" id="fundacionEquipo" class="form-control bg-dark text-white border-secondary" placeholder="Ej: 1902" />
+                    <span id="fundacionEquipoError" class="text-warning small"></span>
+                </div>
+            </div>
+
+            <div class="modal-footer border-social">
+                <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">
+                    Cancelar
+                </button>
+
+                <button type="button" class="btn btn-football" onclick="guardarEquipo()">
+                    <i class="fa-solid fa-save me-2"></i>
+                    Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let equiposTable;
+
+        $(document).ready(function () {
+            equiposTable = $('#equiposTable').DataTable({
+                language: {
+                    url: "https://cdn.datatables.net/plug-ins/2.0.8/i18n/es-ES.json"
+                },
+                pageLength: 5,
+                lengthMenu: [5, 10, 25, 50],
+                order: [[1, "asc"]],
+                columnDefs: [
+                    { orderable: false, targets: 5 }
+                ],
+                layout: {
+                    topStart: {
+                        buttons: [
+                            {
+                                extend: 'excelHtml5',
+                                text: '<i class="fa-solid fa-file-excel me-1"></i> Excel',
+                                className: 'btn btn-success btn-sm'
+                            },
+                            {
+                                extend: 'pdfHtml5',
+                                text: '<i class="fa-solid fa-file-pdf me-1"></i> PDF',
+                                className: 'btn btn-danger btn-sm'
+                            },
+                            {
+                                extend: 'print',
+                                text: '<i class="fa-solid fa-print me-1"></i> Imprimir',
+                                className: 'btn btn-secondary btn-sm'
+                            }
+                        ]
+                    }
+                }
+            });
+        });
+
+        function obtenerToken() {
+            return document.querySelector('input[name="__RequestVerificationToken"]').value;
+        }
+
+        function limpiarFormularioEquipo() {
+            document.getElementById("equipoId").value = "";
+            document.getElementById("ligaIdEquipo").value = "";
+            document.getElementById("nombreEquipo").value = "";
+            document.getElementById("paisEquipo").value = "";
+            document.getElementById("fundacionEquipo").value = "";
+
+            document.getElementById("ligaEquipoError").innerText = "";
+            document.getElementById("nombreEquipoError").innerText = "";
+            document.getElementById("paisEquipoError").innerText = "";
+            document.getElementById("fundacionEquipoError").innerText = "";
+        }
+
+        function abrirCrearEquipo() {
+            limpiarFormularioEquipo();
+            document.getElementById("equipoModalLabel").innerText = "Nuevo Equipo";
+        }
+
+        async function abrirEditarEquipo(id) {
+            limpiarFormularioEquipo();
+
+            const response = await fetch(`/Equipo/GetById/${id}`);
+
+            if (!response.ok) {
+                mostrarError("No se pudo cargar el equipo.");
+                return;
+            }
+
+            const equipo = await response.json();
+
+            document.getElementById("equipoId").value = equipo.equipoId;
+            document.getElementById("ligaIdEquipo").value = equipo.ligaId;
+            document.getElementById("nombreEquipo").value = equipo.nombre;
+            document.getElementById("paisEquipo").value = equipo.pais;
+            document.getElementById("fundacionEquipo").value = equipo.fundacion;
+            document.getElementById("equipoModalLabel").innerText = "Editar Equipo";
+
+            const modal = new bootstrap.Modal(document.getElementById("equipoModal"));
+            modal.show();
+        }
+
+        async function guardarEquipo() {
+            const id = document.getElementById("equipoId").value;
+            const ligaId = document.getElementById("ligaIdEquipo").value;
+            const nombre = document.getElementById("nombreEquipo").value.trim();
+            const pais = document.getElementById("paisEquipo").value.trim();
+            const fundacion = document.getElementById("fundacionEquipo").value;
+
+            limpiarErroresEquipo();
+
+            let valido = true;
+
+            if (!ligaId) {
+                document.getElementById("ligaEquipoError").innerText = "Debe seleccionar una liga.";
+                valido = false;
+            }
+
+            if (!nombre) {
+                document.getElementById("nombreEquipoError").innerText = "El nombre es obligatorio.";
+                valido = false;
+            }
+
+            if (!pais) {
+                document.getElementById("paisEquipoError").innerText = "El país es obligatorio.";
+                valido = false;
+            }
+
+            if (!fundacion || fundacion < 1800 || fundacion > 2100) {
+                document.getElementById("fundacionEquipoError").innerText = "Ingrese un año válido.";
+                valido = false;
+            }
+
+            if (!valido) {
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("__RequestVerificationToken", obtenerToken());
+            formData.append("LigaId", ligaId);
+            formData.append("Nombre", nombre);
+            formData.append("Pais", pais);
+            formData.append("Fundacion", fundacion);
+
+            const url = id
+                ? `/Equipo/EditAjax/${id}`
+                : `/Equipo/CreateAjax`;
+
+            const response = await fetch(url, {
+                method: "POST",
+                body: formData
+            });
+
+            if (!response.ok) {
+                mostrarError("No se pudo guardar el equipo.");
+                return;
+            }
+
+            const result = await response.json();
+
+            if (result.success) {
+                Swal.fire({
+                    icon: "success",
+                    title: "Correcto",
+                    text: result.message,
+                    timer: 1500,
+                    showConfirmButton: false,
+                    background: "#16161D",
+                    color: "#E4E4E7"
+                }).then(() => location.reload());
+            }
+        }
+
+        function limpiarErroresEquipo() {
+            document.getElementById("ligaEquipoError").innerText = "";
+            document.getElementById("nombreEquipoError").innerText = "";
+            document.getElementById("paisEquipoError").innerText = "";
+            document.getElementById("fundacionEquipoError").innerText = "";
+        }
+
+        function eliminarEquipo(id, nombre) {
+            Swal.fire({
+                title: "¿Eliminar equipo?",
+                text: `Se eliminará "${nombre}". Esta acción no se puede deshacer.`,
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#dc3545",
+                cancelButtonColor: "#6c757d",
+                confirmButtonText: "Sí, eliminar",
+                cancelButtonText: "Cancelar",
+                background: "#16161D",
+                color: "#E4E4E7"
+            }).then(async (result) => {
+                if (!result.isConfirmed) {
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append("__RequestVerificationToken", obtenerToken());
+
+                const response = await fetch(`/Equipo/DeleteAjax/${id}`, {
+                    method: "POST",
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    mostrarError("No se pudo eliminar el equipo.");
+                    return;
+                }
+
+                const data = await response.json();
+
+                if (data.success) {
+                    Swal.fire({
+                        icon: "success",
+                        title: "Eliminado",
+                        text: data.message,
+                        timer: 1500,
+                        showConfirmButton: false,
+                        background: "#16161D",
+                        color: "#E4E4E7"
+                    }).then(() => location.reload());
+                }
+            });
+        }
+
+        function mostrarError(mensaje) {
+            Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: mensaje,
+                background: "#16161D",
+                color: "#E4E4E7"
+            });
+        }
+    </script>
+}

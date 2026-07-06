@@ -52,6 +52,18 @@ namespace NetForum.MVC
             builder.Services.AddScoped<ICategoriaService, CategoriaService>();
             builder.Services.AddScoped<ICategoriaService, CategoriaService>();
 
+            builder.Services.AddScoped<ILigaRepository, LigaRepository>();
+            builder.Services.AddScoped<ILigaService, LigaService>();
+
+            builder.Services.AddScoped<IEquipoRepository, EquipoRepository>();
+            builder.Services.AddScoped<IEquipoService, EquipoService>();
+
+            builder.Services.AddScoped<IJugadorRepository, JugadorRepository>();
+            builder.Services.AddScoped<IJugadorService, JugadorService>();
+
+            builder.Services.AddScoped<ITemaRepository, TemaRepository>();
+            builder.Services.AddScoped<ITemaService, TemaService>();
+
             var app = builder.Build();
 
             if (!app.Environment.IsDevelopment())

@@ -1,0 +1,322 @@
+﻿@model IEnumerable<NetForum.Data.Entities.Respuesta>
+
+@{
+    ViewData["Title"] = "Gestión de Respuestas";
+    var temas = ViewBag.Temas as List<SelectListItem>;
+}
+
+@Html.AntiForgeryToken()
+
+<div class="container-fluid py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-white">
+                <i class="fa-solid fa-reply text-success me-2"></i>
+                Gestión de Respuestas
+            </h2>
+            <p class="text-secondary mb-0">
+                Administra respuestas publicadas en los temas del foro.
+            </p>
+        </div>
+
+        <button class="btn btn-football px-4" data-bs-toggle="modal" data-bs-target="#respuestaModal" onclick="abrirCrearRespuesta()">
+            <i class="fa-solid fa-plus me-2"></i>
+            Nueva Respuesta
+        </button>
+    </div>
+
+    <div class="dashboard-panel">
+        <div class="table-responsive">
+            <table id="respuestasTable" class="table table-dark table-hover align-middle w-100">
+                <thead>
+                    <tr>
+                        <th style="width:80px;">ID</th>
+                        <th>Tema</th>
+                        <th>Autor</th>
+                        <th>Estado</th>
+                        <th>Fecha</th>
+                        <th>Contenido</th>
+                        <th style="width:170px;" class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr data-id="@item.RespuestaId">
+                            <td>@item.RespuestaId</td>
+                            <td class="fw-semibold">@item.Tema.Titulo</td>
+                            <td>@item.Usuario.NombreUsuario</td>
+                            <td>
+                                <span class="badge bg-success">
+                                    @item.Estado.Nombre
+                                </span>
+                            </td>
+                            <td>@item.FechaCreacion.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>
+                                @(item.Contenido.Length > 80
+                                    ? item.Contenido.Substring(0, 80) + "..."
+                                    : item.Contenido)
+                            </td>
+                            <td class="text-center">
+                                <button class="btn btn-warning btn-sm" onclick="abrirEditarRespuesta(@item.RespuestaId)">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
+
+                                <button class="btn btn-danger btn-sm" onclick="eliminarRespuesta(@item.RespuestaId, '@item.Tema.Titulo')">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="respuestaModal" tabindex="-1" aria-labelledby="respuestaModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content bg-social-card border border-social text-white" style="border-radius: 18px;">
+            <div class="modal-header border-social">
+                <h5 class="modal-title fw-bold" id="respuestaModalLabel">
+                    Nueva Respuesta
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <input type="hidden" id="respuestaId" />
+
+                <div class="mb-3">
+                    <label class="form-label text-secondary fw-semibold">Tema</label>
+                    <select id="temaIdRespuesta" class="form-select bg-dark text-white border-secondary">
+                        <option value="">Seleccione un tema</option>
+                        @foreach (var tema in temas!)
+                        {
+                            <option value="@tema.Value">@tema.Text</option>
+                        }
+                    </select>
+                    <span id="temaRespuestaError" class="text-warning small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-secondary fw-semibold">Contenido</label>
+                    <textarea id="contenidoRespuesta"
+                              class="form-control bg-dark text-white border-secondary"
+                              rows="6"
+                              placeholder="Escribe la respuesta..."></textarea>
+                    <span id="contenidoRespuestaError" class="text-warning small"></span>
+                </div>
+            </div>
+
+            <div class="modal-footer border-social">
+                <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">
+                    Cancelar
+                </button>
+
+                <button type="button" class="btn btn-football" onclick="guardarRespuesta()">
+                    <i class="fa-solid fa-save me-2"></i>
+                    Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let respuestasTable;
+
+        $(document).ready(function () {
+            respuestasTable = $('#respuestasTable').DataTable({
+                language: {
+                    url: "https://cdn.datatables.net/plug-ins/2.0.8/i18n/es-ES.json"
+                },
+                pageLength: 5,
+                lengthMenu: [5, 10, 25, 50],
+                order: [[4, "desc"]],
+                columnDefs: [
+                    { orderable: false, targets: 6 }
+                ],
+                layout: {
+                    topStart: {
+                        buttons: [
+                            {
+                                extend: 'excelHtml5',
+                                text: '<i class="fa-solid fa-file-excel me-1"></i> Excel',
+                                className: 'btn btn-success btn-sm'
+                            },
+                            {
+                                extend: 'pdfHtml5',
+                                text: '<i class="fa-solid fa-file-pdf me-1"></i> PDF',
+                                className: 'btn btn-danger btn-sm'
+                            },
+                            {
+                                extend: 'print',
+                                text: '<i class="fa-solid fa-print me-1"></i> Imprimir',
+                                className: 'btn btn-secondary btn-sm'
+                            }
+                        ]
+                    }
+                }
+            });
+        });
+
+        function obtenerToken() {
+            return document.querySelector('input[name="__RequestVerificationToken"]').value;
+        }
+
+        function limpiarFormularioRespuesta() {
+            document.getElementById("respuestaId").value = "";
+            document.getElementById("temaIdRespuesta").value = "";
+            document.getElementById("contenidoRespuesta").value = "";
+            limpiarErroresRespuesta();
+        }
+
+        function limpiarErroresRespuesta() {
+            document.getElementById("temaRespuestaError").innerText = "";
+            document.getElementById("contenidoRespuestaError").innerText = "";
+        }
+
+        function abrirCrearRespuesta() {
+            limpiarFormularioRespuesta();
+            document.getElementById("respuestaModalLabel").innerText = "Nueva Respuesta";
+        }
+
+        async function abrirEditarRespuesta(id) {
+            limpiarFormularioRespuesta();
+
+            const response = await fetch(`/Respuesta/GetById/${id}`);
+
+            if (!response.ok) {
+                mostrarError("No se pudo cargar la respuesta.");
+                return;
+            }
+
+            const respuesta = await response.json();
+
+            document.getElementById("respuestaId").value = respuesta.respuestaId;
+            document.getElementById("temaIdRespuesta").value = respuesta.temaId;
+            document.getElementById("contenidoRespuesta").value = respuesta.contenido;
+            document.getElementById("respuestaModalLabel").innerText = "Editar Respuesta";
+
+            const modal = new bootstrap.Modal(document.getElementById("respuestaModal"));
+            modal.show();
+        }
+
+        async function guardarRespuesta() {
+            const id = document.getElementById("respuestaId").value;
+            const temaId = document.getElementById("temaIdRespuesta").value;
+            const contenido = document.getElementById("contenidoRespuesta").value.trim();
+
+            limpiarErroresRespuesta();
+
+            let valido = true;
+
+            if (!temaId) {
+                document.getElementById("temaRespuestaError").innerText = "Debe seleccionar un tema.";
+                valido = false;
+            }
+
+            if (!contenido) {
+                document.getElementById("contenidoRespuestaError").innerText = "El contenido es obligatorio.";
+                valido = false;
+            }
+
+            if (!valido) {
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("__RequestVerificationToken", obtenerToken());
+            formData.append("TemaId", temaId);
+            formData.append("Contenido", contenido);
+
+            const url = id
+                ? `/Respuesta/EditAjax/${id}`
+                : `/Respuesta/CreateAjax`;
+
+            const response = await fetch(url, {
+                method: "POST",
+                body: formData
+            });
+
+            if (!response.ok) {
+                mostrarError("No se pudo guardar la respuesta.");
+                return;
+            }
+
+            const result = await response.json();
+
+            if (result.success) {
+                Swal.fire({
+                    icon: "success",
+                    title: "Correcto",
+                    text: result.message,
+                    timer: 1500,
+                    showConfirmButton: false,
+                    background: "#16161D",
+                    color: "#E4E4E7"
+                }).then(() => location.reload());
+            }
+        }
+
+        function eliminarRespuesta(id, tema) {
+            Swal.fire({
+                title: "¿Eliminar respuesta?",
+                text: `Se eliminará una respuesta del tema "${tema}". Esta acción no se puede deshacer.`,
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#dc3545",
+                cancelButtonColor: "#6c757d",
+                confirmButtonText: "Sí, eliminar",
+                cancelButtonText: "Cancelar",
+                background: "#16161D",
+                color: "#E4E4E7"
+            }).then(async (result) => {
+                if (!result.isConfirmed) {
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append("__RequestVerificationToken", obtenerToken());
+
+                const response = await fetch(`/Respuesta/DeleteAjax/${id}`, {
+                    method: "POST",
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    mostrarError("No se pudo eliminar la respuesta.");
+                    return;
+                }
+
+                const data = await response.json();
+
+                if (data.success) {
+                    Swal.fire({
+                        icon: "success",
+                        title: "Eliminada",
+                        text: data.message,
+                        timer: 1500,
+                        showConfirmButton: false,
+                        background: "#16161D",
+                        color: "#E4E4E7"
+                    }).then(() => location.reload());
+                }
+            });
+        }
+
+        function mostrarError(mensaje) {
+            Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: mensaje,
+                background: "#16161D",
+                color: "#E4E4E7"
+            });
+        }
+    </script>
+}

@@ -64,6 +64,12 @@ namespace NetForum.MVC
             builder.Services.AddScoped<ITemaRepository, TemaRepository>();
             builder.Services.AddScoped<ITemaService, TemaService>();
 
+            builder.Services.AddScoped<IRespuestaRepository, RespuestaRepository>();
+            builder.Services.AddScoped<IRespuestaService, RespuestaService>();
+
+            builder.Services.AddScoped<IEtiquetaRepository, EtiquetaRepository>();
+            builder.Services.AddScoped<IEtiquetaService, EtiquetaService>();
+
             var app = builder.Build();
 
             if (!app.Environment.IsDevelopment())

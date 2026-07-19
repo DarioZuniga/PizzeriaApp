@@ -70,6 +70,9 @@ namespace NetForum.MVC
             builder.Services.AddScoped<IEtiquetaRepository, EtiquetaRepository>();
             builder.Services.AddScoped<IEtiquetaService, EtiquetaService>();
 
+            builder.Services.AddScoped<IReporteRepository, ReporteRepository>();
+            builder.Services.AddScoped<IReporteService, ReporteService>();
+
             var app = builder.Build();
 
             if (!app.Environment.IsDevelopment())

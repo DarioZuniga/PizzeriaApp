@@ -1,0 +1,74 @@
+﻿using NetForum.Business.Interfaces;
+using NetForum.Data.Entities;
+using NetForum.Repository.Interfaces;
+
+namespace NetForum.Business.Services;
+
+public class ReporteService : IReporteService
+{
+    private readonly IReporteRepository _repository;
+
+    public ReporteService(IReporteRepository repository)
+    {
+        _repository = repository;
+    }
+
+    public async Task<IEnumerable<Reporte>> ObtenerReportesAsync()
+    {
+        return await _repository.ObtenerConRelacionesAsync();
+    }
+
+    public async Task<IEnumerable<Reporte>> BuscarReportesAsync(string filtro)
+    {
+        return await _repository.BuscarAsync(filtro);
+    }
+
+    public async Task<IEnumerable<Estado>> ObtenerEstadosAsync()
+    {
+        return await _repository.ObtenerEstadosAsync();
+    }
+
+    public async Task<Reporte> GuardarAsync(Reporte reporte)
+    {
+        reporte.FechaReporte = DateTime.Now;
+
+        return await _repository.AddAsync(reporte);
+    }
+
+    public async Task ActualizarAsync(Reporte reporte)
+    {
+        await _repository.UpdateAsync(reporte);
+    }
+
+    public async Task CambiarEstadoAsync(int reporteId, int estadoId)
+    {
+        var reporte = await _repository.GetByIdAsync(reporteId);
+
+        if (reporte is null)
+        {
+            throw new KeyNotFoundException("El reporte no existe.");
+        }
+
+        var estados = await _repository.ObtenerEstadosAsync();
+
+        if (!estados.Any(e => e.EstadoId == estadoId))
+        {
+            throw new InvalidOperationException(
+                "El estado seleccionado no existe.");
+        }
+
+        reporte.EstadoId = estadoId;
+
+        await _repository.UpdateAsync(reporte);
+    }
+
+    public async Task EliminarAsync(int id)
+    {
+        await _repository.DeleteAsync(id);
+    }
+
+    public async Task<Reporte?> ObtenerPorIdAsync(int id)
+    {
+        return await _repository.GetByIdAsync(id);
+    }
+}

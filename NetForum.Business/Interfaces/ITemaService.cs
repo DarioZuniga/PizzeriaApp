@@ -6,6 +6,7 @@ namespace NetForum.Business.Interfaces;
 // SOLID: Interface Segregation Principle
 public interface ITemaService
 {
+    // Métodos existentes del CRUD administrativo
     Task<IEnumerable<Tema>> ObtenerTemasAsync();
 
     Task<IEnumerable<Tema>> BuscarTemasAsync(string filtro);
@@ -17,4 +18,12 @@ public interface ITemaService
     Task EliminarAsync(int id);
 
     Task<Tema?> ObtenerPorIdAsync(int id);
+    // Método debúsqueda de feed con filtros opcionales
+    Task<IEnumerable<Tema>> ObtenerFeedAsync(
+    string? buscar,
+    int? categoriaId);
+
+    Task<Tema?> ObtenerDetalleAsync(int temaId);
+
+    Task<IEnumerable<Categoria>> ObtenerCategoriasAsync();
 }

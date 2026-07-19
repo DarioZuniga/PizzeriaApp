@@ -46,4 +46,23 @@ public class TemaService : ITemaService
     {
         return await _repository.GetByIdAsync(id);
     }
+    //Método de búsqueda de feed con filtros opcionales
+    public async Task<IEnumerable<Tema>> ObtenerFeedAsync(
+    string? buscar,
+    int? categoriaId)
+    {
+        return await _repository.ObtenerFeedAsync(
+            buscar,
+            categoriaId);
+    }
+
+    public async Task<Tema?> ObtenerDetalleAsync(int temaId)
+    {
+        return await _repository.ObtenerDetalleAsync(temaId);
+    }
+
+    public async Task<IEnumerable<Categoria>> ObtenerCategoriasAsync()
+    {
+        return await _repository.ObtenerCategoriasAsync();
+    }
 }

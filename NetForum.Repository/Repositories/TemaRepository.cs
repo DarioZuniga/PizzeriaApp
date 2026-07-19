@@ -38,4 +38,60 @@ public class TemaRepository : GenericRepository<Tema>, ITemaRepository
             .OrderByDescending(t => t.FechaCreacion)
             .ToListAsync();
     }
+
+    public async Task<IEnumerable<Tema>> ObtenerFeedAsync(
+    string? buscar,
+    int? categoriaId)
+    {
+        var query = _context.Temas
+            .AsNoTracking()
+            .Include(t => t.Usuario)
+            .Include(t => t.Categoria)
+            .Include(t => t.Estado)
+            .Include(t => t.Respuestas)
+            .Include(t => t.Reacciones)
+            .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(buscar))
+        {
+            var filtro = buscar.Trim();
+
+            query = query.Where(t =>
+                t.Titulo.Contains(filtro) ||
+                t.Contenido.Contains(filtro));
+        }
+
+        if (categoriaId.HasValue && categoriaId.Value > 0)
+        {
+            query = query.Where(t =>
+                t.CategoriaId == categoriaId.Value);
+        }
+
+        return await query
+            .OrderByDescending(t => t.FechaCreacion)
+            .ToListAsync();
+    }
+
+    public async Task<Tema?> ObtenerDetalleAsync(int temaId)
+    {
+        return await _context.Temas
+            .AsNoTracking()
+            .Include(t => t.Usuario)
+            .Include(t => t.Categoria)
+            .Include(t => t.Estado)
+            .Include(t => t.Respuestas)
+                .ThenInclude(r => r.Usuario)
+            .Include(t => t.Respuestas)
+                .ThenInclude(r => r.Estado)
+            .Include(t => t.Reacciones)
+            .FirstOrDefaultAsync(t => t.TemaId == temaId);
+    }
+
+    public async Task<IEnumerable<Categoria>> ObtenerCategoriasAsync()
+    {
+        return await _context.Categorias
+            .AsNoTracking()
+            .OrderBy(c => c.Nombre)
+            .ToListAsync();
+    }
 }

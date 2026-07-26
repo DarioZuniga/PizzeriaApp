@@ -1,0 +1,212 @@
+﻿@model NetForum.MVC.Models.ForoDetalleViewModel
+
+@{
+    ViewData["Title"] = Model.Titulo;
+}
+
+<div class="container py-4">
+
+    <div class="mb-4">
+        <a asp-controller="Foro"
+           asp-action="Index"
+           class="btn btn-outline-light btn-sm">
+            <i class="fa-solid fa-arrow-left me-2"></i>
+            Volver al foro
+        </a>
+    </div>
+
+    <article class="dashboard-panel mb-4">
+
+        <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+            <div class="d-flex flex-wrap gap-2">
+                <span class="badge bg-success text-dark px-3 py-2">
+                    <i class="fa-solid fa-folder-open me-1"></i>
+                    @Model.Categoria
+                </span>
+
+                <span class="badge bg-dark border border-secondary text-light px-3 py-2">
+                    @Model.Estado
+                </span>
+            </div>
+
+            <span class="text-secondary small">
+                <i class="fa-regular fa-clock me-1"></i>
+                @Model.FechaCreacion.ToString("dd/MM/yyyy HH:mm")
+            </span>
+        </div>
+
+        <h1 class="text-white fw-bold mb-4">
+            @Model.Titulo
+        </h1>
+
+        <div class="d-flex align-items-center gap-3 mb-4 pb-4 border-bottom border-secondary">
+            <div class="foro-avatar">
+                <i class="fa-solid fa-user"></i>
+            </div>
+
+            <div>
+                <div class="text-secondary small">
+                    Publicado por
+                </div>
+
+                <div class="text-white fw-semibold">
+                    @Model.Autor
+                </div>
+            </div>
+        </div>
+
+        <div class="foro-contenido text-light mb-4">
+            @Model.Contenido
+        </div>
+
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 pt-3 border-top border-secondary">
+            <div class="text-secondary">
+                <i class="fa-regular fa-comment me-1"></i>
+                @Model.Respuestas.Count()
+                @(Model.Respuestas.Count() == 1 ? "respuesta" : "respuestas")
+            </div>
+
+            <div class="text-secondary">
+                <i class="fa-regular fa-heart me-1"></i>
+                @Model.CantidadReacciones
+                @(Model.CantidadReacciones == 1 ? "reacción" : "reacciones")
+            </div>
+        </div>
+    </article>
+
+    <section class="mb-4">
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="h4 text-white fw-bold mb-0">
+                <i class="fa-solid fa-comments text-success me-2"></i>
+                Respuestas
+            </h2>
+
+            <span class="badge bg-dark border border-secondary px-3 py-2">
+                @Model.Respuestas.Count()
+            </span>
+        </div>
+
+        @if (!Model.Respuestas.Any())
+        {
+            <div class="dashboard-panel text-center py-5">
+                <i class="fa-regular fa-comment-dots fa-3x text-secondary mb-3"></i>
+
+                <h4 class="text-white fw-bold">
+                    Todavía no hay respuestas
+                </h4>
+
+                <p class="text-secondary mb-0">
+                    Sé el primero en participar en esta conversación.
+                </p>
+            </div>
+        }
+        else
+        {
+            <div class="d-flex flex-column gap-3">
+                @foreach (var respuesta in Model.Respuestas)
+                {
+                    <article class="dashboard-panel foro-respuesta">
+
+                        <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
+                            <div class="d-flex align-items-center gap-3">
+
+                                <div class="foro-avatar foro-avatar-small">
+                                    <i class="fa-solid fa-user"></i>
+                                </div>
+
+                                <div>
+                                    <div class="d-flex flex-wrap align-items-center gap-2">
+                                        <span class="text-white fw-semibold">
+                                            @respuesta.Autor
+                                        </span>
+
+                                        @if (respuesta.EsAutorTema)
+                                        {
+                                            <span class="badge bg-success text-dark">
+                                                Autor
+                                            </span>
+                                        }
+                                    </div>
+
+                                    <span class="text-secondary small">
+                                        <i class="fa-regular fa-clock me-1"></i>
+                                        @respuesta.FechaCreacion.ToString("dd/MM/yyyy HH:mm")
+                                    </span>
+                                </div>
+                            </div>
+
+                            <span class="badge bg-dark border border-secondary">
+                                @respuesta.Estado
+                            </span>
+                        </div>
+
+                        <div class="foro-contenido text-light">
+                            @respuesta.Contenido
+                        </div>
+                    </article>
+                }
+            </div>
+        }
+    </section>
+
+    <section class="dashboard-panel">
+        <div class="text-center py-3">
+            <i class="fa-solid fa-reply text-success fa-2x mb-3"></i>
+
+            <h3 class="h5 text-white fw-bold">
+                Participa en la conversación
+            </h3>
+
+            <p class="text-secondary mb-3">
+                El formulario para publicar respuestas será habilitado en el siguiente paso.
+            </p>
+
+            <button type="button"
+                    class="btn btn-football"
+                    disabled>
+                <i class="fa-solid fa-reply me-2"></i>
+                Responder
+            </button>
+        </div>
+    </section>
+</div>
+
+@section Styles {
+    <style>
+        .foro-avatar {
+            width: 48px;
+            height: 48px;
+            flex-shrink: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(25, 135, 84, 0.15);
+            border: 1px solid rgba(25, 135, 84, 0.55);
+            color: #20c997;
+            font-size: 1.15rem;
+        }
+
+        .foro-avatar-small {
+            width: 42px;
+            height: 42px;
+            font-size: 1rem;
+        }
+
+        .foro-contenido {
+            line-height: 1.8;
+            white-space: pre-line;
+            overflow-wrap: anywhere;
+        }
+
+        .foro-respuesta {
+            transition: border-color 0.2s ease, transform 0.2s ease;
+        }
+
+            .foro-respuesta:hover {
+                border-color: rgba(25, 135, 84, 0.55);
+                transform: translateY(-2px);
+            }
+    </style>
+}

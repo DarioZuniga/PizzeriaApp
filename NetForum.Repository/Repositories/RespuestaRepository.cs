@@ -37,4 +37,22 @@ public class RespuestaRepository : GenericRepository<Respuesta>, IRespuestaRepos
             .OrderByDescending(r => r.FechaCreacion)
             .ToListAsync();
     }
+    //Obtener el estado inicial de una respuesta, que es "Activo" si existe, o el primer estado disponible
+    //en la base de datos
+    public async Task<Estado?> ObtenerEstadoInicialAsync()
+    {
+        var estadoActivo = await _context.Estados
+            .AsNoTracking()
+            .FirstOrDefaultAsync(e => e.Nombre == "Activo");
+
+        if (estadoActivo is not null)
+        {
+            return estadoActivo;
+        }
+
+        return await _context.Estados
+            .AsNoTracking()
+            .OrderBy(e => e.EstadoId)
+            .FirstOrDefaultAsync();
+    }
 }

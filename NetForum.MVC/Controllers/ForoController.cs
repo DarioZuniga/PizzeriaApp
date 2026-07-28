@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using NetForum.Business.Interfaces;
 using NetForum.MVC.Models;
+using System.Security.Claims;
 
 namespace NetForum.MVC.Controllers;
 
@@ -10,13 +11,17 @@ namespace NetForum.MVC.Controllers;
 public class ForoController : Controller
 {
     private readonly ITemaService _temaService;
+    private readonly IRespuestaService _respuestaService;
 
-    public ForoController(ITemaService temaService)
+    public ForoController(
+        ITemaService temaService,
+        IRespuestaService respuestaService)
     {
         _temaService = temaService;
+        _respuestaService = respuestaService;
     }
 
-    [HttpGet] //Método que obtiene la lista de temas del foro, con opciones de búsqueda y filtrado por categoría.
+    [HttpGet] // Método que obtiene la lista de temas del foro, con opciones de búsqueda y filtrado por categoría.
     public async Task<IActionResult> Index(
         string? buscar,
         int? categoriaId)
@@ -25,8 +30,7 @@ public class ForoController : Controller
             buscar,
             categoriaId);
 
-        var categorias =
-            await _temaService.ObtenerCategoriasAsync();
+        var categorias = await _temaService.ObtenerCategoriasAsync();
 
         var viewModel = new ForoIndexViewModel
         {
@@ -46,24 +50,21 @@ public class ForoController : Controller
                 {
                     TemaId = t.TemaId,
                     Titulo = t.Titulo,
-                    ContenidoResumen =
-                        CrearResumen(t.Contenido, 220),
+                    ContenidoResumen = CrearResumen(t.Contenido, 220),
                     Autor = t.Usuario.NombreUsuario,
                     Categoria = t.Categoria.Nombre,
                     Estado = t.Estado.Nombre,
                     FechaCreacion = t.FechaCreacion,
-                    CantidadRespuestas =
-                        t.Respuestas?.Count ?? 0,
-                    CantidadReacciones =
-                        t.Reacciones?.Count ?? 0
+                    CantidadRespuestas = t.Respuestas?.Count ?? 0,
+                    CantidadReacciones = t.Reacciones?.Count ?? 0
                 })
         };
 
         return View(viewModel);
     }
 
-    [HttpGet]  //Método que obtiene los detalles de un tema específico en el foro.
-               //Se espera un parámetro 'id' que representa el identificador del tema.
+    [HttpGet] // Método que obtiene los detalles de un tema específico en el foro.
+              // Se espera un parámetro 'id' que representa el identificador del tema.
     public async Task<IActionResult> Detalle(int id)
     {
         if (id <= 0)
@@ -106,6 +107,7 @@ public class ForoController : Controller
 
         return View(viewModel);
     }
+
     // Método privado que crea un resumen del contenido de un tema
     private static string CrearResumen(
         string contenido,
@@ -116,13 +118,87 @@ public class ForoController : Controller
             return string.Empty;
         }
 
-        var contenidoLimpio = contenido.Trim(); 
+        var contenidoLimpio = contenido.Trim();
 
         if (contenidoLimpio.Length <= longitudMaxima)
         {
             return contenidoLimpio;
         }
 
-        return contenidoLimpio[..longitudMaxima] + "..."; 
+        return contenidoLimpio[..longitudMaxima] + "...";
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ResponderAjax(
+    CrearRespuestaViewModel viewModel)
+    {
+        if (!ModelState.IsValid)
+        {
+            var mensaje = ModelState.Values
+                .SelectMany(v => v.Errors)
+                .Select(e => e.ErrorMessage)
+                .FirstOrDefault();
+
+            return BadRequest(new
+            {
+                success = false,
+                message = mensaje ?? "Los datos enviados no son válidos."
+            });
+        }
+
+        var usuarioIdTexto = User.FindFirstValue(
+            ClaimTypes.NameIdentifier);
+
+        if (!int.TryParse(usuarioIdTexto, out var usuarioId))
+        {
+            return Unauthorized(new
+            {
+                success = false,
+                message = "No fue posible identificar al usuario autenticado."
+            });
+        }
+
+        var tema = await _temaService.ObtenerDetalleAsync(
+            viewModel.TemaId);
+
+        if (tema is null)
+        {
+            return NotFound(new
+            {
+                success = false,
+                message = "El tema no existe."
+            });
+        }
+
+        try
+        {
+            await _respuestaService.CrearRespuestaForoAsync(
+                viewModel.TemaId,
+                usuarioId,
+                viewModel.Contenido);
+
+            return Json(new
+            {
+                success = true,
+                message = "Tu respuesta fue publicada correctamente."
+            });
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new
+            {
+                success = false,
+                message = ex.Message
+            });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new
+            {
+                success = false,
+                message = ex.Message
+            });
+        }
     }
 }

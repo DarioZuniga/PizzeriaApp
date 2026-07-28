@@ -9,4 +9,6 @@ public interface IRespuestaRepository : IGenericRepository<Respuesta>
     Task<IEnumerable<Respuesta>> ObtenerConRelacionesAsync();
 
     Task<IEnumerable<Respuesta>> BuscarAsync(string filtro);
+
+    Task<Estado?> ObtenerEstadoInicialAsync();
 }

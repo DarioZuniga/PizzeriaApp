@@ -17,4 +17,9 @@ public interface IRespuestaService
     Task EliminarAsync(int id);
 
     Task<Respuesta?> ObtenerPorIdAsync(int id);
+
+    Task<Respuesta> CrearRespuestaForoAsync(
+    int temaId,
+    int usuarioId,
+    string contenido);
 }

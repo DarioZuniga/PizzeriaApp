@@ -65,4 +65,68 @@ public class TemaService : ITemaService
     {
         return await _repository.ObtenerCategoriasAsync();
     }
+
+    public async Task<Tema> CrearTemaForoAsync(
+    int usuarioId,
+    int categoriaId,
+    string titulo,
+    string contenido)
+    {
+        if (usuarioId <= 0)
+        {
+            throw new ArgumentException(
+                "El usuario autenticado no es válido.",
+                nameof(usuarioId));
+        }
+
+        if (categoriaId <= 0)
+        {
+            throw new ArgumentException(
+                "La categoría seleccionada no es válida.",
+                nameof(categoriaId));
+        }
+
+        if (string.IsNullOrWhiteSpace(titulo))
+        {
+            throw new ArgumentException(
+                "El título es obligatorio.",
+                nameof(titulo));
+        }
+
+        if (string.IsNullOrWhiteSpace(contenido))
+        {
+            throw new ArgumentException(
+                "El contenido es obligatorio.",
+                nameof(contenido));
+        }
+
+        var categorias = await _repository.ObtenerCategoriasAsync();
+
+        if (!categorias.Any(c => c.CategoriaId == categoriaId))
+        {
+            throw new InvalidOperationException(
+                "La categoría seleccionada no existe.");
+        }
+
+        var estadoInicial =
+            await _repository.ObtenerEstadoInicialAsync();
+
+        if (estadoInicial is null)
+        {
+            throw new InvalidOperationException(
+                "No existe un estado disponible para publicar el tema.");
+        }
+
+        var tema = new Tema
+        {
+            UsuarioId = usuarioId,
+            CategoriaId = categoriaId,
+            EstadoId = estadoInicial.EstadoId,
+            Titulo = titulo.Trim(),
+            Contenido = contenido.Trim(),
+            FechaCreacion = DateTime.Now
+        };
+
+        return await _repository.AddAsync(tema);
+    }
 }

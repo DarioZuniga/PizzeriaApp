@@ -26,4 +26,10 @@ public interface ITemaService
     Task<Tema?> ObtenerDetalleAsync(int temaId);
 
     Task<IEnumerable<Categoria>> ObtenerCategoriasAsync();
+
+    Task<Tema> CrearTemaForoAsync(
+    int usuarioId,
+    int categoriaId,
+    string titulo,
+    string contenido);
 }

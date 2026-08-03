@@ -94,4 +94,21 @@ public class TemaRepository : GenericRepository<Tema>, ITemaRepository
             .OrderBy(c => c.Nombre)
             .ToListAsync();
     }
+
+    public async Task<Estado?> ObtenerEstadoInicialAsync()
+    {
+        var estadoActivo = await _context.Estados
+            .AsNoTracking()
+            .FirstOrDefaultAsync(e => e.Nombre == "Activo");
+
+        if (estadoActivo is not null)
+        {
+            return estadoActivo;
+        }
+
+        return await _context.Estados
+            .AsNoTracking()
+            .OrderBy(e => e.EstadoId)
+            .FirstOrDefaultAsync();
+    }
 }

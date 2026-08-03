@@ -201,4 +201,85 @@ public class ForoController : Controller
             });
         }
     }
+    // acción AJAX para crear un nuevo tema en el foro, que obtiene las categorías disponibles
+    // y muestra un formulario para crear el tema.
+    [HttpGet]
+    public async Task<IActionResult> Crear()
+    {
+        var categorias =
+            await _temaService.ObtenerCategoriasAsync();
+
+        ViewBag.Categorias = categorias
+            .Select(c => new SelectListItem
+            {
+                Value = c.CategoriaId.ToString(),
+                Text = c.Nombre
+            })
+            .ToList();
+
+        return View(new CrearTemaForoViewModel());
+    }
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CrearAjax(
+    CrearTemaForoViewModel viewModel)
+    {
+        if (!ModelState.IsValid)
+        {
+            var mensaje = ModelState.Values
+                .SelectMany(v => v.Errors)
+                .Select(e => e.ErrorMessage)
+                .FirstOrDefault();
+
+            return BadRequest(new
+            {
+                success = false,
+                message = mensaje ?? "Los datos enviados no son válidos."
+            });
+        }
+
+        var usuarioIdTexto = User.FindFirstValue(
+            ClaimTypes.NameIdentifier);
+
+        if (!int.TryParse(usuarioIdTexto, out var usuarioId))
+        {
+            return Unauthorized(new
+            {
+                success = false,
+                message = "No fue posible identificar al usuario autenticado."
+            });
+        }
+
+        try
+        {
+            var tema = await _temaService.CrearTemaForoAsync(
+                usuarioId,
+                viewModel.CategoriaId,
+                viewModel.Titulo,
+                viewModel.Contenido);
+
+            return Json(new
+            {
+                success = true,
+                message = "El tema fue publicado correctamente.",
+                temaId = tema.TemaId
+            });
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new
+            {
+                success = false,
+                message = ex.Message
+            });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new
+            {
+                success = false,
+                message = ex.Message
+            });
+        }
+    }
 }

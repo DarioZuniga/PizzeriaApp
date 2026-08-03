@@ -19,4 +19,6 @@ public interface ITemaRepository : IGenericRepository<Tema>
     Task<Tema?> ObtenerDetalleAsync(int temaId);
 
     Task<IEnumerable<Categoria>> ObtenerCategoriasAsync();
+
+    Task<Estado?> ObtenerEstadoInicialAsync();
 }

@@ -18,6 +18,11 @@ public class ForoDetalleViewModel
 
     public int CantidadReacciones { get; set; }
 
-    public IEnumerable<ForoRespuestaViewModel> Respuestas { get; set; }
+    public IEnumerable<ForoRespuestaViewModel> Respuestas { get; set; } // su función es almacenar una lista de respuestas
+                                                                        // asociadas al tema del foro
         = Enumerable.Empty<ForoRespuestaViewModel>();
+    public IEnumerable<ForoTipoReaccionViewModel> Reacciones { get; set; }// su función es almacenar una lista de tipos de reacciones
+                                                                          // asociadas al tema del foro
+    = Enumerable.Empty<ForoTipoReaccionViewModel>();
+
 }

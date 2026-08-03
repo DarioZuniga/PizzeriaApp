@@ -4,6 +4,23 @@
     ViewData["Title"] = Model.Titulo;
 }
 
+@functions {
+    private static string ObtenerIconoReaccion(string nombre)
+    {
+        var nombreNormalizado =
+            nombre.Trim().ToLowerInvariant();
+
+        return nombreNormalizado switch
+        {
+            "me gusta" => "fa-solid fa-thumbs-up",
+            "golazo" => "fa-solid fa-futbol",
+            "polémico" => "fa-solid fa-fire",
+            "interesante" => "fa-solid fa-lightbulb",
+            _ => "fa-solid fa-heart"
+        };
+    }
+}
+
 <div class="container py-4">
 
     <div class="mb-4">
@@ -85,12 +102,37 @@
                 @(Model.Respuestas.Count() == 1 ? "respuesta" : "respuestas")
             </div>
 
-            <div class="text-secondary">
-                <i class="fa-regular fa-heart me-1"></i>
-                @Model.CantidadReacciones
-                @(Model.CantidadReacciones == 1 ? "reacción" : "reacciones")
+            <div class="d-flex flex-wrap align-items-center gap-2">
+                @foreach (var reaccion in Model.Reacciones)
+                {
+                    <button type="button"
+                            id="reaccion-@reaccion.TipoReaccionId"
+                            class="btn btn-sm @(reaccion.SeleccionadaPorUsuario
+                                                ? "btn-success"
+                                                : "btn-outline-success")"
+                            onclick="alternarReaccion(
+                        @Model.TemaId,
+                        @reaccion.TipoReaccionId)">
+                        <i class="@ObtenerIconoReaccion(reaccion.Nombre) me-1"></i>
+                        @reaccion.Nombre
+                        <span class="badge bg-dark ms-1"
+                              id="cantidad-reaccion-@reaccion.TipoReaccionId">
+                            @reaccion.Cantidad
+                        </span>
+                    </button>
+                }
+
+                <span class="text-secondary ms-2">
+                    Total:
+                    <strong id="totalReacciones">
+                        @Model.CantidadReacciones
+                    </strong>
+                </span>
             </div>
+
         </div>
+
+
     </article>
 
     <section class="mb-4">
@@ -594,6 +636,87 @@
                     <i class="fa-solid fa-paper-plane me-2"></i>
                     Enviar reporte
                 `;
+            }
+        }
+
+                async function alternarReaccion(
+            temaId,
+            tipoReaccionId
+        ) {
+            const boton = document.getElementById(
+                `reaccion-${tipoReaccionId}`
+            );
+
+            boton.disabled = true;
+
+            const formData = new FormData();
+
+            formData.append(
+                "__RequestVerificationToken",
+                document.querySelector(
+                    'input[name="__RequestVerificationToken"]'
+                ).value
+            );
+
+            formData.append("temaId", temaId);
+            formData.append("tipoReaccionId", tipoReaccionId);
+
+            try {
+                const response = await fetch(
+                    "/Foro/ReaccionarAjax",
+                    {
+                        method: "POST",
+                        body: formData
+                    }
+                );
+
+                const data =
+                    await obtenerRespuestaJson(response);
+
+                if (!response.ok) {
+                    mostrarErrorRespuesta(
+                        data.message ??
+                        "No se pudo registrar la reacción."
+                    );
+
+                    return;
+                }
+
+                const cantidadElemento =
+                    document.getElementById(
+                        `cantidad-reaccion-${tipoReaccionId}`
+                    );
+
+                let cantidadActual =
+                    Number.parseInt(
+                        cantidadElemento.textContent,
+                        10
+                    ) || 0;
+
+                cantidadActual += data.agregada ? 1 : -1;
+
+                cantidadElemento.textContent =
+                    Math.max(0, cantidadActual);
+
+                boton.classList.toggle(
+                    "btn-success",
+                    data.agregada
+                );
+
+                boton.classList.toggle(
+                    "btn-outline-success",
+                    !data.agregada
+                );
+
+                document.getElementById(
+                    "totalReacciones"
+                ).textContent = data.totalReacciones;
+            } catch {
+                mostrarErrorRespuesta(
+                    "Ocurrió un error al registrar la reacción."
+                );
+            } finally {
+                boton.disabled = false;
             }
         }
     </script>

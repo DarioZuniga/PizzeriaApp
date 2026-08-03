@@ -13,15 +13,18 @@ public class ForoController : Controller
     private readonly ITemaService _temaService; // Inyección de dependencias para el servicio de temas del foro.
     private readonly IRespuestaService _respuestaService; // Inyección de dependencias para el servicio de respuestas del foro.
     private readonly IReporteService _reporteService; // Inyección de dependencias para el servicio de reportes del foro.
+    private readonly IReaccionService _reaccionService; // Inyección de dependencias para el servicio de reacciones del foro.
 
     public ForoController(
-      ITemaService temaService,
-      IRespuestaService respuestaService,
-      IReporteService reporteService)
+       ITemaService temaService,
+       IRespuestaService respuestaService,
+       IReporteService reporteService,
+       IReaccionService reaccionService)
     {
         _temaService = temaService;
         _respuestaService = respuestaService;
         _reporteService = reporteService;
+        _reaccionService = reaccionService;
     }
 
     [HttpGet] // Método que obtiene la lista de temas del foro, con opciones de búsqueda y filtrado por categoría.
@@ -68,6 +71,7 @@ public class ForoController : Controller
 
     [HttpGet] // Método que obtiene los detalles de un tema específico en el foro.
               // Se espera un parámetro 'id' que representa el identificador del tema.
+    [HttpGet]
     public async Task<IActionResult> Detalle(int id)
     {
         if (id <= 0)
@@ -82,6 +86,17 @@ public class ForoController : Controller
             return NotFound();
         }
 
+        var tiposReaccion =
+            await _reaccionService.ObtenerTiposAsync();
+
+        var reaccionesTema =
+            await _reaccionService.ObtenerPorTemaAsync(id);
+
+        var usuarioIdTexto =
+            User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        int.TryParse(usuarioIdTexto, out var usuarioId);
+
         var viewModel = new ForoDetalleViewModel
         {
             TemaId = tema.TemaId,
@@ -91,9 +106,25 @@ public class ForoController : Controller
             Categoria = tema.Categoria.Nombre,
             Estado = tema.Estado.Nombre,
             FechaCreacion = tema.FechaCreacion,
-            CantidadReacciones = tema.Reacciones?.Count ?? 0,
+            CantidadReacciones = reaccionesTema.Count(),
 
-            Respuestas = tema.Respuestas?
+            Reacciones = tiposReaccion.Select(tipo =>
+    new ForoTipoReaccionViewModel
+    {
+        TipoReaccionId = tipo.TipoReaccionId,
+        Nombre = tipo.Nombre,
+
+        Cantidad = reaccionesTema.Count(r =>
+            r.TipoReaccionId == tipo.TipoReaccionId),
+
+        SeleccionadaPorUsuario =
+            usuarioId > 0 &&
+            reaccionesTema.Any(r =>
+                r.TipoReaccionId == tipo.TipoReaccionId &&
+                r.UsuarioId == usuarioId)
+    }),
+
+            Respuestas = tema.Respuestas
                 .OrderBy(r => r.FechaCreacion)
                 .Select(r => new ForoRespuestaViewModel
                 {
@@ -105,7 +136,6 @@ public class ForoController : Controller
                     EsAutorTema = r.UsuarioId == tema.UsuarioId
                 })
                 .ToList()
-                ?? new List<ForoRespuestaViewModel>()
         };
 
         return View(viewModel);
@@ -345,6 +375,66 @@ public class ForoController : Controller
         catch (ArgumentException ex)
         {
             return BadRequest(new
+            {
+                success = false,
+                message = ex.Message
+            });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new
+            {
+                success = false,
+                message = ex.Message
+            });
+        }
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ReaccionarAjax(
+    int temaId,
+    int tipoReaccionId)
+    {
+        var usuarioIdTexto = User.FindFirstValue(
+            ClaimTypes.NameIdentifier);
+
+        if (!int.TryParse(usuarioIdTexto, out var usuarioId))
+        {
+            return Unauthorized(new
+            {
+                success = false,
+                message = "No fue posible identificar al usuario."
+            });
+        }
+
+        try
+        {
+            var resultado =
+                await _reaccionService.AlternarReaccionAsync(
+                    usuarioId,
+                    temaId,
+                    tipoReaccionId);
+
+            return Json(new
+            {
+                success = true,
+                agregada = resultado.Agregada,
+                message = resultado.Mensaje,
+                totalReacciones = resultado.TotalReacciones
+            });
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new
+            {
+                success = false,
+                message = ex.Message
+            });
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new
             {
                 success = false,
                 message = ex.Message

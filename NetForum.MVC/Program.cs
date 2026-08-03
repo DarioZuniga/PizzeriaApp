@@ -46,6 +46,8 @@ namespace NetForum.MVC
 
             // DP: Dependency Injection
             // SOLID: Dependency Inversion Principle
+            // estos servicios se encargan de la lógica de negocio y dependen de los
+            // repositorios para acceder a los datos
             builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
             builder.Services.AddScoped<IDashboardService, DashboardService>();
 
@@ -72,6 +74,9 @@ namespace NetForum.MVC
 
             builder.Services.AddScoped<IReporteRepository, ReporteRepository>();
             builder.Services.AddScoped<IReporteService, ReporteService>();
+
+            builder.Services.AddScoped<IReaccionRepository, ReaccionRepository>();
+            builder.Services.AddScoped<IReaccionService, ReaccionService>();
 
             var app = builder.Build();
 

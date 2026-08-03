@@ -71,4 +71,51 @@ public class ReporteService : IReporteService
     {
         return await _repository.GetByIdAsync(id);
     }
+
+    public async Task<Reporte> CrearReporteForoAsync(
+    int temaId,
+    int usuarioId,
+    string motivo)
+    {
+        if (temaId <= 0)
+        {
+            throw new ArgumentException(
+                "El tema seleccionado no es válido.",
+                nameof(temaId));
+        }
+
+        if (usuarioId <= 0)
+        {
+            throw new ArgumentException(
+                "El usuario autenticado no es válido.",
+                nameof(usuarioId));
+        }
+
+        if (string.IsNullOrWhiteSpace(motivo))
+        {
+            throw new ArgumentException(
+                "El motivo del reporte es obligatorio.",
+                nameof(motivo));
+        }
+
+        var estadoInicial =
+            await _repository.ObtenerEstadoInicialAsync();
+
+        if (estadoInicial is null)
+        {
+            throw new InvalidOperationException(
+                "No existe un estado disponible para registrar el reporte.");
+        }
+
+        var reporte = new Reporte
+        {
+            TemaId = temaId,
+            UsuarioId = usuarioId,
+            EstadoId = estadoInicial.EstadoId,
+            Motivo = motivo.Trim(),
+            FechaReporte = DateTime.Now
+        };
+
+        return await _repository.AddAsync(reporte);
+    }
 }

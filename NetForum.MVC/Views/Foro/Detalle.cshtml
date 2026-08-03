@@ -15,6 +15,25 @@
         </a>
     </div>
 
+    <div class="d-flex flex-wrap gap-2">
+        <span class="badge bg-success text-dark px-3 py-2">
+            <i class="fa-solid fa-folder-open me-1"></i>
+            @Model.Categoria
+        </span>
+
+        <span class="badge bg-dark border border-secondary text-light px-3 py-2">
+            @Model.Estado
+        </span>
+
+        <button type="button"
+                class="btn btn-outline-danger btn-sm"
+                data-bs-toggle="modal"
+                data-bs-target="#reporteModal">
+            <i class="fa-solid fa-flag me-1"></i>
+            Reportar
+        </button>
+    </div>
+
     <article class="dashboard-panel mb-4">
 
         <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
@@ -247,6 +266,70 @@
 
     }
 
+<div class="modal fade"
+     id="reporteModal"
+     tabindex="-1"
+     aria-labelledby="reporteModalLabel"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-social-card border border-social text-white"
+             style="border-radius: 18px;">
+
+            <div class="modal-header border-social">
+                <h5 class="modal-title fw-bold"
+                    id="reporteModalLabel">
+                    <i class="fa-solid fa-flag text-danger me-2"></i>
+                    Reportar tema
+                </h5>
+
+                <button type="button"
+                        class="btn-close btn-close-white"
+                        data-bs-dismiss="modal">
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <p class="text-secondary">
+                    Describe claramente por qué consideras que este tema debe ser revisado.
+                </p>
+
+                <textarea id="motivoReporte"
+                          class="form-control bg-dark text-white border-secondary"
+                          rows="5"
+                          maxlength="500"
+                          placeholder="Escribe el motivo del reporte..."></textarea>
+
+                <div class="d-flex justify-content-between mt-2">
+                    <span id="motivoReporteError"
+                          class="text-warning small"></span>
+
+                    <span id="contadorReporte"
+                          class="text-secondary small">
+                        0 / 500
+                    </span>
+                </div>
+            </div>
+
+            <div class="modal-footer border-social">
+                <button type="button"
+                        class="btn btn-outline-light"
+                        data-bs-dismiss="modal">
+                    Cancelar
+                </button>
+
+                <button type="button"
+                        id="btnEnviarReporte"
+                        class="btn btn-danger"
+                        onclick="enviarReporte()">
+                    <i class="fa-solid fa-paper-plane me-2"></i>
+                    Enviar reporte
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
     @section Scripts {
 
     <script>
@@ -394,6 +477,124 @@
                 background: "#16161D",
                 color: "#E4E4E7"
             });
+        }
+
+                const motivoReporte =
+            document.getElementById("motivoReporte");
+
+        if (motivoReporte) {
+            motivoReporte.addEventListener("input", function () {
+                document.getElementById(
+                    "contadorReporte"
+                ).textContent =
+                    `${motivoReporte.value.length} / 500`;
+
+                document.getElementById(
+                    "motivoReporteError"
+                ).innerText = "";
+            });
+        }
+
+        async function enviarReporte() {
+            const motivo =
+                document.getElementById(
+                    "motivoReporte"
+                ).value.trim();
+
+            const error =
+                document.getElementById(
+                    "motivoReporteError"
+                );
+
+            const boton =
+                document.getElementById(
+                    "btnEnviarReporte"
+                );
+
+            error.innerText = "";
+
+            if (motivo.length < 10) {
+                error.innerText =
+                    "El motivo debe contener al menos 10 caracteres.";
+
+                return;
+            }
+
+            const formData = new FormData();
+
+            formData.append(
+                "__RequestVerificationToken",
+                document.querySelector(
+                    'input[name="__RequestVerificationToken"]'
+                ).value
+            );
+
+            formData.append("TemaId", "@Model.TemaId");
+            formData.append("Motivo", motivo);
+
+            boton.disabled = true;
+
+            boton.innerHTML = `
+                <span class="spinner-border spinner-border-sm me-2"></span>
+                Enviando...
+            `;
+
+            try {
+                const response = await fetch(
+                    "/Foro/ReportarAjax",
+                    {
+                        method: "POST",
+                        body: formData
+                    }
+                );
+
+                const data =
+                    await obtenerRespuestaJson(response);
+
+                if (!response.ok) {
+                    mostrarErrorRespuesta(
+                        data.message ??
+                        "No se pudo enviar el reporte."
+                    );
+
+                    return;
+                }
+
+                const modalElement =
+                    document.getElementById("reporteModal");
+
+                const modal =
+                    bootstrap.Modal.getInstance(modalElement);
+
+                modal?.hide();
+
+                await Swal.fire({
+                    icon: "success",
+                    title: "Reporte enviado",
+                    text: data.message,
+                    timer: 1700,
+                    showConfirmButton: false,
+                    background: "#16161D",
+                    color: "#E4E4E7"
+                });
+
+                motivoReporte.value = "";
+
+                document.getElementById(
+                    "contadorReporte"
+                ).textContent = "0 / 500";
+            } catch {
+                mostrarErrorRespuesta(
+                    "Ocurrió un error al enviar el reporte."
+                );
+            } finally {
+                boton.disabled = false;
+
+                boton.innerHTML = `
+                    <i class="fa-solid fa-paper-plane me-2"></i>
+                    Enviar reporte
+                `;
+            }
         }
     </script>
 }

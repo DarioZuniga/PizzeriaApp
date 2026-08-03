@@ -44,4 +44,21 @@ public class ReporteRepository : GenericRepository<Reporte>, IReporteRepository
             .OrderBy(e => e.Nombre)
             .ToListAsync();
     }
+
+    public async Task<Estado?> ObtenerEstadoInicialAsync()
+    {
+        var estadoActivo = await _context.Estados
+            .AsNoTracking()
+            .FirstOrDefaultAsync(e => e.Nombre == "Activo");
+
+        if (estadoActivo is not null)
+        {
+            return estadoActivo;
+        }
+
+        return await _context.Estados
+            .AsNoTracking()
+            .OrderBy(e => e.EstadoId)
+            .FirstOrDefaultAsync();
+    }
 }

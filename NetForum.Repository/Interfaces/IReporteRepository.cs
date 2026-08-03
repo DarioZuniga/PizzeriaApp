@@ -11,4 +11,6 @@ public interface IReporteRepository : IGenericRepository<Reporte>
     Task<IEnumerable<Reporte>> BuscarAsync(string filtro);
 
     Task<IEnumerable<Estado>> ObtenerEstadosAsync();
+
+    Task<Estado?> ObtenerEstadoInicialAsync();
 }

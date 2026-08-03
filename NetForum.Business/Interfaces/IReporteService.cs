@@ -21,5 +21,10 @@ public interface IReporteService
     Task EliminarAsync(int id);
 
     Task<Reporte?> ObtenerPorIdAsync(int id);
+
+    Task<Reporte> CrearReporteForoAsync(
+    int temaId,
+    int usuarioId,
+    string motivo);
 }
 

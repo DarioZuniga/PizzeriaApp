@@ -10,15 +10,18 @@ namespace NetForum.MVC.Controllers;
 [Authorize]
 public class ForoController : Controller
 {
-    private readonly ITemaService _temaService;
-    private readonly IRespuestaService _respuestaService;
+    private readonly ITemaService _temaService; // Inyección de dependencias para el servicio de temas del foro.
+    private readonly IRespuestaService _respuestaService; // Inyección de dependencias para el servicio de respuestas del foro.
+    private readonly IReporteService _reporteService; // Inyección de dependencias para el servicio de reportes del foro.
 
     public ForoController(
-        ITemaService temaService,
-        IRespuestaService respuestaService)
+      ITemaService temaService,
+      IRespuestaService respuestaService,
+      IReporteService reporteService)
     {
         _temaService = temaService;
         _respuestaService = respuestaService;
+        _reporteService = reporteService;
     }
 
     [HttpGet] // Método que obtiene la lista de temas del foro, con opciones de búsqueda y filtrado por categoría.
@@ -282,4 +285,79 @@ public class ForoController : Controller
             });
         }
     }
+    [HttpPost]
+    [ValidateAntiForgeryToken] // acción AJAX para reportar un tema en el foro, que recibe los datos del reporte y
+                               // los valida antes de enviarlos al servicio correspondiente
+    public async Task<IActionResult> ReportarAjax(
+    CrearReporteViewModel viewModel)
+    {
+        if (!ModelState.IsValid)
+        {
+            var mensaje = ModelState.Values
+                .SelectMany(v => v.Errors)
+                .Select(e => e.ErrorMessage)
+                .FirstOrDefault();
+
+            return BadRequest(new
+            {
+                success = false,
+                message = mensaje ?? "Los datos enviados no son válidos."
+            });
+        }
+
+        var usuarioIdTexto = User.FindFirstValue(
+            ClaimTypes.NameIdentifier);
+
+        if (!int.TryParse(usuarioIdTexto, out var usuarioId))
+        {
+            return Unauthorized(new
+            {
+                success = false,
+                message = "No fue posible identificar al usuario autenticado."
+            });
+        }
+
+        var tema = await _temaService.ObtenerDetalleAsync(
+            viewModel.TemaId);
+
+        if (tema is null)
+        {
+            return NotFound(new
+            {
+                success = false,
+                message = "El tema no existe."
+            });
+        }
+
+        try
+        {
+            await _reporteService.CrearReporteForoAsync(
+                viewModel.TemaId,
+                usuarioId,
+                viewModel.Motivo);
+
+            return Json(new
+            {
+                success = true,
+                message = "El reporte fue enviado correctamente."
+            });
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new
+            {
+                success = false,
+                message = ex.Message
+            });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new
+            {
+                success = false,
+                message = ex.Message
+            });
+        }
+    }
+
 }

@@ -3,7 +3,7 @@
 namespace NetForum.Business.Interfaces;
 
 // DP: Service Layer Pattern
-// SOLID: Interface Segregation Principle
+// SOLID: Interface Segregation Principle - la interfaz está enfocada en un conjunto específico de operaciones relacionadas con los reportes
 public interface IReporteService
 {
     Task<IEnumerable<Reporte>> ObtenerReportesAsync();
@@ -27,4 +27,3 @@ public interface IReporteService
     int usuarioId,
     string motivo);
 }
-

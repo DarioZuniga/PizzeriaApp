@@ -5,7 +5,8 @@ using NetForum.Repository.Interfaces;
 namespace NetForum.Business.Services;
 
 // DP: Service Layer Pattern
-// SOLID: Single Responsibility Principle - maneja únicamente reglas de autenticación.
+// SOLID: Dependency Inversion Principle - la clase depende de la abstracción
+// IUsuarioRepository, no de una implementación concreta.
 public class AuthService : IAuthService
 {
     private readonly IUsuarioRepository _usuarioRepository;

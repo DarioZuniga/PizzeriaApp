@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
 namespace NetForum.MVC.Models;
-
+//SOLID: Single Responsibility Principle - esta clase solo se encarga de representar la información de una liga para la vista
 public class LigaViewModel
 {
     [Required(ErrorMessage = "El nombre de la liga es obligatorio.")]

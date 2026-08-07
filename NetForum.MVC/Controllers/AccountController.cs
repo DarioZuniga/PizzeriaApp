@@ -10,11 +10,11 @@ namespace NetForum.MVC.Controllers;
 
 public class AccountController : Controller
 {
+    // SOLID: Dependency Inversion Principle - el controller depende de la abstracción
     private readonly IAuthService _authService;
 
     public AccountController(IAuthService authService)
     {
-        // SOLID: Dependency Inversion Principle
         _authService = authService;
     }
 

@@ -3,9 +3,12 @@ using NetForum.Data.Entities;
 using NetForum.Repository.Interfaces;
 
 namespace NetForum.Business.Services;
-
+// DP: Service Layer Pattern
+//SOLID: Single Responsibility Principle - la clase tiene la responsabilidad de manejar la lógica de negocio relacionada con los reportes
 public class ReporteService : IReporteService
 {
+    // SOLID: Dependency Inversion Principle - la clase depende de la abstracción
+    // IReporteRepository, no de una implementación concreta.
     private readonly IReporteRepository _repository;
 
     public ReporteService(IReporteRepository repository)

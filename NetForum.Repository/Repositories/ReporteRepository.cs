@@ -6,7 +6,7 @@ using NetForum.Repository.Interfaces;
 namespace NetForum.Repository.Repositories;
 
 // DP: Repository Pattern
-// SOLID: Single Responsibility Principle
+// SOLID: Single Responsibility Principle - La clase ReporteRepository tiene la única responsabilidad de manejar las operaciones de acceso a datos relacionadas con los reportes.
 // Centraliza las consultas específicas de reportes.
 public class ReporteRepository : GenericRepository<Reporte>, IReporteRepository
 {

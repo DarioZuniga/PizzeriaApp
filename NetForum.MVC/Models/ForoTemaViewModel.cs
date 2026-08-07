@@ -1,5 +1,5 @@
 ﻿namespace NetForum.MVC.Models;
-
+// SOLID: Single Responsibility Principle - esta clase solo se encarga de representar la información de un tema del foro para la vista
 public class ForoTemaViewModel
 {
     public int TemaId { get; set; }

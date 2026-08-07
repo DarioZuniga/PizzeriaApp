@@ -9,6 +9,7 @@ namespace NetForum.MVC.Controllers;
 [Authorize]
 public class ReporteController : Controller
 {
+    // SOLID: Dependency Inversion Principle - el controller depende de la abstracción
     private readonly IReporteService _reporteService;
 
     public ReporteController(IReporteService reporteService)

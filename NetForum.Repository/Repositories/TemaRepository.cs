@@ -6,7 +6,9 @@ using NetForum.Repository.Interfaces;
 namespace NetForum.Repository.Repositories;
 
 // DP: Repository Pattern
-// SOLID: Single Responsibility Principle
+// SOLID: Single Responsibility Principle - aplica principalmente: la clase centraliza
+// el acceso a datos de Tema. Se mantiene así por simplicidad del feed
+// del foro, que necesita categorías junto con temas en la misma consulta.
 public class TemaRepository : GenericRepository<Tema>, ITemaRepository
 {
     public TemaRepository(NetForumDbContext context)

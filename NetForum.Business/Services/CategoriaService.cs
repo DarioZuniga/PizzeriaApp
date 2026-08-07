@@ -5,7 +5,8 @@ using NetForum.Repository.Interfaces;
 namespace NetForum.Business.Services;
 
 // DP: Service Layer Pattern
-// SOLID: Single Responsibility Principle - centraliza la lógica de negocio de Categorías.
+// SOLID: Dependency Inversion Principle - la clase depende de la abstracción
+// ICategoriaRepository, no de una implementación concreta.
 public class CategoriaService : ICategoriaService
 {
     private readonly ICategoriaRepository _repository;

@@ -6,7 +6,7 @@ using NetForum.Repository.Interfaces;
 namespace NetForum.Repository.Repositories;
 
 // DP: Repository Pattern
-// SOLID: Single Responsibility Principle
+// SOLID: Single Responsibility Principle - esta clase tiene la responsabilidad única de manejar las operaciones de acceso a datos para la entidad Jugador
 public class JugadorRepository : GenericRepository<Jugador>, IJugadorRepository
 {
     public JugadorRepository(NetForumDbContext context)

@@ -6,7 +6,7 @@ using NetForum.Repository.Interfaces;
 namespace NetForum.Repository.Repositories;
 
 // DP: Repository Pattern
-// SOLID: Single Responsibility Principle
+// SOLID: Single Responsibility Principle - La clase LigaRepository tiene la responsabilidad única de manejar las operaciones de acceso a datos relacionadas con la entidad Liga.
 public class LigaRepository : GenericRepository<Liga>, ILigaRepository
 {
     public LigaRepository(NetForumDbContext context)

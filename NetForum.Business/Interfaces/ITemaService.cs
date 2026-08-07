@@ -3,7 +3,8 @@
 namespace NetForum.Business.Interfaces;
 
 // DP: Service Layer Pattern
-// SOLID: Interface Segregation Principle
+// SOLID: Single Responsibility Principle - aplica principalmente: encapsula la
+// lógica de negocio de Tema. Exceptuando la persistencia de datos, que se delega a los repositorios.
 public interface ITemaService
 {
     // Métodos existentes del CRUD administrativo

@@ -3,7 +3,7 @@
 namespace NetForum.Business.Interfaces;
 
 // DP: Service Layer Pattern
-// SOLID: Interface Segregation Principle
+// SOLID: Interface Segregation Principle - la interfaz está enfocada en un conjunto específico de operaciones relacionadas con las categorías
 public interface ICategoriaService
 {
     Task<IEnumerable<Categoria>> ObtenerCategoriasAsync();

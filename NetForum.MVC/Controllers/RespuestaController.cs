@@ -11,6 +11,7 @@ namespace NetForum.MVC.Controllers;
 [Authorize]
 public class RespuestaController : Controller
 {
+    // SOLID: Dependency Inversion Principle - el controller depende de las abstracciones
     private readonly IRespuestaService _respuestaService;
     private readonly ITemaService _temaService;
 
@@ -18,7 +19,6 @@ public class RespuestaController : Controller
         IRespuestaService respuestaService,
         ITemaService temaService)
     {
-        // SOLID: Dependency Inversion Principle
         _respuestaService = respuestaService;
         _temaService = temaService;
     }

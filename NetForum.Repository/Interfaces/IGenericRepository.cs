@@ -4,9 +4,9 @@ using System.Text;
 // ESTE ROPOSITORIO GENÉRICO SE UTILIZA PARA NO TENER QUE REPLICAR
 //TODAS LAS ENTIDADES CON EL MISMO CÓDIGO DE ACCESO A DATOS.
 // CON ESTO APLICAMOS:
-// SOLID: DRY (DONT REPEAT YOURSELF)
-// SOLID: Open/Closed Principle
-// DP: Repository Pattern
+// SOLID: Open/Closed Principle - esta interfaz permanece cerrada a modificación;
+// el comportamiento específico de cada entidad se agrega extendiéndola en
+// interfaces, sin necesidad de tocar este archivo.
 
 using System.Linq.Expressions;
 

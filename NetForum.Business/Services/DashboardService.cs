@@ -4,15 +4,14 @@ using NetForum.Repository.Interfaces;
 namespace NetForum.Business.Services;
 
 // DP: Service Layer Pattern
-// SOLID: Single Responsibility Principle
-// Esta clase centraliza la lógica de negocio del Dashboard.
+// SOLID: Dependency Inversion Principle - la clase depende de la abstracción
+// IDashboardRepository, no de una implementación concreta.
 public class DashboardService : IDashboardService
 {
     private readonly IDashboardRepository _dashboardRepository;
 
     public DashboardService(IDashboardRepository dashboardRepository)
     {
-        // SOLID: Dependency Inversion Principle
         _dashboardRepository = dashboardRepository;
     }
 

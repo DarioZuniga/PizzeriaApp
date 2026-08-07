@@ -10,13 +10,14 @@ using NetForum.Repository.Interfaces;
 namespace NetForum.Repository.Repositories;
 
 // DP: Repository Pattern
-// SOLID: Single Responsibility Principle
-// Esta clase únicamente consulta información para el Dashboard.
+// SOLID: Single Responsibility Principle - esta clase tiene la única responsabilidad
+// de consultar estadísticas para el Dashboard.
 public class DashboardRepository : IDashboardRepository
 {
     private readonly NetForumDbContext _context;
 
-    // SOLID: Dependency Injection
+    // SOLID: Dependency Injection - Se inyecta el contexto de la base de datos a través del constructor,
+    // lo que permite una mayor flexibilidad y facilita las pruebas unitarias.
     public DashboardRepository(NetForumDbContext context)
     {
         _context = context;

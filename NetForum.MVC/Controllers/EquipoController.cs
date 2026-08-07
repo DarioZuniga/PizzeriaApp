@@ -10,12 +10,12 @@ namespace NetForum.MVC.Controllers;
 [Authorize]
 public class EquipoController : Controller
 {
+    // SOLID: Dependency Inversion Principle - el controller depende de las abstracción
     private readonly IEquipoService _equipoService;
     private readonly ILigaService _ligaService;
 
     public EquipoController(IEquipoService equipoService, ILigaService ligaService)
     {
-        // SOLID: Dependency Inversion Principle
         _equipoService = equipoService;
         _ligaService = ligaService;
     }

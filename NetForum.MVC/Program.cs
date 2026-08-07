@@ -35,17 +35,17 @@ namespace NetForum.MVC
                 ));
 
             // DP: Dependency Injection
-            // SOLID: Dependency Inversion Principle
+            // SOLID: Dependency Inversion Principle - aquí se decide qué implementación concreta corresponde a
+            // cada abstracción de la interfaz, y se inyecta en los controladores y servicios que la necesiten. 
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
             builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
 
             // DP: Service Layer Pattern + Dependency Injection
-            // SOLID: Dependency Inversion Principle
             builder.Services.AddScoped<IAuthService, AuthService>();
 
             // DP: Dependency Injection
-            // SOLID: Dependency Inversion Principle
+            // SOLID: Dependency Inversion Principle - 
             // estos servicios se encargan de la lógica de negocio y dependen de los
             // repositorios para acceder a los datos
             builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();

@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
 namespace NetForum.MVC.Models;
-
+// SOLID: Single Responsibility Principle - esta clase solo se encarga de representar la información de registro para la vista
 public class RegisterViewModel
 {
     [Required(ErrorMessage = "El nombre de usuario es obligatorio.")]

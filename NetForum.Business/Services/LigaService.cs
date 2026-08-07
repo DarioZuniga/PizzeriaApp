@@ -5,14 +5,14 @@ using NetForum.Repository.Interfaces;
 namespace NetForum.Business.Services;
 
 // DP: Service Layer Pattern
-// SOLID: Single Responsibility Principle
+// SOLID: Single Responsibility Principle - la clase se encarga únicamente de la
+// lógica de negocio relacionada con las ligas.
 public class LigaService : ILigaService
 {
     private readonly ILigaRepository _repository;
 
     public LigaService(ILigaRepository repository)
     {
-        // SOLID: Dependency Inversion Principle
         _repository = repository;
     }
 

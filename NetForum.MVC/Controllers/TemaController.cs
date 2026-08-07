@@ -11,6 +11,7 @@ namespace NetForum.MVC.Controllers;
 [Authorize]
 public class TemaController : Controller
 {
+    // SOLID: Dependency Inversion Principle - el controller depende de las abstracciones
     private readonly ITemaService _temaService;
     private readonly ICategoriaService _categoriaService;
 
@@ -18,7 +19,6 @@ public class TemaController : Controller
         ITemaService temaService,
         ICategoriaService categoriaService)
     {
-        // SOLID: Dependency Inversion Principle
         _temaService = temaService;
         _categoriaService = categoriaService;
     }

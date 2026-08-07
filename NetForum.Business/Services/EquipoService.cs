@@ -5,14 +5,14 @@ using NetForum.Repository.Interfaces;
 namespace NetForum.Business.Services;
 
 // DP: Service Layer Pattern
-// SOLID: Single Responsibility Principle
+// SOLID: Dependency Inversion Principle - la clase depende de la abstracción
+// IEquipoRepository, no de una implementación concreta.
 public class EquipoService : IEquipoService
 {
     private readonly IEquipoRepository _repository;
 
     public EquipoService(IEquipoRepository repository)
     {
-        // SOLID: Dependency Inversion Principle
         _repository = repository;
     }
 

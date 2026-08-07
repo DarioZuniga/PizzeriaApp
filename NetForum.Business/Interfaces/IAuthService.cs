@@ -2,7 +2,7 @@
 
 namespace NetForum.Business.Interfaces;
 
-// SOLID: Interface Segregation Principle
+// SOLID: Single Responsibility Principle - encapsula únicamente la lógica de autenticación
 // DP: Service Layer Pattern
 public interface IAuthService
 {

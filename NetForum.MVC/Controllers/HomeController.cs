@@ -9,11 +9,11 @@ namespace NetForum.MVC.Controllers;
 [Authorize]
 public class HomeController : Controller
 {
+    // SOLID: Dependency Inversion Principle - el controller depende de la abstracción
     private readonly IDashboardService _dashboardService;
 
     public HomeController(IDashboardService dashboardService)
     {
-        // SOLID: Dependency Inversion Principle
         _dashboardService = dashboardService;
     }
 

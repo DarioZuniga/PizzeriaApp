@@ -1,9 +1,8 @@
 ﻿
-
 namespace NetForum.Business.Interfaces;
 
 // DP: Service Layer Pattern
-// SOLID: Interface Segregation Principle
+// SOLID: Single Responsibility Principle - agrupa únicamente las consultas de conteo que alimentan el Dashboard.
 public interface IDashboardService
 {
     Task<int> ContarUsuariosAsync();

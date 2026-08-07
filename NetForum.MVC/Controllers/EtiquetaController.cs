@@ -9,11 +9,11 @@ namespace NetForum.MVC.Controllers;
 [Authorize]
 public class EtiquetaController : Controller
 {
+    // SOLID: Dependency Inversion Principle - el controller depende de la abstracción
     private readonly IEtiquetaService _etiquetaService;
 
     public EtiquetaController(IEtiquetaService etiquetaService)
     {
-        // SOLID: Dependency Inversion Principle
         _etiquetaService = etiquetaService;
     }
 

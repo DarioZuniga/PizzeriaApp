@@ -3,7 +3,7 @@
 namespace NetForum.Business.Interfaces;
 
 // DP: Service Layer Pattern
-// SOLID: Interface Segregation Principle
+// SOLID: Single Responsibility Principle - encapsula únicamente la lógica de negocio de Equipo.
 public interface IEquipoService
 {
     Task<IEnumerable<Equipo>> ObtenerEquiposAsync();

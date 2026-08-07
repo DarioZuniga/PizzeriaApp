@@ -3,7 +3,7 @@
 namespace NetForum.Repository.Interfaces;
 
 // DP: Repository Pattern
-// SOLID: Interface Segregation Principle
+// SOLID: Interface Segregation Principle - la interfaz está enfocada en un conjunto específico de operaciones relacionadas con las reacciones
 public interface IReaccionRepository : IGenericRepository<Reaccion> 
 {
     Task<IEnumerable<TipoReaccion>> ObtenerTiposAsync();

@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
 namespace NetForum.MVC.Models;
-
+// SOLID: Single Responsibility Principle - esta clase solo se encarga de representar la información de inicio de sesión para la vista
 public class LoginViewModel
 {
     [Required(ErrorMessage = "El correo es obligatorio.")]

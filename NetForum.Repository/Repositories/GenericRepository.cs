@@ -10,7 +10,8 @@ using System.Linq.Expressions;
 namespace NetForum.Repository.Repositories;
 
 // DP: Repository Pattern
-// SOLID: Single Responsibility Principle - esta clase solo maneja acceso genérico a datos.
+// SOLID: Liskov Substitution Principle - las clases derivadas
+// solo agregan métodos, nunca sobrescriben el comportamiento heredado.
 public class GenericRepository<T> : IGenericRepository<T> where T : class
 {
     protected readonly NetForumDbContext _context;

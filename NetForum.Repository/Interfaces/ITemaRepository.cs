@@ -3,7 +3,8 @@
 namespace NetForum.Repository.Interfaces;
 
 // DP: Repository Pattern
-// SOLID: Interface Segregation Principle
+// SOLID: Interface Segregation Principle - se aplica parcialmente a la interfaz ITemaRepository, ya que
+// combina métodos relacionados con el CRUD administrativo y métodos específicos del FrontOffice.
 public interface ITemaRepository : IGenericRepository<Tema>
 {
     // Métodos existentes del CRUD administrativo.

@@ -30,8 +30,10 @@ public class NetForumDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        // DP: Fluent API para centralizar el mapeo de entidades.
-        // SOLID: Single Responsibility Principle, el DbContext solo configura persistencia.
+        // DP: Fluent API - centraliza el mapeo de entidades en un solo lugar en vez
+        // de dispersarlo con Data Annotations en cada clase de entidad.
+        // SOLID: Single Responsibility Principle - el DbContext solo configura
+        // persistencia que no contiene lógica de negocio.
 
         modelBuilder.Entity<Estado>().ToTable("Estados");
         modelBuilder.Entity<Rol>().ToTable("Roles");
@@ -57,8 +59,6 @@ public class NetForumDbContext : DbContext
             .HasIndex(r => new { r.UsuarioId, r.TemaId, r.TipoReaccionId })
             .IsUnique();
 
-        // DP: Fluent API permite configurar restricciones sin contaminar las entidades.
-        // SOLID: Single Responsibility Principle, las reglas de persistencia quedan centralizadas en el DbContext.
         foreach (var relationship in modelBuilder.Model.GetEntityTypes()
                      .SelectMany(entity => entity.GetForeignKeys()))
         {

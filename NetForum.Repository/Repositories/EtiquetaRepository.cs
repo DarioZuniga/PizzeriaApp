@@ -6,7 +6,7 @@ using NetForum.Repository.Interfaces;
 namespace NetForum.Repository.Repositories;
 
 // DP: Repository Pattern
-// SOLID: Single Responsibility Principle
+// SOLID: Single Responsibility Principle - la clase tiene una única responsabilidad: manejar las operaciones de acceso a datos para la entidad Etiqueta
 public class EtiquetaRepository : GenericRepository<Etiqueta>, IEtiquetaRepository
 {
     public EtiquetaRepository(NetForumDbContext context)

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace NetForum.MVC.Models;
-
+//SOLID: Single Responsibility Principle - esta clase solo tiene la responsabilidad de representar la vista del índice del foro
 public class ForoIndexViewModel
 {
     public IEnumerable<ForoTemaViewModel> Temas { get; set; }

@@ -5,14 +5,14 @@ using NetForum.Repository.Interfaces;
 namespace NetForum.Business.Services;
 
 // DP: Service Layer Pattern
-// SOLID: Single Responsibility Principle
+// SOLID: Dependency Inversion Principle - la clase depende de la abstracción
+// ITemaRepository, no de una implementación concreta.
 public class TemaService : ITemaService
 {
     private readonly ITemaRepository _repository;
 
     public TemaService(ITemaRepository repository)
     {
-        // SOLID: Dependency Inversion Principle
         _repository = repository;
     }
 

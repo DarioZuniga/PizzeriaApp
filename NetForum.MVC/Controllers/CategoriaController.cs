@@ -9,11 +9,11 @@ namespace NetForum.MVC.Controllers;
 [Authorize]
 public class CategoriaController : Controller
 {
+    // SOLID: Dependency Inversion Principle - el controller depende de la abstracción
     private readonly ICategoriaService _categoriaService;
 
     public CategoriaController(ICategoriaService categoriaService)
     {
-        // SOLID: Dependency Inversion Principle
         _categoriaService = categoriaService;
     }
 

@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
 namespace NetForum.MVC.Models;
-
+// SOLID: Single Responsibility Principle - esta clase solo se encarga de representar la información de un jugador para la vista
 public class JugadorViewModel
 {
     [Required(ErrorMessage = "Debe seleccionar un equipo.")]

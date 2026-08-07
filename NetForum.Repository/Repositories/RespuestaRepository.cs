@@ -6,7 +6,7 @@ using NetForum.Repository.Interfaces;
 namespace NetForum.Repository.Repositories;
 
 // DP: Repository Pattern
-// SOLID: Single Responsibility Principle
+// SOLID: Single Responsibility Principle - la clase tiene la responsabilidad única de manejar las operaciones de datos relacionadas con las respuestas
 public class RespuestaRepository : GenericRepository<Respuesta>, IRespuestaRepository
 {
     public RespuestaRepository(NetForumDbContext context)

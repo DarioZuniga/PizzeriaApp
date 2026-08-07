@@ -10,6 +10,7 @@ namespace NetForum.MVC.Controllers;
 [Authorize]
 public class ForoController : Controller
 {
+    // SOLID: Dependency Inversion Principle - el controller depende de abstracciones
     private readonly ITemaService _temaService; // Inyección de dependencias para el servicio de temas del foro.
     private readonly IRespuestaService _respuestaService; // Inyección de dependencias para el servicio de respuestas del foro.
     private readonly IReporteService _reporteService; // Inyección de dependencias para el servicio de reportes del foro.

@@ -1,66 +1,231 @@
-﻿@model NetForum.Data.Entities.Usuario
+﻿@model NetForum.MVC.Models.PerfilUsuarioViewModel
+
 @{
-    ViewData["Title"] = "Mi Cuenta";
+    ViewData["Title"] = "Mi perfil";
 }
 
-<div class="container py-5 d-flex justify-content-center">
-    <div class="card bg-social-card border border-social p-4 shadow" style="width: 100%; max-width: 550px; border-radius: 16px;">
-        <div class="card-body">
+<div class="container py-4">
 
-            <div class="text-center mb-4 border-bottom border-social pb-4">
-                <div class="d-inline-flex align-items-center justify-content-center bg-dark text-violet-neon rounded-circle mb-3 border border-social" style="width: 80px; height: 80px; font-size: 2rem;">
-                    👤
+    <section class="dashboard-panel mb-4">
+        <div class="row align-items-center g-4">
+
+            <div class="col-md-auto text-center">
+                <div class="profile-avatar">
+                    <i class="fa-solid fa-user"></i>
                 </div>
-                <h3 class="fw-bold text-white mb-1">Perfil de Usuario</h3>
-                <p class="small text-secondary">Datos de la cuenta conectados a NetForumDb</p>
             </div>
 
-            <div class="space-y-4">
-
-                <div class="mb-3">
-                    <label class="form-label small fw-semibold text-secondary d-block">ID de Usuario (Key)</label>
-                    <div class="p-2.5 text-white-50 small" style="background-color: #0F0F12; border-radius: 8px; border: 1px solid #23232F;">
-                        # @Model.UsuarioId
-                    </div>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label small fw-semibold text-secondary d-block">Nombre de Usuario</label>
-                    <div class="p-3 text-white fw-bold" style="background-color: #0F0F12; border-radius: 8px;">
+            <div class="col">
+                <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                    <h1 class="h2 text-white fw-bold mb-0">
                         @Model.NombreUsuario
-                    </div>
+                    </h1>
+
+                    <span class="badge bg-success text-dark">
+                        @Model.Rol
+                    </span>
+
+                    <span class="badge bg-dark border border-secondary">
+                        @Model.Estado
+                    </span>
                 </div>
 
-                <div class="mb-3">
-                    <label class="form-label small fw-semibold text-secondary d-block">Correo Electrónico</label>
-                    <div class="p-3 text-white" style="background-color: #0F0F12; border-radius: 8px;">
-                        @Model.Correo
-                    </div>
-                </div>
+                <p class="text-secondary mb-2">
+                    <i class="fa-solid fa-envelope me-2"></i>
+                    @Model.Correo
+                </p>
 
-                <div class="row mb-4">
-                    <div class="col-6">
-                        <label class="form-label small fw-semibold text-secondary d-block">Fecha de Registro</label>
-                        <div class="p-2.5 text-white small" style="background-color: #0F0F12; border-radius: 8px;">
-                            @Model.FechaRegistro.ToString("dd/MM/yyyy")
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <label class="form-label small fw-semibold text-secondary d-block">Identificador de Rol</label>
-                        <div class="p-2.5 text-white small" style="background-color: #0F0F12; border-radius: 8px;">
-                            <span class="badge bg-dark text-violet-neon border border-social">Rol ID: @Model.RolId</span>
-                        </div>
-                    </div>
-                </div>
-
+                <p class="text-secondary mb-0">
+                    <i class="fa-solid fa-calendar-days me-2"></i>
+                    Miembro desde
+                    @Model.FechaRegistro.ToString("dd/MM/yyyy")
+                </p>
             </div>
 
-            <div class="text-center pt-2">
-                <a asp-controller="Home" asp-action="Index" class="btn btn-outline-neon w-100 fw-bold py-2.5" style="border-radius: 10px;">
-                    Volver al Feed Principal
+            <div class="col-md-auto">
+                <a asp-controller="Foro"
+                   asp-action="Crear"
+                   class="btn btn-football">
+                    <i class="fa-solid fa-plus me-2"></i>
+                    Publicar tema
                 </a>
             </div>
-
         </div>
-    </div>
+    </section>
+
+    <section class="row g-4 mb-4">
+
+        <div class="col-md-4">
+            <div class="dashboard-stat-card h-100">
+                <i class="fa-solid fa-comments"></i>
+                <div>
+                    <h3>@Model.TotalTemas</h3>
+                    <span>Temas publicados</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="dashboard-stat-card h-100">
+                <i class="fa-solid fa-reply"></i>
+                <div>
+                    <h3>@Model.TotalRespuestas</h3>
+                    <span>Respuestas publicadas</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="dashboard-stat-card h-100">
+                <i class="fa-solid fa-heart"></i>
+                <div>
+                    <h3>@Model.TotalReacciones</h3>
+                    <span>Reacciones realizadas</span>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <section class="dashboard-panel">
+
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+            <div>
+                <h2 class="h4 text-white fw-bold mb-1">
+                    <i class="fa-solid fa-newspaper text-success me-2"></i>
+                    Mis publicaciones
+                </h2>
+
+                <p class="text-secondary mb-0">
+                    Temas que has creado dentro de NetForum.
+                </p>
+            </div>
+
+            <span class="badge bg-dark border border-secondary px-3 py-2">
+                @Model.Temas.Count()
+            </span>
+        </div>
+
+        @if (!Model.Temas.Any())
+        {
+            <div class="text-center py-5">
+                <i class="fa-regular fa-comments fa-4x text-secondary mb-3"></i>
+
+                <h4 class="text-white fw-bold">
+                    Todavía no has publicado temas
+                </h4>
+
+                <p class="text-secondary">
+                    Crea una publicación y comienza a participar.
+                </p>
+
+                <a asp-controller="Foro"
+                   asp-action="Crear"
+                   class="btn btn-football">
+                    Crear mi primer tema
+                </a>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table id="misTemasTable"
+                       class="table table-dark table-hover align-middle w-100">
+
+                    <thead>
+                        <tr>
+                            <th>Título</th>
+                            <th>Categoría</th>
+                            <th>Estado</th>
+                            <th>Fecha</th>
+                            <th>Respuestas</th>
+                            <th>Reacciones</th>
+                            <th class="text-center">Acción</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var tema in Model.Temas)
+                        {
+                            <tr>
+                                <td class="fw-semibold">
+                                    @tema.Titulo
+                                </td>
+
+                                <td>@tema.Categoria</td>
+
+                                <td>
+                                    <span class="badge bg-success text-dark">
+                                        @tema.Estado
+                                    </span>
+                                </td>
+
+                                <td data-order="@tema.FechaCreacion.ToString("yyyy-MM-dd HH:mm:ss")">
+                                    @tema.FechaCreacion.ToString("dd/MM/yyyy HH:mm")
+                                </td>
+
+                                <td>@tema.CantidadRespuestas</td>
+
+                                <td>@tema.CantidadReacciones</td>
+
+                                <td class="text-center">
+                                    <a asp-controller="Foro"
+                                       asp-action="Detalle"
+                                       asp-route-id="@tema.TemaId"
+                                       class="btn btn-outline-success btn-sm">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </section>
 </div>
+
+@section Styles {
+    <style>
+        .profile-avatar {
+            width: 110px;
+            height: 110px;
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #7cff9b, #198754);
+            color: #07140c;
+            font-size: 3rem;
+            box-shadow: 0 0 35px rgba(25, 135, 84, .45);
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            const tabla = document.getElementById(
+                "misTemasTable"
+            );
+
+            if (!tabla) {
+                return;
+            }
+
+            $('#misTemasTable').DataTable({
+                language: {
+                    url: "https://cdn.datatables.net/plug-ins/2.0.8/i18n/es-ES.json" // Cargar traducción al español
+                },
+                pageLength: 5,
+                lengthMenu: [5, 10, 25],
+                order: [[3, "desc"]],
+                columnDefs: [
+                    {
+                        orderable: false,
+                        targets: 6
+                    }
+                ]
+            });
+        });
+    </script>
+}

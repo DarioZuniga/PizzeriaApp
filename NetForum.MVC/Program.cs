@@ -78,6 +78,8 @@ namespace NetForum.MVC
             builder.Services.AddScoped<IReaccionRepository, ReaccionRepository>();
             builder.Services.AddScoped<IReaccionService, ReaccionService>();
 
+            builder.Services.AddScoped<IPerfilService, PerfilService>(); // Agregar el servicio de perfil
+
             var app = builder.Build();
 
             if (!app.Environment.IsDevelopment())

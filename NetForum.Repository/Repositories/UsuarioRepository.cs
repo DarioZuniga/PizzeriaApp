@@ -38,4 +38,41 @@ public class UsuarioRepository : GenericRepository<Usuario>, IUsuarioRepository
         return await _context.Usuarios
             .AnyAsync(u => u.Correo == correo);
     }
+    // DP: Repository Pattern
+    //OOBTIENE EL PERFIL DEL USUARIO CON SUS TEMAS, RESPUESTAS Y REACCIONES
+    // SOLID: Single Responsibility Principle - esta clase solo maneja consultas específicas de Usuario.
+    public async Task<Usuario?> ObtenerPerfilAsync(int usuarioId)
+    {
+        return await _context.Usuarios
+            .AsNoTracking()
+            .Include(u => u.Rol)
+            .Include(u => u.Estado)
+            .Include(u => u.Temas)
+                .ThenInclude(t => t.Categoria)
+            .Include(u => u.Temas)
+                .ThenInclude(t => t.Estado)
+            .Include(u => u.Temas)
+                .ThenInclude(t => t.Respuestas)
+            .Include(u => u.Temas)
+                .ThenInclude(t => t.Reacciones)
+            .FirstOrDefaultAsync(u => u.UsuarioId == usuarioId);
+    }
+
+    public async Task<int> ContarTemasAsync(int usuarioId)
+    {
+        return await _context.Temas
+            .CountAsync(t => t.UsuarioId == usuarioId);
+    }
+
+    public async Task<int> ContarRespuestasAsync(int usuarioId)
+    {
+        return await _context.Respuestas
+            .CountAsync(r => r.UsuarioId == usuarioId);
+    }
+
+    public async Task<int> ContarReaccionesAsync(int usuarioId)
+    {
+        return await _context.Reacciones
+            .CountAsync(r => r.UsuarioId == usuarioId);
+    }
 }

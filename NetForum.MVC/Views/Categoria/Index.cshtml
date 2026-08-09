@@ -3,6 +3,14 @@
 @{
     ViewData["Title"] = "Gestión de Categorías";
 }
+
+@if (TempData["Error"] is not null)
+{
+    <input type="hidden"
+           id="mensajeError"
+           value="@TempData["Error"]" />
+}
+
 @if (TempData["Success"] is not null)
 {
     <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
@@ -162,5 +170,19 @@
             }
         });
     });
+
+    const mensajeError =
+    document.getElementById("mensajeError");
+
+if (mensajeError) {
+    Swal.fire({
+        icon: "warning",
+        title: "No se puede eliminar",
+        text: mensajeError.value,
+        confirmButtonText: "Entendido",
+        background: "#16161D",
+        color: "#E4E4E7"
+    });
+}
 </script>
 }

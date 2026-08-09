@@ -31,4 +31,10 @@ public class CategoriaRepository : GenericRepository<Categoria>, ICategoriaRepos
             .OrderBy(c => c.Nombre)
             .ToListAsync();
     }
+
+    public async Task<bool> TieneTemasAsociadosAsync(int categoriaId)
+    {
+        return await _context.Temas
+            .AnyAsync(t => t.CategoriaId == categoriaId);
+    }
 }

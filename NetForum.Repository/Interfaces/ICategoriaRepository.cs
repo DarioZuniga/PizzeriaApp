@@ -9,4 +9,7 @@ public interface ICategoriaRepository : IGenericRepository<Categoria>
     Task<IEnumerable<Categoria>> ObtenerCategoriasActivasAsync();
 
     Task<IEnumerable<Categoria>> BuscarPorNombreAsync(string nombre);
+
+    Task<bool> TieneTemasAsociadosAsync(int categoriaId); // Su funcionalidad es verificar si
+                                                          // una categoría tiene temas asociados antes de eliminarla.
 }

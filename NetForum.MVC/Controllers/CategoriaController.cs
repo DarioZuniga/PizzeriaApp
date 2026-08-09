@@ -123,9 +123,21 @@ public class CategoriaController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
-        await _categoriaService.EliminarAsync(id);
+        try
+        {
+            await _categoriaService.EliminarAsync(id);
 
-        TempData["Success"] = "Categoría eliminada correctamente.";
+            TempData["Success"] =
+                "Categoría eliminada correctamente.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["Error"] = ex.Message;
+        }
+        catch (KeyNotFoundException ex)
+        {
+            TempData["Error"] = ex.Message;
+        }
 
         return RedirectToAction(nameof(Index));
     }

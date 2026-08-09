@@ -39,6 +39,23 @@ public class CategoriaService : ICategoriaService
 
     public async Task EliminarAsync(int id)
     {
+        var categoria = await _repository.GetByIdAsync(id);
+
+        if (categoria is null)
+        {
+            throw new KeyNotFoundException(
+                "La categoría que intenta eliminar no existe.");
+        }
+
+        var tieneTemas =
+            await _repository.TieneTemasAsociadosAsync(id);
+
+        if (tieneTemas)
+        {
+            throw new InvalidOperationException(
+                "No se puede eliminar esta categoría porque tiene temas asociados.");
+        }
+
         await _repository.DeleteAsync(id);
     }
 

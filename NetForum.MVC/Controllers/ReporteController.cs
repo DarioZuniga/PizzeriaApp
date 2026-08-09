@@ -3,10 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using NetForum.Business.Interfaces;
 using NetForum.MVC.Models;
+using NetForum.MVC.Security;
 
 namespace NetForum.MVC.Controllers;
 
-[Authorize]
+[Authorize(Roles = RolesSistema.Administrador)]
 public class ReporteController : Controller
 {
     private readonly IReporteService _reporteService;

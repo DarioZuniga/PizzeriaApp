@@ -5,10 +5,11 @@ using NetForum.Business.Interfaces;
 using NetForum.Data.Entities;
 using NetForum.MVC.Models;
 using System.Security.Claims;
+using NetForum.MVC.Security;
 
 namespace NetForum.MVC.Controllers;
 
-[Authorize]
+[Authorize(Roles = RolesSistema.Administrador)]
 public class TemaController : Controller
 {
     private readonly ITemaService _temaService;

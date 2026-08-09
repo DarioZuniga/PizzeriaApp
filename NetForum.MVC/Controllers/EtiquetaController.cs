@@ -3,10 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 using NetForum.Business.Interfaces;
 using NetForum.Data.Entities;
 using NetForum.MVC.Models;
+using NetForum.MVC.Security;
 
 namespace NetForum.MVC.Controllers;
 
-[Authorize]
+[Authorize(Roles = RolesSistema.Administrador)]
 public class EtiquetaController : Controller
 {
     private readonly IEtiquetaService _etiquetaService;

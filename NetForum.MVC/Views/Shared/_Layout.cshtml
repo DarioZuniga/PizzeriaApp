@@ -158,7 +158,7 @@
                                asp-action="Index">Categorías</a>
                         </li>
 
-                        @if (User.IsInRole("Administrador"))
+                        @if (User.IsInRole(RolesSistema.Administrador))
                         {
                             <li class="nav-item">
                                 <a class="nav-social-link"
@@ -168,6 +168,7 @@
                                     Administración
                                 </a>
                             </li>
+                        }
                         }
 
                         <li class="nav-item dropdown">

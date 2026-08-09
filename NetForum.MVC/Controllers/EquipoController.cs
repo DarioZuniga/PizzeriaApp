@@ -4,10 +4,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using NetForum.Business.Interfaces;
 using NetForum.Data.Entities;
 using NetForum.MVC.Models;
+using NetForum.MVC.Security;
 
 namespace NetForum.MVC.Controllers;
 
-[Authorize]
+[Authorize(Roles = RolesSistema.Administrador)]
 public class EquipoController : Controller
 {
     // SOLID: Dependency Inversion Principle - el controller depende de las abstracción

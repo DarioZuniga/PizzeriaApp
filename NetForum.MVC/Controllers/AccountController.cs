@@ -52,12 +52,12 @@ public class AccountController : Controller
 
         var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.NameIdentifier, usuario.UsuarioId.ToString()),
+            new Claim(ClaimTypes.Role, usuario.Rol.Nombre),
             new Claim(ClaimTypes.Name, usuario.NombreUsuario),
             new Claim(ClaimTypes.Email, usuario.Correo),
             new Claim(ClaimTypes.Role, usuario.Rol.Nombre)
         };
-
+        
         var claimsIdentity = new ClaimsIdentity(claims, "CookieAuth");
         var principal = new ClaimsPrincipal(claimsIdentity);
 

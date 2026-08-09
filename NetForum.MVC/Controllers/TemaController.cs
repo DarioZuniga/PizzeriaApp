@@ -5,10 +5,11 @@ using NetForum.Business.Interfaces;
 using NetForum.Data.Entities;
 using NetForum.MVC.Models;
 using System.Security.Claims;
+using NetForum.MVC.Security;
 
 namespace NetForum.MVC.Controllers;
 
-[Authorize]
+[Authorize(Roles = RolesSistema.Administrador)]
 public class TemaController : Controller
 {
     // SOLID: Dependency Inversion Principle - el controller depende de las abstracciones

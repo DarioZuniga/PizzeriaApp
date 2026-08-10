@@ -80,6 +80,9 @@ namespace NetForum.MVC
 
             builder.Services.AddScoped<IPerfilService, PerfilService>(); // Agregar el servicio de perfil
 
+            builder.Services.AddScoped<ITemaEtiquetaRepository,TemaEtiquetaRepository>();
+            builder.Services.AddScoped<ITemaEtiquetaService,TemaEtiquetaService>();
+
             var app = builder.Build();
 
             if (!app.Environment.IsDevelopment())

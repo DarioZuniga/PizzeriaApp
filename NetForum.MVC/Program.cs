@@ -48,44 +48,44 @@ namespace NetForum.MVC
             // SOLID: Dependency Inversion Principle - 
             // estos servicios se encargan de la lógica de negocio y dependen de los
             // repositorios para acceder a los datos
-            builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
+            builder.Services.AddScoped<IDashboardRepository, DashboardRepository>(); // Dependencias de Dashboard
             builder.Services.AddScoped<IDashboardService, DashboardService>();
 
-            builder.Services.AddScoped<ICategoriaService, CategoriaService>();
+            builder.Services.AddScoped<ICategoriaService, CategoriaService>(); // Dependencias de Categoria
             builder.Services.AddScoped<ICategoriaService, CategoriaService>();
 
-            builder.Services.AddScoped<ILigaRepository, LigaRepository>();
+            builder.Services.AddScoped<ILigaRepository, LigaRepository>(); // Dependencias de Liga
             builder.Services.AddScoped<ILigaService, LigaService>();
 
-            builder.Services.AddScoped<IEquipoRepository, EquipoRepository>();
+            builder.Services.AddScoped<IEquipoRepository, EquipoRepository>(); // Dependencias de Equipo
             builder.Services.AddScoped<IEquipoService, EquipoService>();
 
-            builder.Services.AddScoped<IJugadorRepository, JugadorRepository>();
+            builder.Services.AddScoped<IJugadorRepository, JugadorRepository>(); // Dependencias de Jugador
             builder.Services.AddScoped<IJugadorService, JugadorService>();
 
-            builder.Services.AddScoped<ITemaRepository, TemaRepository>();
+            builder.Services.AddScoped<ITemaRepository, TemaRepository>(); // Dependencias de Tema
             builder.Services.AddScoped<ITemaService, TemaService>();
 
-            builder.Services.AddScoped<IRespuestaRepository, RespuestaRepository>();
+            builder.Services.AddScoped<IRespuestaRepository, RespuestaRepository>();// Dependencias de Respuesta
             builder.Services.AddScoped<IRespuestaService, RespuestaService>();
 
-            builder.Services.AddScoped<IEtiquetaRepository, EtiquetaRepository>();
+            builder.Services.AddScoped<IEtiquetaRepository, EtiquetaRepository>(); // Dependencias de Etiqueta
             builder.Services.AddScoped<IEtiquetaService, EtiquetaService>();
 
-            builder.Services.AddScoped<IReporteRepository, ReporteRepository>();
+            builder.Services.AddScoped<IReporteRepository, ReporteRepository>(); // Dependencias de Reporte
             builder.Services.AddScoped<IReporteService, ReporteService>();
 
-            builder.Services.AddScoped<IReaccionRepository, ReaccionRepository>();
+            builder.Services.AddScoped<IReaccionRepository, ReaccionRepository>(); // Dependencias de Reaccion
             builder.Services.AddScoped<IReaccionService, ReaccionService>();
 
             builder.Services.AddScoped<IPerfilService, PerfilService>(); // Agregar el servicio de perfil
 
-            builder.Services.AddScoped<ITemaEtiquetaRepository,TemaEtiquetaRepository>();
-            builder.Services.AddScoped<ITemaEtiquetaService,TemaEtiquetaService>();
+            builder.Services.AddScoped<ITemaEtiquetaRepository,TemaEtiquetaRepository>(); // Dependencias de TemaEtiqueta 
+            builder.Services.AddScoped<ITemaEtiquetaService,TemaEtiquetaService>(); // Dependencias de TemaEtiqueta
 
             var app = builder.Build();
 
-            if (!app.Environment.IsDevelopment())
+            if (!app.Environment.IsDevelopment()) // Configuración de manejo de errores
             {
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();

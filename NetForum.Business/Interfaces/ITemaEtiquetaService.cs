@@ -7,9 +7,7 @@ namespace NetForum.Business.Interfaces;
 public interface ITemaEtiquetaService
 {
     Task<IEnumerable<Etiqueta>> ObtenerEtiquetasAsync();
-
     Task<IEnumerable<TemaEtiqueta>> ObtenerPorTemaAsync(int temaId);
-
     Task ReemplazarEtiquetasAsync(
         int temaId,
         IEnumerable<int> etiquetaIds);

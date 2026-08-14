@@ -15,17 +15,22 @@ public class ForoController : Controller
     private readonly IRespuestaService _respuestaService; // Inyección de dependencias para el servicio de respuestas del foro.
     private readonly IReporteService _reporteService; // Inyección de dependencias para el servicio de reportes del foro.
     private readonly IReaccionService _reaccionService; // Inyección de dependencias para el servicio de reacciones del foro.
-
-    public ForoController(
-       ITemaService temaService,
-       IRespuestaService respuestaService,
-       IReporteService reporteService,
-       IReaccionService reaccionService)
+    private readonly ITemaEtiquetaService _temaEtiquetaService; // Inyección de dependencias para el
+                                                                // servicio de etiquetas de temas del foro.
+    public ForoController( // Controller, su finción es manejar las solicitudes HTTP
+                           // relacionadas con el foro, como mostrar la lista de temas,
+                           // los detalles de un tema específico, crear respuestas, reportar temas y reaccionar a ellos.
+      ITemaService temaService,
+      IRespuestaService respuestaService,
+      IReporteService reporteService,
+      IReaccionService reaccionService,
+      ITemaEtiquetaService temaEtiquetaService)
     {
-        _temaService = temaService;
+        _temaService = temaService; 
         _respuestaService = respuestaService;
         _reporteService = reporteService;
         _reaccionService = reaccionService;
+        _temaEtiquetaService = temaEtiquetaService;
     }
 
     [HttpGet] // Método que obtiene la lista de temas del foro, con opciones de búsqueda y filtrado por categoría.
@@ -164,7 +169,8 @@ public class ForoController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> ResponderAjax(
+    public async Task<IActionResult> ResponderAjax( // acción AJAX para crear una nueva respuesta en un tema del foro, que recibe los datos de la respuesta y
+                                                    // los valida antes de enviarlos al servicio correspondiente
     CrearRespuestaViewModel viewModel)
     {
         if (!ModelState.IsValid)
@@ -181,7 +187,8 @@ public class ForoController : Controller
             });
         }
 
-        var usuarioIdTexto = User.FindFirstValue(
+        var usuarioIdTexto = User.FindFirstValue( // obtiene el identificador del usuario autenticado desde
+                                                  // los claims del token de autenticación
             ClaimTypes.NameIdentifier);
 
         if (!int.TryParse(usuarioIdTexto, out var usuarioId))
@@ -207,7 +214,8 @@ public class ForoController : Controller
 
         try
         {
-            await _respuestaService.CrearRespuestaForoAsync(
+            await _respuestaService.CrearRespuestaForoAsync( // llama al servicio de respuestas para crear
+                                                             // una nueva respuesta en el tema del foro
                 viewModel.TemaId,
                 usuarioId,
                 viewModel.Contenido);
@@ -218,7 +226,7 @@ public class ForoController : Controller
                 message = "Tu respuesta fue publicada correctamente."
             });
         }
-        catch (ArgumentException ex)
+        catch (ArgumentException ex) // captura excepciones de argumento y devuelve un mensaje de error
         {
             return BadRequest(new
             {
@@ -226,7 +234,7 @@ public class ForoController : Controller
                 message = ex.Message
             });
         }
-        catch (InvalidOperationException ex)
+        catch (InvalidOperationException ex) // captura excepciones de operación inválida y devuelve un mensaje de error
         {
             return BadRequest(new
             {
@@ -238,10 +246,14 @@ public class ForoController : Controller
     // acción AJAX para crear un nuevo tema en el foro, que obtiene las categorías disponibles
     // y muestra un formulario para crear el tema.
     [HttpGet]
-    public async Task<IActionResult> Crear()
+    public async Task<IActionResult> Crear() // acción AJAX para crear un nuevo tema en el foro,
+                                             // que obtiene las categorías disponibles
     {
         var categorias =
             await _temaService.ObtenerCategoriasAsync();
+
+        var etiquetas =
+            await _temaEtiquetaService.ObtenerEtiquetasAsync();
 
         ViewBag.Categorias = categorias
             .Select(c => new SelectListItem
@@ -251,11 +263,14 @@ public class ForoController : Controller
             })
             .ToList();
 
+        ViewBag.Etiquetas = etiquetas;
+
         return View(new CrearTemaForoViewModel());
     }
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> CrearAjax(
+    public async Task<IActionResult> CrearAjax( // acción AJAX para crear un nuevo tema en el foro, que recibe los datos
+                                                // del tema y los valida antes de enviarlos al servicio correspondiente
     CrearTemaForoViewModel viewModel)
     {
         if (!ModelState.IsValid)
@@ -284,13 +299,18 @@ public class ForoController : Controller
             });
         }
 
-        try
+        try 
         {
-            var tema = await _temaService.CrearTemaForoAsync(
+            var tema = await _temaService.CrearTemaForoAsync( // llama al servicio de temas para crear un nuevo tema en el foro
                 usuarioId,
                 viewModel.CategoriaId,
                 viewModel.Titulo,
                 viewModel.Contenido);
+
+            await _temaEtiquetaService.ReemplazarEtiquetasAsync( // llama al servicio de etiquetas de temas
+                                                                 // para reemplazar las etiquetas asociadas al tema recién creado
+                    tema.TemaId,
+                    viewModel.EtiquetaIds);
 
             return Json(new
             {

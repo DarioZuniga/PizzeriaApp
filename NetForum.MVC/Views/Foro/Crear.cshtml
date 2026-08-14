@@ -1,4 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Mvc.Rendering
+@using NetForum.Data.Entities
+
 @model NetForum.MVC.Models.CrearTemaForoViewModel
 
 @{
@@ -7,6 +9,10 @@
     var categorias =
         ViewBag.Categorias as IEnumerable<SelectListItem>
         ?? Enumerable.Empty<SelectListItem>();
+
+    var etiquetas =
+        ViewBag.Etiquetas as IEnumerable<Etiqueta>
+        ?? Enumerable.Empty<Etiqueta>();
 }
 
 <div class="container py-4">
@@ -60,6 +66,30 @@
 
                         <span id="categoriaError"
                               class="text-warning small"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label text-secondary fw-semibold">
+                            Etiquetas
+                        </label>
+
+                        <div class="d-flex flex-wrap gap-2">
+                            @foreach (var etiqueta in etiquetas)
+                            {
+                                <label class="btn btn-outline-success btn-sm etiqueta-opcion">
+                                    <input type="checkbox"
+                                           class="d-none etiqueta-checkbox"
+                                           value="@etiqueta.EtiquetaId" />
+
+                                    <i class="fa-solid fa-tag me-1"></i>
+                                    #@etiqueta.Nombre
+                                </label>
+                            }
+                        </div>
+
+                        <div class="form-text text-secondary mt-2">
+                            Puedes seleccionar varias etiquetas.
+                        </div>
                     </div>
 
                     <div class="mb-4">
@@ -137,9 +167,10 @@
 
 @section Scripts {
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener("DOMContentLoaded", function () { //  DOMCONTENTLOADED SE ENCARGA DE INICIALIZAR LOS
+                                                                      //EVENTOS Y FUNCIONES CUANDO EL DOM ESTÉ LISTO
             const titulo =
-                document.getElementById("tituloTema");
+                document.getElementById("tituloTema"); 
 
             const contenido =
                 document.getElementById("contenidoTema");
@@ -152,6 +183,23 @@
                 document.getElementById(
                     "tituloError"
                 ).innerText = "";
+
+              document.querySelectorAll( // FUNCION PARA CAMBIAR EL ESTILO DE LOS BOTONES DE ETIQUETAS 
+            ".etiqueta-checkbox"
+               ).forEach(checkbox => {
+
+                checkbox.addEventListener("change", function () {
+                const label = this.closest("label");
+
+                if (this.checked) {
+                    label.classList.remove("btn-outline-success");
+                    label.classList.add("btn-success");
+                } else {
+                    label.classList.remove("btn-success");
+                    label.classList.add("btn-outline-success");
+                }
+            });
+        });
             });
 
             contenido.addEventListener("input", function () {
@@ -181,7 +229,7 @@
             );
         });
 
-        async function publicarTema(event) {
+        async function publicarTema(event) { //  PUBLICAR TEMA: funcion para manejar el evento de envío del formulario 
             event.preventDefault();
 
             const categoriaId =
@@ -196,6 +244,12 @@
                 document.getElementById(
                     "contenidoTema"
                 ).value.trim();
+
+            const etiquetaIds = Array.from(
+            document.querySelectorAll(
+                ".etiqueta-checkbox:checked"
+            )
+        ).map(e => e.value);
 
             limpiarErrores();
 
@@ -247,6 +301,10 @@
             formData.append("CategoriaId", categoriaId);
             formData.append("Titulo", titulo);
             formData.append("Contenido", contenido);
+
+            etiquetaIds.forEach(id => {
+            formData.append("EtiquetaIds", id);
+        });
 
             boton.disabled = true;
 
@@ -302,7 +360,7 @@
             }
         }
 
-        function limpiarErrores() {
+        function limpiarErrores() { // funcion para limpiar los mensajes de error en el formulario
             document.getElementById(
                 "categoriaError"
             ).innerText = "";
@@ -316,15 +374,15 @@
             ).innerText = "";
         }
 
-        async function obtenerRespuestaJson(response) {
+        async function obtenerRespuestaJson(response) { // funcion para obtener la respuesta JSON de la solicitud fetch
             try {
                 return await response.json();
             } catch {
                 return {};
             }
         }
-
-        function mostrarError(mensaje) {
+        
+        function mostrarError(mensaje) { // funcion para mostrar un mensaje de error usando SweetAlert2
             Swal.fire({
                 icon: "error",
                 title: "No se pudo publicar",

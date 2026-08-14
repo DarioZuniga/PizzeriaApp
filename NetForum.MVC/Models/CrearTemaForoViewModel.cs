@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
 namespace NetForum.MVC.Models;
-// SOLID: Single Responsibility Principle - esta clase solo se encarga de representar la información de un tema para la vista
+
 public class CrearTemaForoViewModel
 {
     [Required(ErrorMessage = "Debe seleccionar una categoría.")]
@@ -21,4 +21,6 @@ public class CrearTemaForoViewModel
         MinimumLength = 10,
         ErrorMessage = "El contenido debe contener entre 10 y 10000 caracteres.")]
     public string Contenido { get; set; } = string.Empty;
+
+    public List<int> EtiquetaIds { get; set; } = new();
 }

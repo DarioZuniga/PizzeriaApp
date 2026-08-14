@@ -68,8 +68,19 @@ public class ForoController : Controller
                     Estado = t.Estado.Nombre,
                     FechaCreacion = t.FechaCreacion,
                     CantidadRespuestas = t.Respuestas?.Count ?? 0,
-                    CantidadReacciones = t.Reacciones?.Count ?? 0
+                    CantidadReacciones = t.Reacciones?.Count ?? 0,
+
+                    Etiquetas = t.TemaEtiquetas
+                   .Select(te => new ForoEtiquetaViewModel
+         {
+                      EtiquetaId = te.EtiquetaId,
+                      Nombre = te.Etiqueta.Nombre
+              })
+                    .OrderBy(e => e.Nombre)
+                    .ToList()
                 })
+
+
         };
 
         return View(viewModel);
@@ -113,6 +124,15 @@ public class ForoController : Controller
             Estado = tema.Estado.Nombre,
             FechaCreacion = tema.FechaCreacion,
             CantidadReacciones = reaccionesTema.Count(),
+
+            Etiquetas = tema.TemaEtiquetas
+                .Select(te => new ForoEtiquetaViewModel
+    {
+        EtiquetaId = te.EtiquetaId,
+        Nombre = te.Etiqueta.Nombre
+      })
+                .OrderBy(e => e.Nombre)
+                .ToList(),
 
             Reacciones = tiposReaccion.Select(tipo =>
     new ForoTipoReaccionViewModel

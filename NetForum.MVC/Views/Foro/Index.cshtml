@@ -20,7 +20,7 @@
 
         <a asp-controller="Foro"
            asp-action="Crear"
-            class="btn btn-football px-4">
+           class="btn btn-football px-4">
             <i class="fa-solid fa-plus me-2"></i>
             Publicar tema
         </a>
@@ -137,7 +137,7 @@
                                 </span>
                             </div>
 
-                            <span class="text-secondary small">
+                            <span class="text-secondary small">  
                                 <i class="fa-regular fa-clock me-1"></i>
                                 @tema.FechaCreacion.ToString("dd/MM/yyyy HH:mm")
                             </span>
@@ -155,6 +155,19 @@
                         <p class="text-secondary mb-4 foro-topic-summary">
                             @tema.ContenidoResumen
                         </p>
+
+                        @if (tema.Etiquetas.Any())  // este condicional verifica si hay etiquetas para mostrar
+                        {
+                            <div class="d-flex flex-wrap gap-2 mb-4">
+                                @foreach (var etiqueta in tema.Etiquetas)
+                                {
+                                    <span class="foro-tag">
+                                        <i class="fa-solid fa-tag me-1"></i>
+                                        #@etiqueta.Nombre
+                                    </span>
+                                }
+                            </div>
+                        }
 
                         <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
                             <div class="text-secondary">
@@ -195,28 +208,37 @@
 @section Styles {
     <style>
         .foro-topic-card {
-            transition:
-                transform 0.2s ease,
-                border-color 0.2s ease,
-                box-shadow 0.2s ease;
+            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
         }
 
-        .foro-topic-card:hover {
-            transform: translateY(-3px);
-            border-color: rgba(25, 135, 84, 0.7);
-            box-shadow: 0 14px 35px rgba(0, 0, 0, 0.28);
-        }
+            .foro-topic-card:hover {
+                transform: translateY(-3px);
+                border-color: rgba(25, 135, 84, 0.7);
+                box-shadow: 0 14px 35px rgba(0, 0, 0, 0.28);
+            }
 
         .foro-topic-title {
             transition: color 0.2s ease;
         }
 
-        .foro-topic-title:hover {
-            color: #20c997 !important;
-        }
+            .foro-topic-title:hover {
+                color: #20c997 !important;
+            }
 
         .foro-topic-summary {
             line-height: 1.7;
+        }
+
+        .foro-tag {
+            display: inline-flex;
+            align-items: center;
+            padding: .4rem .75rem;
+            border-radius: 50rem;
+            background: rgba(25, 135, 84, .12);
+            border: 1px solid rgba(25, 135, 84, .35);
+            color: #75d6a0;
+            font-size: .82rem;
+            font-weight: 600;
         }
     </style>
 }

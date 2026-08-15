@@ -32,7 +32,7 @@
         </a>
     </div>
 
-    <div class="d-flex flex-wrap gap-2">
+    <div class="d-flex flex-wrap gap-2 mb-3">
         <span class="badge bg-success text-dark px-3 py-2">
             <i class="fa-solid fa-folder-open me-1"></i>
             @Model.Categoria
@@ -54,15 +54,30 @@
     <article class="dashboard-panel mb-4">
 
         <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
-            <div class="d-flex flex-wrap gap-2">
-                <span class="badge bg-success text-dark px-3 py-2">
-                    <i class="fa-solid fa-folder-open me-1"></i>
-                    @Model.Categoria
-                </span>
+            <div class="d-flex flex-column">
+                <div class="d-flex flex-wrap gap-2">
+                    <span class="badge bg-success text-dark px-3 py-2">
+                        <i class="fa-solid fa-folder-open me-1"></i>
+                        @Model.Categoria
+                    </span>
 
-                <span class="badge bg-dark border border-secondary text-light px-3 py-2">
-                    @Model.Estado
-                </span>
+                    <span class="badge bg-dark border border-secondary text-light px-3 py-2">
+                        @Model.Estado
+                    </span>
+                </div>
+
+                @if (Model.Etiquetas.Any())
+                {
+                    <div class="d-flex flex-wrap gap-2 mt-3">
+                        @foreach (var etiqueta in Model.Etiquetas)
+                        {
+                            <span class="foro-tag">
+                                <i class="fa-solid fa-tag me-1"></i>
+                                #@etiqueta.Nombre
+                            </span>
+                        }
+                    </div>
+                }
             </div>
 
             <span class="text-secondary small">
@@ -108,8 +123,8 @@
                     <button type="button"
                             id="reaccion-@reaccion.TipoReaccionId"
                             class="btn btn-sm @(reaccion.SeleccionadaPorUsuario
-                                                ? "btn-success"
-                                                : "btn-outline-success")"
+                                                                            ? "btn-success"
+                                                                            : "btn-outline-success")"
                             onclick="alternarReaccion(
                         @Model.TemaId,
                         @reaccion.TipoReaccionId)">
@@ -131,7 +146,6 @@
             </div>
 
         </div>
-
 
     </article>
 
@@ -304,9 +318,20 @@
                 border-color: rgba(25, 135, 84, 0.55);
                 transform: translateY(-2px);
             }
-    </style>
 
-    }
+        .foro-tag {
+            display: inline-flex;
+            align-items: center;
+            padding: .4rem .75rem;
+            border-radius: 50rem;
+            background: rgba(25, 135, 84, .12);
+            border: 1px solid rgba(25, 135, 84, .35);
+            color: #75d6a0;
+            font-size: .82rem;
+            font-weight: 600;
+        }
+    </style>
+}
 
 <div class="modal fade"
      id="reporteModal"
@@ -372,7 +397,7 @@
     </div>
 </div>
 
-    @section Scripts {
+@section Scripts {
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
@@ -521,7 +546,7 @@
             });
         }
 
-                const motivoReporte =
+        const motivoReporte =
             document.getElementById("motivoReporte");
 
         if (motivoReporte) {
@@ -639,13 +664,15 @@
             }
         }
 
-                async function alternarReaccion(
+        async function alternarReaccion(
             temaId,
             tipoReaccionId
         ) {
             const boton = document.getElementById(
                 `reaccion-${tipoReaccionId}`
             );
+
+            boton.disabled = true;
 
             boton.disabled = true;
 
@@ -720,7 +747,4 @@
             }
         }
     </script>
-}
-
-
 }

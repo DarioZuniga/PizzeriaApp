@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace NetForum.Data.Entities;
+﻿namespace NetForum.Data.Entities;
 
 public class TemaEtiqueta
 {

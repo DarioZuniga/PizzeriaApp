@@ -16,7 +16,7 @@ public class TemaRepository : GenericRepository<Tema>, ITemaRepository
     {
     }
 
-    public async Task<IEnumerable<Tema>> ObtenerConRelacionesAsync()
+    public async Task<IEnumerable<Tema>> ObtenerConRelacionesAsync() 
     {
         return await _context.Temas
             .Include(t => t.Usuario)
@@ -41,7 +41,8 @@ public class TemaRepository : GenericRepository<Tema>, ITemaRepository
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<Tema>> ObtenerFeedAsync(
+    public async Task<IEnumerable<Tema>> ObtenerFeedAsync( //método para obtener el feed de temas,
+                                                           //con filtros opcionales de búsqueda y categoría
     string? buscar,
     int? categoriaId)
     {
@@ -52,6 +53,8 @@ public class TemaRepository : GenericRepository<Tema>, ITemaRepository
             .Include(t => t.Estado)
             .Include(t => t.Respuestas)
             .Include(t => t.Reacciones)
+            .Include(t => t.TemaEtiquetas)
+            .ThenInclude(te => te.Etiqueta)
             .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(buscar))
@@ -76,17 +79,20 @@ public class TemaRepository : GenericRepository<Tema>, ITemaRepository
 
     public async Task<Tema?> ObtenerDetalleAsync(int temaId)
     {
-        return await _context.Temas
-            .AsNoTracking()
-            .Include(t => t.Usuario)
-            .Include(t => t.Categoria)
-            .Include(t => t.Estado)
-            .Include(t => t.Respuestas)
-                .ThenInclude(r => r.Usuario)
-            .Include(t => t.Respuestas)
-                .ThenInclude(r => r.Estado)
-            .Include(t => t.Reacciones)
-            .FirstOrDefaultAsync(t => t.TemaId == temaId);
+   
+     return await _context.Temas
+    .AsNoTracking()
+    .Include(t => t.Usuario)
+    .Include(t => t.Categoria)
+    .Include(t => t.Estado)
+    .Include(t => t.Respuestas)
+    .ThenInclude(r => r.Usuario)
+    .Include(t => t.Respuestas)
+    .ThenInclude(r => r.Estado)
+    .Include(t => t.Reacciones)
+    .Include(t => t.TemaEtiquetas)
+    .ThenInclude(te => te.Etiqueta)
+    .FirstOrDefaultAsync(t => t.TemaId == temaId);
     }
 
     public async Task<IEnumerable<Categoria>> ObtenerCategoriasAsync()

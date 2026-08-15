@@ -41,10 +41,11 @@ public class TemaRepository : GenericRepository<Tema>, ITemaRepository
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<Tema>> ObtenerFeedAsync( //método para obtener el feed de temas,
-                                                           //con filtros opcionales de búsqueda y categoría
+    public async Task<IEnumerable<Tema>> ObtenerFeedAsync(  // task que devuelve los temas para el feed del foro,
+                                                            // con soporte para paginación y filtrado por categoría o etiqueta.
     string? buscar,
-    int? categoriaId)
+    int? categoriaId,
+    int? etiquetaId)
     {
         var query = _context.Temas
             .AsNoTracking()
@@ -54,37 +55,49 @@ public class TemaRepository : GenericRepository<Tema>, ITemaRepository
             .Include(t => t.Respuestas)
             .Include(t => t.Reacciones)
             .Include(t => t.TemaEtiquetas)
-            .ThenInclude(te => te.Etiqueta)
+                .ThenInclude(te => te.Etiqueta)
             .AsQueryable();
 
-        if (!string.IsNullOrWhiteSpace(buscar))
+        if (!string.IsNullOrWhiteSpace(buscar)) // si el parámetro de búsqueda no es nulo o vacío,
+                                                // se aplica un filtro adicional a la consulta
         {
             var filtro = buscar.Trim();
 
-            query = query.Where(t =>
+            query = query.Where(t => // se filtra por título o contenido del tema
                 t.Titulo.Contains(filtro) ||
                 t.Contenido.Contains(filtro));
         }
 
-        if (categoriaId.HasValue && categoriaId.Value > 0)
+        if (categoriaId.HasValue &&  // filto por categoría si se proporciona un Id de categoría válido
+            categoriaId.Value > 0)
         {
             query = query.Where(t =>
                 t.CategoriaId == categoriaId.Value);
         }
 
-        return await query
+        if (etiquetaId.HasValue && // filto por etiqueta si se proporciona un Id de etiqueta válido
+            etiquetaId.Value > 0)
+        {
+            query = query.Where(t =>
+                t.TemaEtiquetas.Any(te =>
+                    te.EtiquetaId == etiquetaId.Value));
+        }
+
+        return await query // se ejecuta la consulta y se devuelve la lista de temas resultante
             .OrderByDescending(t => t.FechaCreacion)
             .ToListAsync();
     }
 
-    public async Task<Tema?> ObtenerDetalleAsync(int temaId)
+    public async Task<Tema?> ObtenerDetalleAsync(int temaId) // método para obtener un tema específico con
+                                                             // todas sus relaciones, incluyendo usuario,
+                                                             // categoría, estado, respuestas y etiquetas.
     {
    
-     return await _context.Temas
+     return await _context.Temas // se obtiene el tema con el Id especificado, incluyendo todas sus relaciones
     .AsNoTracking()
-    .Include(t => t.Usuario)
+    .Include(t => t.Usuario) // se incluyen las relaciones
     .Include(t => t.Categoria)
-    .Include(t => t.Estado)
+    .Include(t => t.Estado) 
     .Include(t => t.Respuestas)
     .ThenInclude(r => r.Usuario)
     .Include(t => t.Respuestas)
@@ -95,7 +108,8 @@ public class TemaRepository : GenericRepository<Tema>, ITemaRepository
     .FirstOrDefaultAsync(t => t.TemaId == temaId);
     }
 
-    public async Task<IEnumerable<Categoria>> ObtenerCategoriasAsync()
+    public async Task<IEnumerable<Categoria>> ObtenerCategoriasAsync() // método para obtener todas las categorías
+                                                                       // disponibles en el foro, ordenadas alfabéticamente por nombre.
     {
         return await _context.Categorias
             .AsNoTracking()

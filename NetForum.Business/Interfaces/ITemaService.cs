@@ -21,8 +21,9 @@ public interface ITemaService
     Task<Tema?> ObtenerPorIdAsync(int id);
     // Método debúsqueda de feed con filtros opcionales
     Task<IEnumerable<Tema>> ObtenerFeedAsync(
-    string? buscar,
-    int? categoriaId);
+     string? buscar,
+     int? categoriaId,
+     int? etiquetaId);
 
     Task<Tema?> ObtenerDetalleAsync(int temaId);
 

@@ -36,16 +36,24 @@ public class ForoController : Controller
     [HttpGet] // Método que obtiene la lista de temas del foro, con opciones de búsqueda y filtrado por categoría.
     public async Task<IActionResult> Index(
         string? buscar,
-        int? categoriaId)
+        int? categoriaId,
+        int? etiquetaId)
     {
         var temas = await _temaService.ObtenerFeedAsync(
             buscar,
-            categoriaId);
+            categoriaId,
+            etiquetaId);
 
         var categorias = await _temaService.ObtenerCategoriasAsync();
+        var etiquetas = await _temaEtiquetaService.ObtenerEtiquetasAsync();
+        var etiquetaSeleccionada = etiquetas.FirstOrDefault(e =>
+            e.EtiquetaId == etiquetaId);
 
         var viewModel = new ForoIndexViewModel
         {
+            EtiquetaId = etiquetaId, // se asigna el Id de la etiqueta seleccionada al ViewModel
+            EtiquetaNombre =
+            etiquetaSeleccionada?.Nombre,
             Buscar = buscar,
             CategoriaId = categoriaId,
 

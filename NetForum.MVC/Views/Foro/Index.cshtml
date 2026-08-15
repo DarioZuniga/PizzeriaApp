@@ -26,7 +26,7 @@
         </a>
     </div>
 
-    <div class="dashboard-panel mb-4">
+    <div class="dashboard-panel mb-4"> 
         <form asp-controller="Foro"
               asp-action="Index"
               method="get"
@@ -83,7 +83,8 @@
             </div>
 
             @if (!string.IsNullOrWhiteSpace(Model.Buscar)
-                || Model.CategoriaId.HasValue)
+                     || Model.CategoriaId.HasValue
+                     || Model.EtiquetaId.HasValue)
             {
                 <div class="col-12">
                     <a asp-controller="Foro"
@@ -91,6 +92,34 @@
                        class="btn btn-outline-light btn-sm">
                         <i class="fa-solid fa-xmark me-1"></i>
                         Limpiar filtros
+                    </a>
+                </div>
+            }
+
+            @if (Model.EtiquetaId.HasValue) //PANEL DE FILTROS ACTIVOS PARA ETIQUETAS
+            {
+                <div class="alert alert-dark border border-success
+                    d-flex flex-wrap justify-content-between
+                    align-items-center gap-3">
+
+                    <div>
+                        <i class="fa-solid fa-filter text-success me-2"></i>
+
+                        Mostrando publicaciones con:
+
+                        <strong class="text-success">
+                            #@Model.EtiquetaNombre
+                        </strong>
+                    </div>
+
+                    <a asp-controller="Foro"
+                       asp-action="Index"
+                       asp-route-buscar="@Model.Buscar"
+                       asp-route-categoriaId="@Model.CategoriaId"
+                       class="btn btn-outline-success btn-sm">
+
+                        <i class="fa-solid fa-xmark me-1"></i>
+                        Quitar etiqueta
                     </a>
                 </div>
             }
@@ -161,10 +190,14 @@
                             <div class="d-flex flex-wrap gap-2 mb-4">
                                 @foreach (var etiqueta in tema.Etiquetas)
                                 {
-                                    <span class="foro-tag">
+                                    <a asp-controller="Foro"
+                                       asp-action="Index"
+                                       asp-route-etiquetaId="@etiqueta.EtiquetaId"
+                                       class="foro-tag text-decoration-none">
+
                                         <i class="fa-solid fa-tag me-1"></i>
                                         #@etiqueta.Nombre
-                                    </span>
+                                    </a>
                                 }
                             </div>
                         }

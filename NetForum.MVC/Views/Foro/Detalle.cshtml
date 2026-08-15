@@ -78,6 +78,18 @@
                         }
                     </div>
                 }
+
+                @if (Model.EsPropietario)
+                {
+                    <a asp-controller="Foro"
+                       asp-action="Editar"
+                       asp-route-id="@Model.TemaId"
+                       class="btn btn-outline-warning btn-sm">
+
+                        <i class="fa-solid fa-pen-to-square me-1"></i>
+                        Editar
+                    </a>
+                }
             </div>
 
             <span class="text-secondary small">

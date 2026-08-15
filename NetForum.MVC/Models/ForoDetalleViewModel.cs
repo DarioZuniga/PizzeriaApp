@@ -19,5 +19,6 @@ public class ForoDetalleViewModel
     public IEnumerable<ForoEtiquetaViewModel> Etiquetas { get; set; } // Almacenar una lista de etiquetas
                                                                       // asociadas al tema del foro
     = Enumerable.Empty<ForoEtiquetaViewModel>();
+    public bool EsPropietario { get; set; } // botón DE Editar solamente al propietario
 
 }

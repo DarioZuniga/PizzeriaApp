@@ -122,8 +122,11 @@ public class ForoController : Controller
 
         int.TryParse(usuarioIdTexto, out var usuarioId);
 
-        var viewModel = new ForoDetalleViewModel
-        {
+        var viewModel = new ForoDetalleViewModel // Se construye el ViewModel con los detalles del tema,
+                                                 // incluyendo información sobre el autor, categoría, estado,
+                                                 // fecha de creación, cantidad de reacciones, etiquetas asociadas,
+                                                 // reacciones y respuestas.
+        {  //iniciador de objetos para crear una instancia de ForoDetalleViewModel y asignar valores a sus propiedades
             TemaId = tema.TemaId,
             Titulo = tema.Titulo,
             Contenido = tema.Contenido,
@@ -131,9 +134,12 @@ public class ForoController : Controller
             Categoria = tema.Categoria.Nombre,
             Estado = tema.Estado.Nombre,
             FechaCreacion = tema.FechaCreacion,
-            CantidadReacciones = reaccionesTema.Count(),
+            CantidadReacciones = reaccionesTema.Count(), 
 
-            Etiquetas = tema.TemaEtiquetas
+            EsPropietario = usuarioId > 0 && tema.UsuarioId == usuarioId, // Se determina si el usuario autenticado
+                                                                          // es el propietario del tema.
+
+            Etiquetas = tema.TemaEtiquetas  // Mapeo de Etiquetas
                 .Select(te => new ForoEtiquetaViewModel
     {
         EtiquetaId = te.EtiquetaId,
@@ -142,8 +148,7 @@ public class ForoController : Controller
                 .OrderBy(e => e.Nombre)
                 .ToList(),
 
-            Reacciones = tiposReaccion.Select(tipo =>
-    new ForoTipoReaccionViewModel
+            Reacciones = tiposReaccion.Select(tipo => new ForoTipoReaccionViewModel // Mapeo de Reacciones
     {
         TipoReaccionId = tipo.TipoReaccionId,
         Nombre = tipo.Nombre,
@@ -158,7 +163,7 @@ public class ForoController : Controller
                 r.UsuarioId == usuarioId)
     }),
 
-            Respuestas = tema.Respuestas
+            Respuestas = tema.Respuestas  // Mapeo de Respuestas
                 .OrderBy(r => r.FechaCreacion)
                 .Select(r => new ForoRespuestaViewModel
                 {
@@ -490,6 +495,139 @@ public class ForoController : Controller
             });
         }
         catch (InvalidOperationException ex)
+        {
+            return BadRequest(new
+            {
+                success = false,
+                message = ex.Message
+            });
+        }
+    }
+    [HttpGet]
+    public async Task<IActionResult> Editar(int id) // al editar las etiquetas actuales aparezcan seleccionadas.
+    {
+        var usuarioIdTexto =
+            User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (!int.TryParse(usuarioIdTexto, out var usuarioId))
+        {
+            return Unauthorized();
+        }
+
+        var tema = await _temaService.ObtenerDetalleAsync(id);
+
+        if (tema is null)
+        {
+            return NotFound();
+        }
+
+        if (tema.UsuarioId != usuarioId)
+        {
+            return Forbid();
+        }
+
+        var categorias =
+            await _temaService.ObtenerCategoriasAsync();
+
+        var etiquetas =
+            await _temaEtiquetaService.ObtenerEtiquetasAsync();
+
+        var etiquetasTema =
+            await _temaEtiquetaService.ObtenerPorTemaAsync(id);
+
+        ViewBag.Categorias = categorias
+            .Select(c => new SelectListItem
+            {
+                Value = c.CategoriaId.ToString(),
+                Text = c.Nombre
+            })
+            .ToList();
+
+        ViewBag.Etiquetas = etiquetas;
+
+        var model = new EditarTemaForoViewModel
+        {
+            TemaId = tema.TemaId,
+            CategoriaId = tema.CategoriaId,
+            Titulo = tema.Titulo,
+            Contenido = tema.Contenido,
+
+            EtiquetaIds = etiquetasTema
+                .Select(te => te.EtiquetaId)
+                .ToList()
+        };
+
+        return View(model);
+    }
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EditarAjax( // acción AJAX para editar un tema en el foro,
+                                                 // que recibe los datos del tema y los valida
+    EditarTemaForoViewModel viewModel)
+    {
+        if (!ModelState.IsValid)
+        {
+            var mensaje = ModelState.Values
+                .SelectMany(v => v.Errors)
+                .Select(e => e.ErrorMessage)
+                .FirstOrDefault();
+
+            return BadRequest(new
+            {
+                success = false,
+                message = mensaje ?? "Los datos enviados no son válidos."
+            });
+        }
+
+        var usuarioIdTexto =
+            User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (!int.TryParse(usuarioIdTexto, out var usuarioId))
+        {
+            return Unauthorized(new
+            {
+                success = false,
+                message = "No fue posible identificar al usuario."
+            });
+        }
+
+        try
+        {
+            await _temaService.ActualizarTemaForoAsync(
+                viewModel.TemaId,
+                usuarioId,
+                viewModel.CategoriaId,
+                viewModel.Titulo,
+                viewModel.Contenido);
+
+            await _temaEtiquetaService.ReemplazarEtiquetasAsync(
+                viewModel.TemaId,
+                viewModel.EtiquetaIds);
+
+            return Json(new
+            {
+                success = true,
+                message = "Publicación actualizada correctamente.",
+                temaId = viewModel.TemaId
+            });
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return StatusCode(403, new
+            {
+                success = false,
+                message = "No tiene permisos para modificar esta publicación."
+            });
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new
+            {
+                success = false,
+                message = ex.Message
+            });
+        }
+        catch (ArgumentException ex)
         {
             return BadRequest(new
             {

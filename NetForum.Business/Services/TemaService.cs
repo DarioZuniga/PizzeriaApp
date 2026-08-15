@@ -68,7 +68,7 @@ public class TemaService : ITemaService
         return await _repository.ObtenerCategoriasAsync();
     }
 
-    public async Task<Tema> CrearTemaForoAsync(
+    public async Task<Tema> CrearTemaForoAsync( 
     int usuarioId,
     int categoriaId,
     string titulo,
@@ -130,5 +130,51 @@ public class TemaService : ITemaService
         };
 
         return await _repository.AddAsync(tema);
+    }
+    public async Task ActualizarTemaForoAsync( //método para actualizar un tema del foro, con validaciones
+                                               //de permisos y datos
+    int temaId,
+    int usuarioId,
+    int categoriaId,
+    string titulo,
+    string contenido)
+    {
+        var tema = await _repository.GetByIdAsync(temaId);
+
+        if (tema is null)
+        {
+            throw new KeyNotFoundException(
+                "El tema no existe.");
+        }
+
+        if (tema.UsuarioId != usuarioId)
+        {
+            throw new UnauthorizedAccessException(  //Seguridad: Validación de permisos para modificar un tema 
+                "No tiene permisos para modificar este tema.");
+        }
+
+        if (categoriaId <= 0)
+        {
+            throw new ArgumentException(
+                "La categoría seleccionada no es válida.");
+        }
+
+        if (string.IsNullOrWhiteSpace(titulo))
+        {
+            throw new ArgumentException(
+                "El título es obligatorio.");
+        }
+
+        if (string.IsNullOrWhiteSpace(contenido))
+        {
+            throw new ArgumentException(
+                "El contenido es obligatorio.");
+        }
+
+        tema.CategoriaId = categoriaId;
+        tema.Titulo = titulo.Trim();
+        tema.Contenido = contenido.Trim();
+
+        await _repository.UpdateAsync(tema);
     }
 }

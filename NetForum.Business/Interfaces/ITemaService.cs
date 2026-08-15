@@ -34,4 +34,11 @@ public interface ITemaService
     int categoriaId,
     string titulo,
     string contenido);
+
+    Task ActualizarTemaForoAsync(
+    int temaId,
+    int usuarioId,
+    int categoriaId,
+    string titulo,
+    string contenido);
 }

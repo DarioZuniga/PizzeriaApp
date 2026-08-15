@@ -114,6 +114,10 @@
             .footer-badge {
                 font-size: 0.75rem;
             }
+
+            .max-w-md {
+                max-width: 400px; 
+            }
     </style>
 
     @* Permite inyectar CSS específico desde otras vistas si lo necesitas *@
@@ -132,8 +136,11 @@
                 </a>
 
                 <div class="collapse navbar-collapse d-flex justify-content-between">
-                    <div class="mx-auto d-none d-md-block search-input-container">
-                        <input type="text" class="form-control text-white border-0 py-2 small search-input" placeholder="Foro Futbolero - NetForum" disabled>
+                    <div class="search-input-container w-100 max-w-md d-none d-md-block">
+                        <input type="text"
+                               class="form-control text-white border-0 py-2 small search-input text-center"
+                               placeholder="BIENVENIDOS AL FORO"
+                               disabled>
                     </div>
 
                     <ul class="navbar-nav gap-4 align-items-center mb-0">

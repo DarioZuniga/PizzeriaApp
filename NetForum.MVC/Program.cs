@@ -104,6 +104,60 @@ namespace NetForum.MVC
                 pattern: "{controller=Home}/{action=Index}/{id?}");
 
             app.Run();
+
+            // API de fútbol, aquí se configura el cliente HTTP para consumir la API externa de fútbol,
+            // utilizando la URL base y la clave de API desde la configuración.
+
+             builder.Services.AddHttpClient<IFootballApiService, FootballApiService>(
+    client =>
+    {
+        var baseUrl =
+            builder.Configuration["FootballApi:BaseUrl"];
+
+        var apiKey =
+            builder.Configuration["FootballApi:ApiKey"];
+
+        if (string.IsNullOrWhiteSpace(baseUrl))
+        {
+            throw new InvalidOperationException(
+                "FootballApi:BaseUrl no está configurado.");
         }
+
+        if (string.IsNullOrWhiteSpace(apiKey))
+        {
+            throw new InvalidOperationException(
+                "FootballApi:ApiKey no está configurado.");
+        }
+
+        client.BaseAddress =
+            new Uri(baseUrl);
+
+        client.DefaultRequestHeaders.Add(
+            "X-Auth-Token",
+            apiKey);
+    });
+        }
+
     }
 }
+
+/*Registro de un Typed Client (Cliente Tipado) mediante HttpClientFactory e Inyección de Dependencias en el archivo Program.cs.
+¿Qué hace exactamento este código?
+
+    Registra el servicio en el contenedor de dependencias (DI):
+    Vincula la interfaz IFootballApiService con su implementación concreta FootballApiService, gestionando automáticamente el ciclo de vida del HttpClient.
+
+    Lee la configuración (appsettings.json):
+    Extrae la URL base (FootballApi:BaseUrl) y la clave de acceso (FootballApi:ApiKey) de tu archivo de configuración.
+
+    Aplica validaciones de seguridad:
+    Verifica si los valores existen. Si faltan la URL o la API Key, detiene la aplicación inmediatamente lanzando un InvalidOperationException para evitar fallos silenciosos 
+en ejecución.
+
+    Configura el cliente HTTP:
+
+        BaseAddress: Establece la URL raíz para que todas las peticiones desde el servicio utilicen esa base
+(ej. [https://api.football-data.org/v4/](https://api.football-data.org/v4/)).
+
+   DefaultRequestHeaders: Agrega automáticamente el encabezado de autenticación X-Auth-Token
+   con tu clave de API a todas las solicitudes salientes que realice este servicio.*/

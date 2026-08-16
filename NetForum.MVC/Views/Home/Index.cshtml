@@ -20,22 +20,19 @@
                 Debate partidos, fichajes, polémicas, jugadores, ligas y todo lo que mueve al mundo del fútbol.
             </p>
 
-           <a asp-controller="Foro"
-   asp-action="Index"
-   class="btn btn-football px-4 py-2 fw-bold">
+            <a asp-controller="Foro"
+               asp-action="Index"
+               class="btn btn-football px-4 py-2 fw-bold">
+                <i class="fa-solid fa-fire me-2"></i>
+                Explorar Temas
+            </a>
 
-    <i class="fa-solid fa-fire me-2"></i>
-    Explorar Temas
-</a>
-
-<a asp-controller="Foro"
-   asp-action="Crear"
-   class="btn btn-outline-light px-4 py-2 fw-bold">
-
-    <i class="fa-solid fa-plus me-2"></i>
-    Crear Tema
-</a>
-            </div>
+            <a asp-controller="Foro"
+               asp-action="Crear"
+               class="btn btn-outline-light px-4 py-2 fw-bold">
+                <i class="fa-solid fa-plus me-2"></i>
+                Crear Tema
+            </a>
         </div>
     </section>
 
@@ -100,69 +97,69 @@
                     </span>
                 </div>
 
-               @if (!Model.TemasDestacados.Any())
-{
-                 <div class="text-center py-5">
-                 <i class="fa-regular fa-comments fa-3x text-secondary mb-3"></i>
+                @if (!Model.TemasDestacados.Any())
+                {
+                    <div class="text-center py-5">
+                        <i class="fa-regular fa-comments fa-3x text-secondary mb-3"></i>
 
-                     <h5 class="text-white fw-bold">
-                                       Aún no hay temas destacados
-                 </h5>
+                        <h5 class="text-white fw-bold">
+                            Aún no hay temas destacados
+                        </h5>
 
-                      <p class="text-secondary mb-0">
-                                          Las conversaciones más activas aparecerán aquí.
-                             </p>
-                      </div>
+                        <p class="text-secondary mb-0">
+                            Las conversaciones más activas aparecerán aquí.
+                        </p>
+                    </div>
+                }
+                else
+                {
+                    @foreach (var tema in Model.TemasDestacados)
+                    {
+                        <a asp-controller="Foro"
+                           asp-action="Detalle"
+                           asp-route-id="@tema.TemaId"
+                           class="topic-card text-decoration-none">
+
+                            <div class="topic-avatar bg-success">
+                                @tema.Iniciales
+                            </div>
+
+                            <div class="flex-grow-1">
+
+                                <h5 class="text-white fw-bold mb-1">
+                                    @tema.Titulo
+                                </h5>
+
+                                <p class="text-secondary mb-2">
+                                    @tema.Resumen
+                                </p>
+
+                                <div class="d-flex flex-wrap gap-3 small text-secondary">
+
+                                    <span>
+                                        <i class="fa-solid fa-comment me-1"></i>
+                                        @tema.CantidadRespuestas
+                                        respuestas
+                                    </span>
+
+                                    <span>
+                                        <i class="fa-solid fa-heart me-1"></i>
+                                        @tema.CantidadReacciones
+                                        reacciones
+                                    </span>
+
+                                    <span>
+                                        <i class="fa-solid fa-clock me-1"></i>
+                                        @tema.FechaCreacion.ToString("dd/MM/yyyy HH:mm")
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </a>
                     }
-                        else
-           {
-                 @foreach (var tema in Model.TemasDestacados)
-             {
-                 <a asp-controller="Foro"
-                  asp-action="Detalle"
-                  asp-route-id="@tema.TemaId"
-                    class="topic-card text-decoration-none">
-
-               <div class="topic-avatar bg-success">
-                @tema.Iniciales
-               </div>
-
-               <div class="flex-grow-1">
-
-                <h5 class="text-white fw-bold mb-1">
-                    @tema.Titulo
-                </h5>
-
-                <p class="text-secondary mb-2">
-                    @tema.Resumen
-                </p>
-
-                <div class="d-flex flex-wrap gap-3 small text-secondary">
-
-                    <span>
-                        <i class="fa-solid fa-comment me-1"></i>
-                        @tema.CantidadRespuestas
-                        respuestas
-                    </span>
-
-                    <span>
-                        <i class="fa-solid fa-heart me-1"></i>
-                        @tema.CantidadReacciones
-                        reacciones
-                    </span>
-
-                    <span>
-                        <i class="fa-solid fa-clock me-1"></i>
-                        @tema.FechaCreacion.ToString("dd/MM/yyyy HH:mm")
-                    </span>
-
-                </div>
-
-            </div>
-
-        </a>
-    }
-}
+                }
 
             </div>
         </div>
@@ -200,103 +197,99 @@
                 </div>
             </div>
         </div>
+
         <!-- renderiza la tarjeta de los próximos partidos en la interfaz de usuario.-->
         <div class="dashboard-panel mt-4">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h4 class="fw-bold text-white mb-1">
-                <i class="fa-solid fa-futbol text-success me-2"></i>
-                Próximos partidos
-            </h4>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h4 class="fw-bold text-white mb-1">
+                        <i class="fa-solid fa-futbol text-success me-2"></i>
+                        Próximos partidos
+                    </h4>
 
-            <p class="text-secondary mb-0">
-                Calendario futbolístico actualizado
-            </p>
-        </div>
+                    <p class="text-secondary mb-0">
+                        Calendario futbolístico actualizado
+                    </p>
+                </div>
 
-        <span class="badge bg-dark border border-social text-success">
-            Football Data
-        </span>
-    </div>
+                <span class="badge bg-dark border border-social text-success">
+                    Football Data
+                </span>
+            </div>
 
-    @if (!Model.ProximosPartidos.Any())
-    {
-        <div class="text-center py-4 text-secondary">
-            No hay próximos partidos disponibles.
-        </div>
-    }
-    else
-    {
-        <div class="d-flex flex-column gap-3">
-
-            @foreach (var partido in Model.ProximosPartidos)
+            @if (!Model.ProximosPartidos.Any())
             {
-                <div class="match-card">
+                <div class="text-center py-4 text-secondary">
+                    No hay próximos partidos disponibles.
+                </div>
+            }
+            else
+            {
+                <div class="d-flex flex-column gap-3">
 
-                    <div class="text-secondary small mb-2">
-                        @partido.Competicion
-                    </div>
+                    @foreach (var partido in Model.ProximosPartidos)
+                    {
+                        <div class="match-card">
 
-                    <div class="row align-items-center">
-
-                        <div class="col text-end">
-                            @if (!string.IsNullOrWhiteSpace(
-                                partido.EscudoLocal))
-                            {
-                                <img src="@partido.EscudoLocal"
-                                     alt="@partido.Local"
-                                     width="32"
-                                     height="32"
-                                     class="me-2" />
-                            }
-
-                            <span class="text-white fw-semibold">
-                                @partido.Local
-                            </span>
-                        </div>
-
-                        <div class="col-auto text-center">
-                            <div class="fw-bold text-success">
-                                VS
+                            <div class="text-secondary small mb-2">
+                                @partido.Competicion
                             </div>
 
-                            <div class="small text-secondary">
-                                @partido.FechaUtc
-                                    .ToLocalTime()
-                                    .ToString("dd/MM/yyyy HH:mm")
+                            <div class="row align-items-center">
+
+                                <div class="col text-end">
+                                    @if (!string.IsNullOrWhiteSpace(partido.EscudoLocal))
+                                    {
+                                        <img src="@partido.EscudoLocal"
+                                             alt="@partido.Local"
+                                             width="32"
+                                             height="32"
+                                             class="me-2" />
+                                    }
+
+                                    <span class="text-white fw-semibold">
+                                        @partido.Local
+                                    </span>
+                                </div>
+
+                                <div class="col-auto text-center">
+                                    <div class="fw-bold text-success">
+                                        VS
+                                    </div>
+
+                                    @(partido.FechaUtc
+                                        .ToLocalTime()
+                                        .ToString("dd/MM/yyyy HH:mm"))
+                                </div>
+
+                                <div class="col">
+                                    @if (!string.IsNullOrWhiteSpace(partido.EscudoVisitante))
+                                    {
+                                        <img src="@partido.EscudoVisitante"
+                                             alt="@partido.Visitante"
+                                             width="32"
+                                             height="32"
+                                             class="me-2" />
+                                    }
+
+                                    <span class="text-white fw-semibold">
+                                        @partido.Visitante
+                                    </span>
+                                </div>
+
                             </div>
+
                         </div>
-
-                        <div class="col">
-                            @if (!string.IsNullOrWhiteSpace(
-                                partido.EscudoVisitante))
-                            {
-                                <img src="@partido.EscudoVisitante"
-                                     alt="@partido.Visitante"
-                                     width="32"
-                                     height="32"
-                                     class="me-2" />
-                            }
-
-                            <span class="text-white fw-semibold">
-                                @partido.Visitante
-                            </span>
-                        </div>
-
-                    </div>
+                    }
 
                 </div>
             }
 
+            <div class="text-secondary small mt-4">
+                Data provided by football-data.org
+            </div>
         </div>
-    }
-
-    <div class="text-secondary small mt-4">
-        Data provided by football-data.org
-    </div>
-
-</div>
 
     </section>
 </div>

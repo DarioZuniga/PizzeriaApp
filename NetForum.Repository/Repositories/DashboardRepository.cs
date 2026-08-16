@@ -58,7 +58,7 @@ public class DashboardRepository : IDashboardRepository
             .OrderByDescending(t => // ordenar por la suma de respuestas y reacciones
                 t.Respuestas.Count + t.Reacciones.Count)
             .ThenByDescending(t => t.FechaCreacion) // en caso de empate, ordenar por fecha de creación
-            .Take(3) // tomar solo los 3 primeros resultados
+            .Take(4) // tomar solo los 3 primeros resultados
             .ToListAsync(); // ejecutar la consulta de manera asíncrona y devolver la lista de temas
     }
 }

@@ -98,9 +98,8 @@
                             Título
                         </label>
 
-                        <input type="text"
+                        <input asp-for="Titulo"
                                id="tituloTema"
-                               name="Titulo"
                                maxlength="200"
                                class="form-control bg-dark text-white border-secondary"
                                placeholder="Escribe un título claro y descriptivo" />
@@ -122,12 +121,12 @@
                             Contenido
                         </label>
 
-                        <textarea id="contenidoTema"
-                                  name="Contenido"
-                                  maxlength="10000"
-                                  rows="12"
-                                  class="form-control bg-dark text-white border-secondary"
-                                  placeholder="Desarrolla aquí tu publicación..."></textarea>
+                        <<textarea asp-for="Contenido"
+                                       id="contenidoTema"
+                                       maxlength="10000"
+                                       rows="12"
+                                       class="form-control bg-dark text-white border-secondary"
+                                       placeholder="Desarrolla aquí tu publicación..."></textarea>
 
                         <div class="d-flex justify-content-between mt-2">
                             <span id="contenidoError"

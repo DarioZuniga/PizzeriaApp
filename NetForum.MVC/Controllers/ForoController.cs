@@ -279,8 +279,10 @@ public class ForoController : Controller
     // acción AJAX para crear un nuevo tema en el foro, que obtiene las categorías disponibles
     // y muestra un formulario para crear el tema.
     [HttpGet]
-    public async Task<IActionResult> Crear() // acción AJAX para crear un nuevo tema en el foro,
+    public async Task<IActionResult> Crear( // acción AJAX para crear un nuevo tema en el foro,
                                              // que obtiene las categorías disponibles
+    string? titulo,
+    string? contenido)
     {
         var categorias =
             await _temaService.ObtenerCategoriasAsync();
@@ -298,8 +300,15 @@ public class ForoController : Controller
 
         ViewBag.Etiquetas = etiquetas;
 
-        return View(new CrearTemaForoViewModel());
+        var model = new CrearTemaForoViewModel
+        {
+            Titulo = titulo ?? string.Empty,
+            Contenido = contenido ?? string.Empty
+        };
+
+        return View(model);
     }
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> CrearAjax( // acción AJAX para crear un nuevo tema en el foro, que recibe los datos

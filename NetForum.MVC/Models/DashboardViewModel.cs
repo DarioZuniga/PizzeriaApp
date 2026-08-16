@@ -17,6 +17,11 @@ public class DashboardViewModel
 
     public string NombreUsuario { get; set; } = string.Empty;
 
-    public IEnumerable<TemaDestacadoViewModel> TemasDestacados { get; set; }
+    public IEnumerable<TemaDestacadoViewModel> TemasDestacados { get; set; } // función: transporta la información de los
+                                                                             // temas destacados hacia la vista
         = Enumerable.Empty<TemaDestacadoViewModel>();
+
+    public IEnumerable<PartidoProximoViewModel> ProximosPartidos { get; set; } // función: transporta la información
+                                                                               // de los próximos partidos hacia la vista
+    = Enumerable.Empty<PartidoProximoViewModel>();
 }

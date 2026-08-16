@@ -1,4 +1,5 @@
 ﻿using NetForum.Business.Interfaces;
+using NetForum.Data.Entities;
 using NetForum.Repository.Interfaces;
 
 namespace NetForum.Business.Services;
@@ -35,8 +36,12 @@ public class DashboardService : IDashboardService
         return await _dashboardRepository.ContarEquiposAsync();
     }
 
-    public async Task<int> ContarLigasAsync()
+    public async Task<int> ContarLigasAsync() 
     {
         return await _dashboardRepository.ContarLigasAsync();
+    }
+    public async Task<IEnumerable<Tema>> ObtenerTemasDestacadosAsync() // DP: Service Layer Pattern
+    {
+        return await _dashboardRepository.ObtenerTemasDestacadosAsync();
     }
 }

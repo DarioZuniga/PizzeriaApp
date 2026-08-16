@@ -1,4 +1,6 @@
 ﻿
+using NetForum.Data.Entities;
+
 namespace NetForum.Business.Interfaces;
 
 // DP: Service Layer Pattern
@@ -14,4 +16,5 @@ public interface IDashboardService
     Task<int> ContarEquiposAsync();
 
     Task<int> ContarLigasAsync();
+    Task<IEnumerable<Tema>> ObtenerTemasDestacadosAsync();
 }

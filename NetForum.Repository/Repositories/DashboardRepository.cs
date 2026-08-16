@@ -5,6 +5,7 @@
 
 using Microsoft.EntityFrameworkCore;
 using NetForum.Data;
+using NetForum.Data.Entities;
 using NetForum.Repository.Interfaces;
 
 namespace NetForum.Repository.Repositories;
@@ -46,5 +47,18 @@ public class DashboardRepository : IDashboardRepository
     public async Task<int> ContarLigasAsync()
     {
         return await _context.Ligas.CountAsync();
+    }
+    public async Task<IEnumerable<Tema>> ObtenerTemasDestacadosAsync() // método para obtener los temas más destacados
+                                                                       // según la cantidad de respuestas y reacciones
+    {
+        return await _context.Temas // consultar la tabla de Temas
+            .AsNoTracking() // no se necesita seguimiento de cambios, ya que solo se van a leer los datos
+            .Include(t => t.Respuestas)
+            .Include(t => t.Reacciones)
+            .OrderByDescending(t => // ordenar por la suma de respuestas y reacciones
+                t.Respuestas.Count + t.Reacciones.Count)
+            .ThenByDescending(t => t.FechaCreacion) // en caso de empate, ordenar por fecha de creación
+            .Take(3) // tomar solo los 3 primeros resultados
+            .ToListAsync(); // ejecutar la consulta de manera asíncrona y devolver la lista de temas
     }
 }

@@ -100,68 +100,69 @@
                     </span>
                 </div>
 
-                <div class="topic-card">
-                    <div class="topic-avatar bg-success">
-                        RM
-                    </div>
+               @if (!Model.TemasDestacados.Any())
+{
+                 <div class="text-center py-5">
+                 <i class="fa-regular fa-comments fa-3x text-secondary mb-3"></i>
 
-                    <div class="flex-grow-1">
-                        <h5 class="text-white fw-bold mb-1">
-                            ¿Real Madrid es favorito para ganar la Champions?
-                        </h5>
-                        <p class="text-secondary mb-2">
-                            Debate sobre plantilla, calendario, fichajes y rendimiento europeo.
-                        </p>
+                     <h5 class="text-white fw-bold">
+                                       Aún no hay temas destacados
+                 </h5>
 
-                        <div class="d-flex gap-3 small text-secondary">
-                            <span><i class="fa-solid fa-comment me-1"></i> 32 respuestas</span>
-                            <span><i class="fa-solid fa-heart me-1"></i> 88 reacciones</span>
-                            <span><i class="fa-solid fa-clock me-1"></i> Hace 18 min</span>
-                        </div>
-                    </div>
+                      <p class="text-secondary mb-0">
+                                          Las conversaciones más activas aparecerán aquí.
+                             </p>
+                      </div>
+                    }
+                        else
+           {
+                 @foreach (var tema in Model.TemasDestacados)
+             {
+                 <a asp-controller="Foro"
+                  asp-action="Detalle"
+                  asp-route-id="@tema.TemaId"
+                    class="topic-card text-decoration-none">
+
+               <div class="topic-avatar bg-success">
+                @tema.Iniciales
+               </div>
+
+               <div class="flex-grow-1">
+
+                <h5 class="text-white fw-bold mb-1">
+                    @tema.Titulo
+                </h5>
+
+                <p class="text-secondary mb-2">
+                    @tema.Resumen
+                </p>
+
+                <div class="d-flex flex-wrap gap-3 small text-secondary">
+
+                    <span>
+                        <i class="fa-solid fa-comment me-1"></i>
+                        @tema.CantidadRespuestas
+                        respuestas
+                    </span>
+
+                    <span>
+                        <i class="fa-solid fa-heart me-1"></i>
+                        @tema.CantidadReacciones
+                        reacciones
+                    </span>
+
+                    <span>
+                        <i class="fa-solid fa-clock me-1"></i>
+                        @tema.FechaCreacion.ToString("dd/MM/yyyy HH:mm")
+                    </span>
+
                 </div>
 
-                <div class="topic-card">
-                    <div class="topic-avatar bg-warning text-dark">
-                        VAR
-                    </div>
+            </div>
 
-                    <div class="flex-grow-1">
-                        <h5 class="text-white fw-bold mb-1">
-                            ¿El VAR está mejorando o arruinando el fútbol?
-                        </h5>
-                        <p class="text-secondary mb-2">
-                            Una discusión caliente sobre arbitraje, justicia deportiva y emoción.
-                        </p>
-
-                        <div class="d-flex gap-3 small text-secondary">
-                            <span><i class="fa-solid fa-comment me-1"></i> 47 respuestas</span>
-                            <span><i class="fa-solid fa-heart me-1"></i> 120 reacciones</span>
-                            <span><i class="fa-solid fa-clock me-1"></i> Hace 45 min</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="topic-card">
-                    <div class="topic-avatar bg-primary">
-                        CR
-                    </div>
-
-                    <div class="flex-grow-1">
-                        <h5 class="text-white fw-bold mb-1">
-                            Liga Promerica: ¿quién llega más fuerte a semifinales?
-                        </h5>
-                        <p class="text-secondary mb-2">
-                            Opiniones sobre Saprissa, Alajuelense, Herediano y Cartaginés.
-                        </p>
-
-                        <div class="d-flex gap-3 small text-secondary">
-                            <span><i class="fa-solid fa-comment me-1"></i> 21 respuestas</span>
-                            <span><i class="fa-solid fa-heart me-1"></i> 54 reacciones</span>
-                            <span><i class="fa-solid fa-clock me-1"></i> Hace 1 hora</span>
-                        </div>
-                    </div>
-                </div>
+        </a>
+    }
+}
 
             </div>
         </div>

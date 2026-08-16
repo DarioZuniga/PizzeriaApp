@@ -16,4 +16,7 @@ public class DashboardViewModel
     public int TotalLigas { get; set; }
 
     public string NombreUsuario { get; set; } = string.Empty;
+
+    public IEnumerable<TemaDestacadoViewModel> TemasDestacados { get; set; }
+        = Enumerable.Empty<TemaDestacadoViewModel>();
 }

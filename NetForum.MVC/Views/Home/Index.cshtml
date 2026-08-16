@@ -20,16 +20,21 @@
                 Debate partidos, fichajes, polémicas, jugadores, ligas y todo lo que mueve al mundo del fútbol.
             </p>
 
-            <div class="d-flex flex-wrap gap-3">
-                <a class="btn btn-football px-4 py-2 fw-bold" href="#">
-                    <i class="fa-solid fa-fire me-2"></i>
-                    Explorar Temas
-                </a>
+           <a asp-controller="Foro"
+   asp-action="Index"
+   class="btn btn-football px-4 py-2 fw-bold">
 
-                <a class="btn btn-outline-light px-4 py-2 fw-bold" href="#">
-                    <i class="fa-solid fa-plus me-2"></i>
-                    Crear Tema
-                </a>
+    <i class="fa-solid fa-fire me-2"></i>
+    Explorar Temas
+</a>
+
+<a asp-controller="Foro"
+   asp-action="Crear"
+   class="btn btn-outline-light px-4 py-2 fw-bold">
+
+    <i class="fa-solid fa-plus me-2"></i>
+    Crear Tema
+</a>
             </div>
         </div>
     </section>

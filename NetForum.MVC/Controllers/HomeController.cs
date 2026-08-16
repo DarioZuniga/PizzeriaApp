@@ -11,12 +11,18 @@ public class HomeController : Controller
 {
     // SOLID: Dependency Inversion Principle - el controller depende de la abstracción
     private readonly IDashboardService _dashboardService;
+    private readonly IFootballApiService _footballApiService; // función: servicio para obtener los próximos partidos
+                                                              // de fútbol desde una API externa
 
-    public HomeController(IDashboardService dashboardService) // DP: Service Layer Pattern
+       public HomeController(   // constructor del controlador que recibe las dependencias a través de inyección
+                                // de dependencias
+      IDashboardService dashboardService,  // función: servicio para obtener los datos del dashboard desde la capa de negocio
+      IFootballApiService footballApiService) // función: servicio para obtener los próximos partidos de fútbol desde una API externa
     {
-        _dashboardService = dashboardService; // SOLID: Dependency Inversion Principle - inyección de dependencias
+        _dashboardService = dashboardService; 
+        _footballApiService = footballApiService; 
     }
-              
+
     private static string CrearResumen( // método privado para crear un resumen del contenido de un tema,
                                         // limitando la longitud máxima
     string contenido,
@@ -67,6 +73,9 @@ public class HomeController : Controller
     {
         var temasDestacados =
             await _dashboardService.ObtenerTemasDestacadosAsync(); // DP: Service Layer Pattern
+        var proximosPartidos =   // API externa para obtener los próximos partidos de fútbol
+                 await _footballApiService
+                    .ObtenerProximosPartidosAsync(5);
 
         var model = new DashboardViewModel
         {
@@ -111,9 +120,45 @@ public class HomeController : Controller
                     FechaCreacion =
                         t.FechaCreacion
                 })
-                .ToList()
-        };
+                .ToList(),
 
-        return View(model);
+            /*proyección de datos (mapeo) mediante LINQ para convertir los partidos obtenidos de la API en una lista de objetos PartidoProximoViewModel listos para mostrar en la interfaz.
+
+        Puntos clave de lo que hace:
+
+    Proyección con Select: Transforma cada objeto partido (p) de la lista de origen en un nuevo PartidoProximoViewModel.
+
+    Lógica de nombres (Fallback): Evalúa si el equipo tiene un nombre corto (ShortName). Si existe y no está vacío, lo usa; de lo contrario, utiliza el nombre completo (Name).
+
+    Mapeo de atributos: Copia los escudos (Crest), la competición y la fecha en formato UTC.
+
+    Materialización con ToList(): Ejecuta la consulta de LINQ y asigna la lista final a la propiedad ProximosPartidos.*/
+
+            ProximosPartidos = proximosPartidos
+                 .Select(p => new PartidoProximoViewModel
+    {
+                  PartidoId = p.Id,
+                  Competicion = p.Competition.Name,
+
+                  Local = string.IsNullOrWhiteSpace(
+                         p.HomeTeam.ShortName)
+                            ? p.HomeTeam.Name
+                           : p.HomeTeam.ShortName,
+
+                           Visitante = string.IsNullOrWhiteSpace(
+                         p.AwayTeam.ShortName)
+                           ? p.AwayTeam.Name
+                           : p.AwayTeam.ShortName,
+        
+                          EscudoLocal = p.HomeTeam.Crest,
+
+                       EscudoVisitante = p.AwayTeam.Crest,
+
+                       FechaUtc = p.UtcDate
+    })
+                     .ToList(),
+                       };
+
+                         return View(model);
     }
 }

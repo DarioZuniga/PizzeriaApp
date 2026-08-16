@@ -83,6 +83,27 @@ namespace NetForum.MVC
             builder.Services.AddScoped<ITemaEtiquetaRepository,TemaEtiquetaRepository>(); // Dependencias de TemaEtiqueta 
             builder.Services.AddScoped<ITemaEtiquetaService,TemaEtiquetaService>(); // Dependencias de TemaEtiqueta
 
+            //--------------------------------------
+            builder.Services.AddHttpClient<IFootballApiService, FootballApiService>(client =>
+            {
+                var baseUrl = builder.Configuration["FootballApi:BaseUrl"];
+                var apiKey = builder.Configuration["FootballApi:ApiKey"];
+
+                if (string.IsNullOrWhiteSpace(baseUrl))
+                {
+                    throw new InvalidOperationException("FootballApi:BaseUrl no está configurado.");
+                }
+
+                if (string.IsNullOrWhiteSpace(apiKey))
+                {
+                    throw new InvalidOperationException("FootballApi:ApiKey no está configurado.");
+                }
+
+                client.BaseAddress = new Uri(baseUrl);
+                client.DefaultRequestHeaders.Add("X-Auth-Token", apiKey);
+            });
+            //--------------------------------------
+
             var app = builder.Build();
 
             if (!app.Environment.IsDevelopment()) // Configuración de manejo de errores

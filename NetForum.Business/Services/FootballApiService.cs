@@ -17,8 +17,8 @@ public class FootballApiService : IFootballApiService // btener los próximos pa
         ObtenerProximosPartidosAsync(int cantidad = 5)
     {
         var response =
-            await _httpClient.GetFromJsonAsync<FootballMatchesResponse>(
-                "matches");
+     await _httpClient.GetFromJsonAsync<FootballMatchesResponse>(
+         "competitions/PL/matches");
 
         if (response?.Matches is null)
         {

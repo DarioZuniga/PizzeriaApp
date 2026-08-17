@@ -375,3 +375,36 @@ body {
         border-color: rgba(34, 197, 94, .45);
         transform: translateY(-2px);
     }
+
+.resultado-score {
+    min-width: 72px;
+    padding: .45rem .75rem;
+    border-radius: 10px;
+    background: #0F0F12;
+    border: 1px solid #2F2F3A;
+    color: #ffffff;
+    font-size: 1.15rem;
+    font-weight: 800;
+    text-align: center;
+}
+
+.dashboard-chart-container {
+    position: relative;
+    width: 100%;
+    height: 380px;
+}
+
+.dashboard-section-full {
+    width: 100%;
+    margin-bottom: 1.5rem;
+}
+
+    .dashboard-section-full .dashboard-panel {
+        width: 100%;
+    }
+
+@media (max-width: 768px) {
+    .dashboard-chart-container {
+        height: 300px;
+    }
+}

@@ -63,7 +63,7 @@ public class FootballApiService : IFootballApiService // btener los próximos pa
         var response =
             await _httpClient
                 .GetFromJsonAsync<FootballMatchesResponse>(
-                    "competitions/PL/matches?status=FINISHED");
+                    "competitions/CL/matches?status=FINISHED");
 
         if (response?.Matches is null)
         {

@@ -76,9 +76,23 @@ public class HomeController : Controller
         var proximosPartidos =   // API externa para obtener los próximos partidos de fútbol
                  await _footballApiService
                     .ObtenerProximosPartidosAsync(5);
+        var temasPorCategoria =    // función : obtiene la cantidad de temas por categoría desde la capa de negocio
+              await _dashboardService
+                 .ObtenerTemasPorCategoriaAsync();
 
         var model = new DashboardViewModel
         {
+            TemasPorCategoria = temasPorCategoria
+                  .Select(x => new GraficoTemasCategoriaViewModel // proyección de datos (mapeo) mediante LINQ,
+                                                                  // lo que permite transformar los datos obtenidos
+                                                                  // de la capa de negocio en objetos listos
+                                                                  // para mostrar en la vista
+                  {
+                     Categoria = x.Key,
+                        Cantidad = x.Value
+                      })
+                     .ToList(),
+
             NombreUsuario =
                 User.Identity?.Name ?? "Futbolero",
 

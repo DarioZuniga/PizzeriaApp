@@ -1,4 +1,7 @@
 ﻿@model NetForum.MVC.Models.DashboardViewModel
+
+@using System.Text.Json
+
 @{
     ViewData["Title"] = "Dashboard";
     var nombreUsuario = Model.NombreUsuario;
@@ -6,6 +9,7 @@
 
 <div class="container-fluid px-4 py-4">
 
+    <!-- HERO SECTION -->
     <section class="football-hero mb-4">
         <div class="football-hero-content">
             <span class="badge bg-success-subtle text-success border border-success mb-3">
@@ -36,12 +40,13 @@
         </div>
     </section>
 
+    <!-- METRICS CARDS -->
     <section class="row g-4 mb-4">
         <div class="col-xl-3 col-md-6">
             <div class="dashboard-stat-card">
                 <i class="fa-solid fa-users"></i>
                 <div>
-                    <h3>@Model.TotalUsuarios</h3>  @*Con este código el dashboard muestra datos reales desde SQL Server*@
+                    <h3>@Model.TotalUsuarios</h3>
                     <span>Usuarios</span>
                 </div>
             </div>
@@ -51,7 +56,7 @@
             <div class="dashboard-stat-card">
                 <i class="fa-solid fa-comments"></i>
                 <div>
-                    <h3>@Model.TotalTemas</h3>  @*Con este código el dashboard muestra datos reales desde SQL Server*@
+                    <h3>@Model.TotalTemas</h3>
                     <span>Temas</span>
                 </div>
             </div>
@@ -61,7 +66,7 @@
             <div class="dashboard-stat-card">
                 <i class="fa-solid fa-futbol"></i>
                 <div>
-                    <h3>@Model.TotalEquipos</h3>  @*Con este código el dashboard muestra datos reales desde SQL Server*@
+                    <h3>@Model.TotalEquipos</h3>
                     <span>Equipos</span>
                 </div>
             </div>
@@ -71,17 +76,21 @@
             <div class="dashboard-stat-card">
                 <i class="fa-solid fa-trophy"></i>
                 <div>
-                    <h3>@Model.TotalLigas</h3>  @*Con este código el dashboard muestra datos reales desde SQL Server*@
+                    <h3>@Model.TotalLigas</h3>
                     <span>Ligas</span>
                 </div>
             </div>
         </div>
     </section>
 
+    <!-- MAIN CONTENT ROW -->
     <section class="row g-4">
 
+        <!-- COLUMNA IZQUIERDA -->
         <div class="col-lg-8">
-            <div class="dashboard-panel">
+            
+            <!-- Temas Destacados -->
+            <div class="dashboard-panel mb-4">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div>
                         <h4 class="fw-bold text-white mb-1">
@@ -138,14 +147,12 @@
 
                                     <span>
                                         <i class="fa-solid fa-comment me-1"></i>
-                                        @tema.CantidadRespuestas
-                                        respuestas
+                                        @tema.CantidadRespuestas respuestas
                                     </span>
 
                                     <span>
                                         <i class="fa-solid fa-heart me-1"></i>
-                                        @tema.CantidadReacciones
-                                        reacciones
+                                        @tema.CantidadReacciones reacciones
                                     </span>
 
                                     <span>
@@ -162,8 +169,39 @@
                 }
 
             </div>
+
+            <!-- Gráfico: Temas por categoría -->
+            <div class="dashboard-panel">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h4 class="fw-bold text-white mb-1">
+                            <i class="fa-solid fa-chart-column text-success me-2"></i>
+                            Temas por categoría
+                        </h4>
+
+                        <p class="text-secondary mb-0">
+                            Distribución de publicaciones de la comunidad
+                        </p>
+                    </div>
+                </div>
+
+                @if (!Model.TemasPorCategoria.Any())
+                {
+                    <div class="text-center text-secondary py-5">
+                        No existen datos suficientes para mostrar la gráfica.
+                    </div>
+                }
+                else
+                {
+                    <div style="position: relative; height: 350px;">
+                        <canvas id="temasCategoriaChart"></canvas>
+                    </div>
+                }
+            </div>
+
         </div>
 
+        <!-- COLUMNA DERECHA -->
         <div class="col-lg-4">
             <div class="dashboard-panel mb-4">
                 <h5 class="fw-bold text-white mb-3">
@@ -200,7 +238,7 @@
 
     </section>
 
-    <!-- renderiza la tarjeta de los próximos partidos en la interfaz de usuario.-->
+    <!-- PRÓXIMOS PARTIDOS (ANCHO COMPLETO) -->
     <div class="dashboard-panel mt-4">
 
         <div class="d-flex justify-content-between align-items-center mb-4">
@@ -311,3 +349,146 @@
     </div>
 
 </div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    @if (Model.TemasPorCategoria.Any())
+    {
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                // Serializar datos enviando las etiquetas y los valores desde el modelo
+                const labels = @Html.Raw(Json.Serialize(Model.TemasPorCategoria.Select(x => x.Categoria)));
+                const dataValues = @Html.Raw(Json.Serialize(Model.TemasPorCategoria.Select(x => x.Cantidad)));
+
+                const ctx = document.getElementById('temasCategoriaChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar', // Puedes cambiarlo a 'doughnut' o 'pie'
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Cantidad de Temas',
+                            data: dataValues,
+                            backgroundColor: '#198754',
+                            borderColor: '#20c997',
+                            borderWidth: 1,
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: { color: '#a0a0a0', stepSize: 1 },
+                                grid: { color: 'rgba(255, 255, 255, 0.05)' }
+                            },
+                            x: {
+                                ticks: { color: '#a0a0a0' },
+                                grid: { display: false }
+                            }
+                        }
+                    }
+                });
+            });
+        </script>
+
+        <script>
+    document.addEventListener(
+        "DOMContentLoaded",
+        function () {
+
+            const canvas =
+                document.getElementById(
+                    "temasCategoriaChart"
+                );
+
+            if (!canvas) {
+                return;
+            }
+
+            const categorias =
+                @Html.Raw(
+                    JsonSerializer.Serialize(
+                        Model.TemasPorCategoria
+                            .Select(x => x.Categoria)
+                    )
+                );
+
+            const cantidades =
+                @Html.Raw(
+                    JsonSerializer.Serialize(
+                        Model.TemasPorCategoria
+                            .Select(x => x.Cantidad)
+                    )
+                );
+
+            new Chart(
+                canvas,
+                {
+                    type: "bar",
+
+                    data: {
+                        labels: categorias,
+
+                        datasets: [
+                            {
+                                label: "Temas",
+                                data: cantidades,
+                                borderWidth: 1
+                            }
+                        ]
+                    },
+
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: "#E4E4E7"
+                                }
+                            }
+                        },
+
+                        scales: {
+                            x: {
+                                ticks: {
+                                    color: "#A1A1AA"
+                                },
+
+                                grid: {
+                                    color:
+                                        "rgba(255,255,255,0.05)"
+                                }
+                            },
+
+                            y: {
+                                beginAtZero: true,
+
+                                ticks: {
+                                    color: "#A1A1AA",
+                                    precision: 0
+                                },
+
+                                grid: {
+                                    color:
+                                        "rgba(255,255,255,0.05)"
+                                }
+                            }
+                        }
+                    }
+                }
+            );
+        }
+    );
+</script>
+    }
+}

@@ -44,4 +44,10 @@ public class DashboardService : IDashboardService
     {
         return await _dashboardRepository.ObtenerTemasDestacadosAsync();
     }
+    public async Task<Dictionary<string, int>> // método para obtener la cantidad de temas por categoría en el dashboard
+    ObtenerTemasPorCategoriaAsync()
+    {
+        return await _dashboardRepository
+            .ObtenerTemasPorCategoriaAsync();
+    }
 }

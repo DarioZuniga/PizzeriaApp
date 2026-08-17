@@ -61,4 +61,23 @@ public class DashboardRepository : IDashboardRepository
             .Take(4) // tomar solo los 3 primeros resultados
             .ToListAsync(); // ejecutar la consulta de manera asíncrona y devolver la lista de temas
     }
+    public async Task<Dictionary<string, int>> // método para obtener la cantidad de temas por categoría en el dashboard
+    ObtenerTemasPorCategoriaAsync()
+    {
+        var datos = await _context.Temas
+            .AsNoTracking()
+            .GroupBy(t => t.Categoria.Nombre)
+            .Select(grupo => new
+            {
+                Categoria = grupo.Key,
+                Cantidad = grupo.Count()
+            })
+            .OrderByDescending(x => x.Cantidad)
+            .ThenBy(x => x.Categoria)
+            .ToListAsync();
+
+        return datos.ToDictionary(
+            x => x.Categoria,
+            x => x.Cantidad);
+    }
 }

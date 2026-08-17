@@ -24,4 +24,8 @@ public class DashboardViewModel
     public IEnumerable<PartidoProximoViewModel> ProximosPartidos { get; set; } // función: transporta la información
                                                                                // de los próximos partidos hacia la vista
     = Enumerable.Empty<PartidoProximoViewModel>();
+
+    public IEnumerable<GraficoTemasCategoriaViewModel> TemasPorCategoria  { get; set; } // función: transporta la información de los
+                                                                                        // temas por categoría hacia la vista
+        = Enumerable.Empty<GraficoTemasCategoriaViewModel>();
 }

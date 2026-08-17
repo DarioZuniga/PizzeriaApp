@@ -17,4 +17,6 @@ public interface IDashboardService
 
     Task<int> ContarLigasAsync();
     Task<IEnumerable<Tema>> ObtenerTemasDestacadosAsync();
+
+    Task<Dictionary<string, int>> ObtenerTemasPorCategoriaAsync();
 }

@@ -58,7 +58,7 @@ public class FootballApiService : IFootballApiService // btener los próximos pa
         Take(cantidad): Limita el número de resultados según el parámetro cantidad (por defecto, toma los 5 partidos más próximos).*/
 
     public async Task<IEnumerable<FootballMatchDto>>
-    ObtenerUltimosResultadosAsync(int cantidad = 5)      // Dashboad próximos partidos - API 
+    ObtenerUltimosResultadosAsync(int cantidad = 5)      // Dashboad resultados - API 
     {
         var response =
             await _httpClient

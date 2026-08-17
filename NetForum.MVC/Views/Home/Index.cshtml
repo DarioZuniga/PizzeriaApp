@@ -170,38 +170,70 @@
 
             </div>
 
-            <!-- Gráfico: Temas por categoría -->
-            <div class="dashboard-panel">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <div>
-                        <h4 class="fw-bold text-white mb-1">
-                            <i class="fa-solid fa-chart-column text-success me-2"></i>
-                            Temas por categoría
-                        </h4>
+            <!-- FILA GRÁFICOS: TEMAS POR CATEGORÍA Y RESPUESTAS POR DÍA -->
+            <div class="row g-4 mb-4">
 
-                        <p class="text-secondary mb-0">
-                            Distribución de publicaciones de la comunidad
-                        </p>
+                <!-- GRÁFICO: TEMAS POR CATEGORÍA -->
+                <div class="col-md-7">
+                    <div class="dashboard-panel h-100">
+                        <div class="mb-4">
+                            <h4 class="fw-bold text-white mb-1">
+                                <i class="fa-solid fa-chart-column text-success me-2"></i>
+                                Temas por categoría
+                            </h4>
+                            <p class="text-secondary mb-0">
+                                Distribución de publicaciones de la comunidad
+                            </p>
+                        </div>
+
+                        @if (!Model.TemasPorCategoria.Any())
+                        {
+                            <div class="text-center text-secondary py-5">
+                                No existen datos para mostrar.
+                            </div>
+                        }
+                        else
+                        {
+                            <div style="position:relative; height:300px;">
+                                <canvas id="temasCategoriaChart"></canvas>
+                            </div>
+                        }
                     </div>
                 </div>
 
-                @if (!Model.TemasPorCategoria.Any())
-                {
-                    <div class="text-center text-secondary py-5">
-                        No existen datos suficientes para mostrar la gráfica.
+                <!-- GRÁFICO: RESPUESTAS POR DÍA -->
+                <div class="col-md-5">
+                    <div class="dashboard-panel h-100">
+                        <div class="mb-4">
+                            <h4 class="fw-bold text-white mb-1">
+                                <i class="fa-solid fa-chart-line text-success me-2"></i>
+                                Respuestas por día
+                            </h4>
+                            <p class="text-secondary mb-0">
+                                Actividad de los últimos 7 días
+                            </p>
+                        </div>
+
+                        @if (!Model.RespuestasPorDia.Any())
+                        {
+                            <div class="text-center text-secondary py-5">
+                                No existen datos para mostrar.
+                            </div>
+                        }
+                        else
+                        {
+                            <div style="position:relative; height:300px;">
+                                <canvas id="respuestasDiaChart"></canvas>
+                            </div>
+                        }
                     </div>
-                }
-                else
-                {
-                    <div style="position: relative; height: 350px;">
-                        <canvas id="temasCategoriaChart"></canvas>
-                    </div>
-                }
+                </div>
+
             </div>
 
         </div>
 
-        <!-- COLUMNA DERECHA -->
+        <!-- COLUMNA DERECHA (LIGAS POPULARES & ACTIVIDAD) -->
         <div class="col-lg-4">
             <div class="dashboard-panel mb-4">
                 <h5 class="fw-bold text-white mb-3">
@@ -238,7 +270,7 @@
 
     </section>
 
-    <!-- PRÓXIMOS PARTIDOS (ANCHO COMPLETO) -->
+    <!-- PRÓXIMOS PARTIDOS -->
     <div class="dashboard-panel mt-4">
 
         <div class="d-flex justify-content-between align-items-center mb-4">
@@ -298,9 +330,7 @@
                                     VS
                                 </div>
 
-                                @(partido.FechaUtc
-                                    .ToLocalTime()
-                                    .ToString("dd/MM/yyyy HH:mm"))
+                                @partido.FechaUtc.ToLocalTime().ToString("dd/MM/yyyy HH:mm")
                             </div>
 
                             <div class="col">
@@ -321,14 +351,8 @@
                             <div class="mt-3 text-center">
                                 <a asp-controller="Foro"
                                    asp-action="Crear"
-                                   asp-route-titulo="@($"Debate: {partido.Local} vs {partido.Visitante}")"
-                                   asp-route-contenido="@(
-                                       $"¿Qué opinas sobre el partido {partido.Local} vs {partido.Visitante} " +
-                                       $"de {partido.Competicion}? " +
-                                       $"El encuentro está programado para el " +
-                                       $"{partido.FechaUtc.ToLocalTime():dd/MM/yyyy HH:mm}. " +
-                                       $"Comparte tu análisis, pronóstico y opinión sobre este encuentro."
-                                   )"
+                                   asp-route-titulo="Debate: @partido.Local vs @partido.Visitante"
+                                   asp-route-contenido="¿Qué opinas sobre el partido @partido.Local vs @partido.Visitante de @partido.Competicion? El encuentro está programado para el @partido.FechaUtc.ToLocalTime().ToString("dd/MM/yyyy HH:mm"). Comparte tu análisis, pronóstico y opinión sobre este encuentro."
                                    class="btn btn-outline-success btn-sm">
                                     <i class="fa-solid fa-comments me-1"></i>
                                     Debatir partido
@@ -353,24 +377,24 @@
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    @if (Model.TemasPorCategoria.Any())
-    {
-        <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                // Serializar datos enviando las etiquetas y los valores desde el modelo
-                const labels = @Html.Raw(Json.Serialize(Model.TemasPorCategoria.Select(x => x.Categoria)));
-                const dataValues = @Html.Raw(Json.Serialize(Model.TemasPorCategoria.Select(x => x.Cantidad)));
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
 
-                const ctx = document.getElementById('temasCategoriaChart').getContext('2d');
-                new Chart(ctx, {
-                    type: 'bar', // Puedes cambiarlo a 'doughnut' o 'pie'
+            // 1. GRÁFICO TEMAS POR CATEGORÍA
+            const canvasCategoria = document.getElementById("temasCategoriaChart");
+            if (canvasCategoria) {
+                const categorias = @Html.Raw(JsonSerializer.Serialize(Model.TemasPorCategoria.Select(x => x.Categoria)));
+                const cantidadesCat = @Html.Raw(JsonSerializer.Serialize(Model.TemasPorCategoria.Select(x => x.Cantidad)));
+
+                new Chart(canvasCategoria, {
+                    type: "bar",
                     data: {
-                        labels: labels,
+                        labels: categorias,
                         datasets: [{
-                            label: 'Cantidad de Temas',
-                            data: dataValues,
-                            backgroundColor: '#198754',
-                            borderColor: '#20c997',
+                            label: "Temas",
+                            data: cantidadesCat,
+                            backgroundColor: "#198754",
+                            borderColor: "#20c997",
                             borderWidth: 1,
                             borderRadius: 6
                         }]
@@ -379,116 +403,77 @@
                         responsive: true,
                         maintainAspectRatio: false,
                         plugins: {
-                            legend: {
-                                display: false
-                            }
+                            legend: { display: false }
                         },
                         scales: {
+                            x: {
+                                ticks: { color: "#A1A1AA" },
+                                grid: { display: false }
+                            },
                             y: {
                                 beginAtZero: true,
-                                ticks: { color: '#a0a0a0', stepSize: 1 },
-                                grid: { color: 'rgba(255, 255, 255, 0.05)' }
-                            },
-                            x: {
-                                ticks: { color: '#a0a0a0' },
-                                grid: { display: false }
+                                ticks: { color: "#A1A1AA", precision: 0, stepSize: 1 },
+                                grid: { color: "rgba(255,255,255,0.05)" }
                             }
                         }
                     }
                 });
-            });
-        </script>
-
-        <script>
-    document.addEventListener(
-        "DOMContentLoaded",
-        function () {
-
-            const canvas =
-                document.getElementById(
-                    "temasCategoriaChart"
-                );
-
-            if (!canvas) {
-                return;
             }
 
-            const categorias =
-                @Html.Raw(
-                    JsonSerializer.Serialize(
-                        Model.TemasPorCategoria
-                            .Select(x => x.Categoria)
-                    )
-                );
+            // 2. GRÁFICO RESPUESTAS POR DÍA
+            const canvasRespuestas = document.getElementById("respuestasDiaChart");
+            if (canvasRespuestas) {
+                const fechas = @Html.Raw(JsonSerializer.Serialize(Model.RespuestasPorDia.Select(x => x.Fecha.ToString("dd/MM"))));
+                const cantidadesResp = @Html.Raw(JsonSerializer.Serialize(Model.RespuestasPorDia.Select(x => x.Cantidad)));
 
-            const cantidades =
-                @Html.Raw(
-                    JsonSerializer.Serialize(
-                        Model.TemasPorCategoria
-                            .Select(x => x.Cantidad)
-                    )
-                );
-
-            new Chart(
-                canvas,
-                {
-                    type: "bar",
-
+                new Chart(canvasRespuestas, {
+                    type: "line",
                     data: {
-                        labels: categorias,
-
-                        datasets: [
-                            {
-                                label: "Temas",
-                                data: cantidades,
-                                borderWidth: 1
-                            }
-                        ]
+                        labels: fechas,
+                        datasets: [{
+                            label: "Respuestas",
+                            data: cantidadesResp,
+                            borderColor: "#20c997",
+                            backgroundColor: "rgba(32, 201, 151, 0.1)",
+                            borderWidth: 3,
+                            tension: 0.35,
+                            fill: true,
+                            pointRadius: 4,
+                            pointHoverRadius: 6
+                        }]
                     },
-
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-
+                        interaction: {
+                            intersect: false,
+                            mode: "index"
+                        },
                         plugins: {
-                            legend: {
-                                labels: {
-                                    color: "#E4E4E7"
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: function (context) {
+                                        const cantidad = context.parsed.y;
+                                        return cantidad === 1 ? "1 respuesta" : `${cantidad} respuestas`;
+                                    }
                                 }
                             }
                         },
-
                         scales: {
                             x: {
-                                ticks: {
-                                    color: "#A1A1AA"
-                                },
-
-                                grid: {
-                                    color:
-                                        "rgba(255,255,255,0.05)"
-                                }
+                                ticks: { color: "#A1A1AA" },
+                                grid: { display: false }
                             },
-
                             y: {
                                 beginAtZero: true,
-
-                                ticks: {
-                                    color: "#A1A1AA",
-                                    precision: 0
-                                },
-
-                                grid: {
-                                    color:
-                                        "rgba(255,255,255,0.05)"
-                                }
+                                ticks: { color: "#A1A1AA", precision: 0, stepSize: 1 },
+                                grid: { color: "rgba(255,255,255,0.05)" }
                             }
                         }
                     }
-                }
-            );
-        }
-    );
-</script>
-    }
+                });
+            }
+        });
+    </script>
 }

@@ -75,13 +75,26 @@ public class HomeController : Controller
             await _dashboardService.ObtenerTemasDestacadosAsync(); // DP: Service Layer Pattern
         var proximosPartidos =   // API externa para obtener los próximos partidos de fútbol
                  await _footballApiService
-                    .ObtenerProximosPartidosAsync(5);
+              .ObtenerProximosPartidosAsync(5);
         var temasPorCategoria =    // función : obtiene la cantidad de temas por categoría desde la capa de negocio
               await _dashboardService
-                 .ObtenerTemasPorCategoriaAsync();
+             .ObtenerTemasPorCategoriaAsync();
+        var respuestasPorDia = // función : obtiene la cantidad de respuestas por día desde la capa de negocio
+            await _dashboardService
+            .ObtenerRespuestasPorDiaAsync(7);
 
         var model = new DashboardViewModel
         {
+              RespuestasPorDia = respuestasPorDia
+                .Select(x => new GraficoRespuestasDiaViewModel
+             {
+                      Fecha = x.Key,
+                      Cantidad = x.Value
+         })
+                     .OrderBy(x => x.Fecha)
+                     .ToList(),
+
+
             TemasPorCategoria = temasPorCategoria
                   .Select(x => new GraficoTemasCategoriaViewModel // proyección de datos (mapeo) mediante LINQ,
                                                                   // lo que permite transformar los datos obtenidos

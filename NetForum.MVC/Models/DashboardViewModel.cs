@@ -28,4 +28,9 @@ public class DashboardViewModel
     public IEnumerable<GraficoTemasCategoriaViewModel> TemasPorCategoria  { get; set; } // función: transporta la información de los
                                                                                         // temas por categoría hacia la vista
         = Enumerable.Empty<GraficoTemasCategoriaViewModel>();
+
+    public IEnumerable<GraficoRespuestasDiaViewModel> 
+    RespuestasPorDia
+    { get; set; }
+        = Enumerable.Empty<GraficoRespuestasDiaViewModel>();
 }

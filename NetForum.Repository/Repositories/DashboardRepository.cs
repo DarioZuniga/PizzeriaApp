@@ -80,4 +80,47 @@ public class DashboardRepository : IDashboardRepository
             x => x.Categoria,
             x => x.Cantidad);
     }
+
+    public async Task<Dictionary<DateTime, int>> ObtenerRespuestasPorDiaAsync(int dias = 7)
+    {
+        if (dias <= 0)
+        {
+            dias = 7;
+        }
+
+        var hoy = DateTime.Today;
+
+        var fechaInicio = hoy.AddDays(-(dias - 1));
+
+        var fechaFin = hoy.AddDays(1);
+
+        var datos = await _context.Respuestas
+            .AsNoTracking()
+            .Where(r =>
+                r.FechaCreacion >= fechaInicio &&
+                r.FechaCreacion < fechaFin)
+            .GroupBy(r => r.FechaCreacion.Date)
+            .Select(grupo => new
+            {
+                Fecha = grupo.Key,
+                Cantidad = grupo.Count()
+            })
+            .ToListAsync();
+
+        var resultado =
+            new Dictionary<DateTime, int>();
+
+        for (var fecha = fechaInicio;
+             fecha <= hoy;
+             fecha = fecha.AddDays(1))
+        {
+            var cantidad = datos
+                .FirstOrDefault(x => x.Fecha == fecha)
+                ?.Cantidad ?? 0;
+
+            resultado.Add(fecha, cantidad);
+        }
+
+        return resultado;
+    }
 }

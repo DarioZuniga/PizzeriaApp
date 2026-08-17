@@ -50,4 +50,12 @@ public class DashboardService : IDashboardService
         return await _dashboardRepository
             .ObtenerTemasPorCategoriaAsync();
     }
+
+    public async Task<Dictionary<DateTime, int>> ObtenerRespuestasPorDiaAsync(  // metodo para obtener la cantidad
+                                                                                // de respuestas por día en el dashboard
+        int dias = 7)
+    {
+        return await _dashboardRepository
+            .ObtenerRespuestasPorDiaAsync(dias);
+    }
 }

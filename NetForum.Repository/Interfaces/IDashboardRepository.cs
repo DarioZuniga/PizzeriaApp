@@ -7,15 +7,12 @@ namespace NetForum.Repository.Interfaces;
 public interface IDashboardRepository
 {
     Task<int> ContarUsuariosAsync();
-
     Task<int> ContarTemasAsync();
-
     Task<int> ContarRespuestasAsync();
-
     Task<int> ContarEquiposAsync();
-
     Task<int> ContarLigasAsync();
     Task<IEnumerable<Tema>> ObtenerTemasDestacadosAsync();
-
     Task<Dictionary<string, int>> ObtenerTemasPorCategoriaAsync();
+    Task<Dictionary<DateTime, int>> ObtenerRespuestasPorDiaAsync(
+    int dias = 7);
 }

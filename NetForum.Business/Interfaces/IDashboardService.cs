@@ -19,4 +19,8 @@ public interface IDashboardService
     Task<IEnumerable<Tema>> ObtenerTemasDestacadosAsync();
 
     Task<Dictionary<string, int>> ObtenerTemasPorCategoriaAsync();
+
+    Task<Dictionary<DateTime, int>>
+    ObtenerRespuestasPorDiaAsync(
+        int dias = 7);
 }

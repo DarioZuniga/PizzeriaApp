@@ -33,4 +33,9 @@ public class DashboardViewModel
     RespuestasPorDia
     { get; set; }
         = Enumerable.Empty<GraficoRespuestasDiaViewModel>();
+
+    public IEnumerable<ResultadoRecienteViewModel>
+    UltimosResultados
+    { get; set; }
+        = Enumerable.Empty<ResultadoRecienteViewModel>();
 }

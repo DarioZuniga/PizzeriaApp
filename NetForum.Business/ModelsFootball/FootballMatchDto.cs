@@ -13,4 +13,5 @@ public class FootballMatchDto // metodo para representar un partido de fútbol e
     public FootballTeamDto HomeTeam { get; set; } = new();
 
     public FootballTeamDto AwayTeam { get; set; } = new();
+    public FootballScoreDto Score { get; set; } = new();
 }

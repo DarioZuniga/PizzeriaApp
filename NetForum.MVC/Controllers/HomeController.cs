@@ -28,7 +28,7 @@ public class HomeController : Controller
     string contenido,
     int longitudMaxima)
     {
-        if (string.IsNullOrWhiteSpace(contenido))
+        if (string.IsNullOrWhiteSpace (contenido))
         {
             return string.Empty;
         }
@@ -43,7 +43,7 @@ public class HomeController : Controller
         return limpio[..longitudMaxima] + "...";
     }
 
-    private static string CrearIniciales(string titulo) // método privado para crear las iniciales de un título,
+    private static string CrearIniciales (string titulo) // método privado para crear las iniciales de un título,
                                                         // tomando las primeras letras de las primeras dos palabras
     {
         if (string.IsNullOrWhiteSpace(titulo))
@@ -66,8 +66,6 @@ public class HomeController : Controller
             ? "NF"
             : iniciales;
     }
-    
-
     public async Task<IActionResult> Index() // acción del controlador que obtiene los datos del dashboard y
                                              // los pasa a la vista
     {
@@ -79,13 +77,48 @@ public class HomeController : Controller
         var temasPorCategoria =    // función : obtiene la cantidad de temas por categoría desde la capa de negocio
               await _dashboardService
              .ObtenerTemasPorCategoriaAsync();
-        var respuestasPorDia = // función : obtiene la cantidad de respuestas por día desde la capa de negocio
+        var respuestasPorDia = // función : obtiene la cantidad de respuestas por día d
             await _dashboardService
             .ObtenerRespuestasPorDiaAsync(7);
 
+       var ultimosResultados =       // obtiene los últimos resultados de los partidos de la premier 
+             await _footballApiService
+           .ObtenerUltimosResultadosAsync(5);
+
         var model = new DashboardViewModel
         {
-              RespuestasPorDia = respuestasPorDia
+
+            UltimosResultados = ultimosResultados        // gráfico de resultados recientes
+    .Select(p => new ResultadoRecienteViewModel
+    {
+        PartidoId = p.Id,
+
+        Competicion = p.Competition.Name,
+
+        Local = string.IsNullOrWhiteSpace(
+            p.HomeTeam.ShortName)
+                ? p.HomeTeam.Name
+                : p.HomeTeam.ShortName,
+
+        Visitante = string.IsNullOrWhiteSpace(
+            p.AwayTeam.ShortName)
+                ? p.AwayTeam.Name
+                : p.AwayTeam.ShortName,
+
+        EscudoLocal = p.HomeTeam.Crest,
+
+        EscudoVisitante = p.AwayTeam.Crest,
+
+        GolesLocal = p.Score.FullTime.Home ?? 0,
+
+        GolesVisitante = p.Score.FullTime.Away ?? 0,
+
+        FechaUtc = p.UtcDate
+    })
+    .ToList(),
+
+
+            RespuestasPorDia = respuestasPorDia             // respuesta por día (gráfico)
                 .Select(x => new GraficoRespuestasDiaViewModel
              {
                       Fecha = x.Key,

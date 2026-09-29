@@ -1,0 +1,51 @@
+﻿@model NewsFlow.Data.Entities.Categoria
+
+@{
+    ViewData["Title"] = "Eliminar Categoría";
+}
+
+<div class="container py-5">
+    <div class="dashboard-panel mx-auto" style="max-width: 620px;">
+
+        <h2 class="fw-bold text-danger mb-3">
+            <i class="fa-solid fa-triangle-exclamation me-2"></i>
+            Eliminar Categoría
+        </h2>
+
+        <p class="text-secondary mb-4">
+            ¿Estás seguro de que deseas eliminar esta categoría?
+        </p>
+
+        <div class="alert alert-warning">
+            Esta acción no se puede deshacer.
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label text-secondary">Nombre</label>
+            <div class="form-control bg-dark text-white border-secondary">
+                @Model.Nombre
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label text-secondary">Descripción</label>
+            <div class="form-control bg-dark text-white border-secondary">
+                @Model.Descripcion
+            </div>
+        </div>
+
+        <form asp-action="DeleteConfirmed" asp-route-id="@Model.CategoriaId" method="post">
+            @Html.AntiForgeryToken()
+
+            <button type="submit" class="btn btn-danger px-4 fw-bold">
+                <i class="fa-solid fa-trash me-2"></i>
+                Sí, eliminar
+            </button>
+
+            <a asp-action="Index" class="btn btn-outline-light px-4">
+                Cancelar
+            </a>
+        </form>
+
+    </div>
+</div>

@@ -1,0 +1,394 @@
+﻿@using Microsoft.AspNetCore.Mvc.Rendering
+@using NewsFlow.Data.Entities
+
+@model NewsFlow.MVC.Models.CrearTemaForoViewModel
+
+@{
+    ViewData["Title"] = "Publicar tema";
+
+    var categorias =
+        ViewBag.Categorias as IEnumerable<SelectListItem>
+        ?? Enumerable.Empty<SelectListItem>();
+
+    var etiquetas =
+        ViewBag.Etiquetas as IEnumerable<Etiqueta>
+        ?? Enumerable.Empty<Etiqueta>();
+}
+
+<div class="container py-4">
+
+    <div class="mb-4">
+        <a asp-controller="Foro"
+           asp-action="Index"
+           class="btn btn-outline-light btn-sm">
+            <i class="fa-solid fa-arrow-left me-2"></i>
+            Volver al foro
+        </a>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-xl-9">
+
+            <div class="dashboard-panel">
+
+                <div class="mb-4">
+                    <h1 class="h2 text-white fw-bold mb-2">
+                        <i class="fa-solid fa-pen-to-square text-success me-2"></i>
+                        Publicar un nuevo tema
+                    </h1>
+
+                    <p class="text-secondary mb-0">
+                        Comparte una opinión, pregunta o análisis con la comunidad.
+                    </p>
+                </div>
+
+                <form id="crearTemaForm">
+                    @Html.AntiForgeryToken()
+
+                    <div class="mb-4">
+                        <label for="categoriaId"
+                               class="form-label text-secondary fw-semibold">
+                            Categoría
+                        </label>
+
+                        <select id="categoriaId"
+                                name="CategoriaId"
+                                class="form-select bg-dark text-white border-secondary">
+                            <option value="">Seleccione una categoría</option>
+
+                            @foreach (var categoria in categorias)
+                            {
+                                <option value="@categoria.Value">
+                                    @categoria.Text
+                                </option>
+                            }
+                        </select>
+
+                        <span id="categoriaError"
+                              class="text-warning small"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label text-secondary fw-semibold">
+                            Etiquetas
+                        </label>
+
+                        <div class="d-flex flex-wrap gap-2">
+                            @foreach (var etiqueta in etiquetas)
+                            {
+                                <label class="btn btn-outline-success btn-sm etiqueta-opcion">
+                                    <input type="checkbox"
+                                           class="d-none etiqueta-checkbox"
+                                           value="@etiqueta.EtiquetaId" />
+
+                                    <i class="fa-solid fa-tag me-1"></i>
+                                    #@etiqueta.Nombre
+                                </label>
+                            }
+                        </div>
+
+                        <div class="form-text text-secondary mt-2">
+                            Puedes seleccionar varias etiquetas.
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="tituloTema"
+                               class="form-label text-secondary fw-semibold">
+                            Título
+                        </label>
+
+                        <input asp-for="Titulo"
+                               id="tituloTema"
+                               maxlength="200"
+                               class="form-control bg-dark text-white border-secondary"
+                               placeholder="Escribe un título claro y descriptivo" />
+
+                        <div class="d-flex justify-content-between mt-2">
+                            <span id="tituloError"
+                                  class="text-warning small"></span>
+
+                            <span id="contadorTitulo"
+                                  class="text-secondary small">
+                                0 / 200
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="contenidoTema"
+                               class="form-label text-secondary fw-semibold">
+                            Contenido
+                        </label>
+
+                        <<textarea asp-for="Contenido"
+                                       id="contenidoTema"
+                                       maxlength="10000"
+                                       rows="12"
+                                       class="form-control bg-dark text-white border-secondary"
+                                       placeholder="Desarrolla aquí tu publicación..."></textarea>
+
+                        <div class="d-flex justify-content-between mt-2">
+                            <span id="contenidoError"
+                                  class="text-warning small"></span>
+
+                            <span id="contadorContenido"
+                                  class="text-secondary small">
+                                0 / 10000
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-dark border border-secondary">
+                        <i class="fa-solid fa-circle-info text-info me-2"></i>
+                        Publica contenido relacionado con fútbol y mantén una conversación respetuosa.
+                    </div>
+
+                    <div class="d-flex flex-wrap justify-content-end gap-2">
+                        <a asp-controller="Foro"
+                           asp-action="Index"
+                           class="btn btn-outline-light px-4">
+                            Cancelar
+                        </a>
+
+                        <button type="submit"
+                                id="btnPublicarTema"
+                                class="btn btn-football px-4">
+                            <i class="fa-solid fa-paper-plane me-2"></i>
+                            Publicar tema
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () { //  DOMCONTENTLOADED SE ENCARGA DE INICIALIZAR LOS
+                                                                      //EVENTOS Y FUNCIONES CUANDO EL DOM ESTÉ LISTO
+            const titulo =
+                document.getElementById("tituloTema"); 
+
+            const contenido =
+                document.getElementById("contenidoTema");
+
+            titulo.addEventListener("input", function () {
+                document.getElementById(
+                    "contadorTitulo"
+                ).textContent = `${titulo.value.length} / 200`;
+
+                document.getElementById(
+                    "tituloError"
+                ).innerText = "";
+
+              document.querySelectorAll( // FUNCION PARA CAMBIAR EL ESTILO DE LOS BOTONES DE ETIQUETAS 
+            ".etiqueta-checkbox"
+               ).forEach(checkbox => {
+
+                checkbox.addEventListener("change", function () {
+                const label = this.closest("label");
+
+                if (this.checked) {
+                    label.classList.remove("btn-outline-success");
+                    label.classList.add("btn-success");
+                } else {
+                    label.classList.remove("btn-success");
+                    label.classList.add("btn-outline-success");
+                }
+            });
+        });
+            });
+
+            contenido.addEventListener("input", function () {
+                document.getElementById(
+                    "contadorContenido"
+                ).textContent =
+                    `${contenido.value.length} / 10000`;
+
+                document.getElementById(
+                    "contenidoError"
+                ).innerText = "";
+            });
+
+            document.getElementById(
+                "categoriaId"
+            ).addEventListener("change", function () {
+                document.getElementById(
+                    "categoriaError"
+                ).innerText = "";
+            });
+
+            document.getElementById(
+                "crearTemaForm"
+            ).addEventListener(
+                "submit",
+                publicarTema
+            );
+        });
+
+        async function publicarTema(event) { //  PUBLICAR TEMA: funcion para manejar el evento de envío del formulario 
+            event.preventDefault();
+
+            const categoriaId =
+                document.getElementById("categoriaId").value;
+
+            const titulo =
+                document.getElementById(
+                    "tituloTema"
+                ).value.trim();
+
+            const contenido =
+                document.getElementById(
+                    "contenidoTema"
+                ).value.trim();
+
+            const etiquetaIds = Array.from(
+            document.querySelectorAll(
+                ".etiqueta-checkbox:checked"
+            )
+        ).map(e => e.value);
+
+            limpiarErrores();
+
+            let valido = true;
+
+            if (!categoriaId) {
+                document.getElementById(
+                    "categoriaError"
+                ).innerText =
+                    "Debe seleccionar una categoría.";
+
+                valido = false;
+            }
+
+            if (titulo.length < 5) {
+                document.getElementById(
+                    "tituloError"
+                ).innerText =
+                    "El título debe contener al menos 5 caracteres.";
+
+                valido = false;
+            }
+
+            if (contenido.length < 10) {
+                document.getElementById(
+                    "contenidoError"
+                ).innerText =
+                    "El contenido debe contener al menos 10 caracteres.";
+
+                valido = false;
+            }
+
+            if (!valido) {
+                return;
+            }
+
+            const boton =
+                document.getElementById("btnPublicarTema");
+
+            const formData = new FormData();
+
+            formData.append(
+                "__RequestVerificationToken",
+                document.querySelector(
+                    'input[name="__RequestVerificationToken"]'
+                ).value
+            );
+
+            formData.append("CategoriaId", categoriaId);
+            formData.append("Titulo", titulo);
+            formData.append("Contenido", contenido);
+
+            etiquetaIds.forEach(id => {
+            formData.append("EtiquetaIds", id);
+        });
+
+            boton.disabled = true;
+
+            boton.innerHTML = `
+                <span class="spinner-border spinner-border-sm me-2"></span>
+                Publicando...
+            `;
+
+            try {
+                const response = await fetch(
+                    "/Foro/CrearAjax",
+                    {
+                        method: "POST",
+                        body: formData
+                    }
+                );
+
+                const data =
+                    await obtenerRespuestaJson(response);
+
+                if (!response.ok) {
+                    mostrarError(
+                        data.message ??
+                        "No se pudo publicar el tema."
+                    );
+
+                    return;
+                }
+
+                await Swal.fire({
+                    icon: "success",
+                    title: "Tema publicado",
+                    text: data.message,
+                    timer: 1600,
+                    showConfirmButton: false,
+                    background: "#16161D",
+                    color: "#E4E4E7"
+                });
+
+                window.location.href =
+                    `/Foro/Detalle/${data.temaId}`;
+            } catch {
+                mostrarError(
+                    "Ocurrió un error al publicar el tema."
+                );
+            } finally {
+                boton.disabled = false;
+
+                boton.innerHTML = `
+                    <i class="fa-solid fa-paper-plane me-2"></i>
+                    Publicar tema
+                `;
+            }
+        }
+
+        function limpiarErrores() { // funcion para limpiar los mensajes de error en el formulario
+            document.getElementById(
+                "categoriaError"
+            ).innerText = "";
+
+            document.getElementById(
+                "tituloError"
+            ).innerText = "";
+
+            document.getElementById(
+                "contenidoError"
+            ).innerText = "";
+        }
+
+        async function obtenerRespuestaJson(response) { // funcion para obtener la respuesta JSON de la solicitud fetch
+            try {
+                return await response.json();
+            } catch {
+                return {};
+            }
+        }
+        
+        function mostrarError(mensaje) { // funcion para mostrar un mensaje de error usando SweetAlert2
+            Swal.fire({
+                icon: "error",
+                title: "No se pudo publicar",
+                text: mensaje,
+                background: "#16161D",
+                color: "#E4E4E7"
+            });
+        }
+    </script>
+}

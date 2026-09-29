@@ -1,0 +1,265 @@
+﻿@* 1. La lógica Razor siempre va al inicio del archivo *@
+@using NewsFlow.MVC.Security
+@{
+    var isAuthPage = ViewContext.RouteData.Values["controller"]?.ToString() == "Account"
+        && (
+            ViewContext.RouteData.Values["action"]?.ToString() == "Login"
+            || ViewContext.RouteData.Values["action"]?.ToString() == "Register"
+        );
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - NewsFlow</title>
+
+   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+   <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+   <link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.bootstrap5.css" />
+   <link rel="stylesheet" href="https://cdn.datatables.net/buttons/3.0.2/css/buttons.bootstrap5.css" />
+
+    <style>
+            body {
+                background-color: #0F0F12 !important;
+                color: #E4E4E7 !important;
+                font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                min-height: 100vh;
+            }
+
+            .bg-social-card {
+                background-color: #16161D !important;
+            }
+
+            .border-social {
+                border-color: #23232F !important;
+            }
+
+          
+            .text-green-neon {
+                color: #00ff00 !important;
+            }
+
+            .btn-violet-neon {
+                background-color: #8B5CF6 !important;
+                color: #ffffff !important;
+                border: none;
+                transition: all 0.2s ease;
+            }
+
+                .btn-violet-neon:hover {
+                    background-color: #7C3AED !important;
+                    transform: translateY(-1px);
+                }
+
+            .btn-outline-neon {
+                border: 1px solid #23232F !important;
+                color: #E4E4E7 !important;
+                transition: all 0.2s;
+            }
+
+                .btn-outline-neon:hover {
+                    background-color: #23232F !important;
+                    color: #ffffff !important;
+                }
+
+  
+            .nav-social-link {
+                color: #ffffff !important;
+                font-weight: 500;
+                text-decoration: none;
+                transition: color 0.2s;
+            }
+                .nav-social-link:hover,
+                .nav-social-link.active {
+                    color: #00ff00 !important;
+                }
+
+            .dropdown-menu-dark-custom {
+                background-color: #16161D !important;
+                border: 1px solid #23232F !important;
+                border-radius: 12px;
+                padding: 8px;
+            }
+
+                .dropdown-menu-dark-custom .dropdown-item {
+                    color: #E4E4E7 !important;
+                    border-radius: 6px;
+                    transition: all 0.2s;
+                }
+
+                    .dropdown-menu-dark-custom .dropdown-item:hover {
+                        background-color: #23232F !important;
+                        color: #ffffff !important;
+                    }
+
+            .brand-logo {
+                letter-spacing: -1px;
+                text-decoration: none;
+            }
+
+            .search-input-container {
+                width: 100%;
+                max-width: 400px;
+            }
+
+            .search-input {
+                border-radius: 20px;
+                background-color: #0F0F12 !important;
+            }
+
+            .footer-badge {
+                font-size: 0.75rem;
+            }
+
+            .max-w-md {
+                max-width: 400px; 
+            }
+    </style>
+
+    @* Permite inyectar CSS específico desde otras vistas si lo necesitas *@
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+
+<body class="d-flex flex-column">
+
+    @if (!isAuthPage)
+    {
+        <nav class="navbar navbar-expand-md bg-social-card border-bottom border-social sticky-top py-2 px-4">
+            <div class="container-fluid">
+                <!-- "Net" en blanco y "Forum" en verde neón -->
+                <a class="navbar-brand fw-bold text-white fs-3 d-flex align-items-center brand-logo" asp-controller="Home" asp-action="Index">
+                    Net<span class="text-green-neon">Forum</span>
+                </a>
+
+                <div class="collapse navbar-collapse d-flex justify-content-between">
+                    <div class="search-input-container w-100 max-w-md d-none d-md-block">
+                        <input type="text"
+                               class="form-control text-white border-0 py-2 small search-input text-center"
+                               placeholder="BIENVENIDOS AL FORO"
+                               disabled>
+                    </div>
+
+                    <ul class="navbar-nav gap-4 align-items-center mb-0">
+                        <li class="nav-item">
+                            <a class="nav-social-link"
+                               asp-controller="Home"
+                               asp-action="Index">Feed</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-social-link"
+                               asp-controller="Foro"
+                               asp-action="Index">
+                                <i class="fa-solid fa-comments me-1"></i>
+                                Foro
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-social-link"
+                               asp-controller="Categoria"
+                               asp-action="Index">Categorías</a>
+                        </li>
+
+                        @if (User.IsInRole(RolesSistema.Administrador))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-social-link"
+                                   asp-controller="Admin"
+                                   asp-action="Index">
+                                    <i class="fa-solid fa-screwdriver-wrench me-1"></i>
+                                    Administración
+                                </a>
+                            </li>
+                        }
+                        
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-social-link dropdown-toggle d-flex align-items-center gap-1" href="#" id="navbarAccountDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                @if (User.Identity != null && User.Identity.IsAuthenticated)
+                                {
+                                    <span>Hola, @User.Identity.Name</span>
+                                }
+                                else
+                                {
+                                    <span>Account</span>
+                                }
+                            </a>
+
+                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark-custom shadow" aria-labelledby="navbarAccountDropdown">
+                                @if (User.Identity != null && User.Identity.IsAuthenticated)
+                                {
+                                    <li>
+                                        <a class="dropdown-item py-2" asp-controller="Account" asp-action="Profile">
+                                            👤 Ver mi Perfil
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider border-social"></li>
+                                    <li>
+                                        <a class="dropdown-item py-2 text-danger fw-semibold" asp-controller="Account" asp-action="Logout">
+                                            🚪 Cerrar Sesión
+                                        </a>
+                                    </li>
+                                }
+                                else
+                                {
+                                    <li>
+                                        <a class="dropdown-item py-2" asp-controller="Account" asp-action="Login">
+                                            🔑 Iniciar Sesión
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item py-2" asp-controller="Account" asp-action="Register">
+                                            ✨ Crear Cuenta
+                                        </a>
+                                    </li>
+                                }
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    }
+    <main class="flex-grow-1">
+        @RenderBody()
+    </main>
+
+    @if (!isAuthPage)
+    {
+        <footer class="text-muted bg-social-card border-top border-social py-4 mt-5">
+            <div class="container text-center">
+                <p class="small mb-1 text-secondary">&copy; @DateTime.Now.Year NewsFlow Platform. Diseñado como un producto digital nativo en .NET 10.</p>
+                <span class="badge bg-dark text-secondary border border-social px-3 py-1 footer-badge">PA Module // Cluster Alpha</span>
+            </div>
+        </footer >
+    }
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+                                @*JS de DataTables*@
+    @*DataTables con Bootstrap 5 nos dará paginación, búsqueda,
+    ordenamiento y exportación para Excel/PDF*@
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+<script src="https://cdn.datatables.net/2.0.8/js/dataTables.js"></script>
+<script src="https://cdn.datatables.net/2.0.8/js/dataTables.bootstrap5.js"></script>
+
+<script src="https://cdn.datatables.net/buttons/3.0.2/js/dataTables.buttons.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.0.2/js/buttons.bootstrap5.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.0.2/js/buttons.html5.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.0.2/js/buttons.print.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    
+    @await RenderSectionAsync("Scripts", required: false) @*Permite inyectar JS desde otra vista de ser necesario*@ 
+</body>
+</html>

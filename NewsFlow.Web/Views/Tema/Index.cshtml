@@ -1,0 +1,331 @@
+﻿@model IEnumerable<NewsFlow.Data.Entities.Tema>
+
+@{
+    ViewData["Title"] = "Gestión de Temas";
+    var categorias = ViewBag.Categorias as List<SelectListItem>;
+}
+
+@Html.AntiForgeryToken()
+
+<div class="container-fluid py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-white">
+                <i class="fa-solid fa-comments text-success me-2"></i>
+                Gestión de Temas
+            </h2>
+            <p class="text-secondary mb-0">
+                Administra publicaciones, categorías y contenido del foro.
+            </p>
+        </div>
+
+        <button class="btn btn-football px-4" data-bs-toggle="modal" data-bs-target="#temaModal" onclick="abrirCrearTema()">
+            <i class="fa-solid fa-plus me-2"></i>
+            Nuevo Tema
+        </button>
+    </div>
+
+    <div class="dashboard-panel">
+        <div class="table-responsive">
+            <table id="temasTable" class="table table-dark table-hover align-middle w-100">
+                <thead>
+                    <tr>
+                        <th style="width:80px;">ID</th>
+                        <th>Título</th>
+                        <th>Categoría</th>
+                        <th>Autor</th>
+                        <th>Estado</th>
+                        <th>Fecha</th>
+                        <th style="width:170px;" class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr data-id="@item.TemaId">
+                            <td>@item.TemaId</td>
+                            <td class="fw-semibold">@item.Titulo</td>
+                            <td>@item.Categoria.Nombre</td>
+                            <td>@item.Usuario.NombreUsuario</td>
+                            <td>
+                                <span class="badge bg-success">
+                                    @item.Estado.Nombre
+                                </span>
+                            </td>
+                            <td>@item.FechaCreacion.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td class="text-center">
+                                <button class="btn btn-warning btn-sm" onclick="abrirEditarTema(@item.TemaId)">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
+
+                                <button class="btn btn-danger btn-sm" onclick="eliminarTema(@item.TemaId, '@item.Titulo')">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="temaModal" tabindex="-1" aria-labelledby="temaModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content bg-social-card border border-social text-white" style="border-radius: 18px;">
+            <div class="modal-header border-social">
+                <h5 class="modal-title fw-bold" id="temaModalLabel">
+                    Nuevo Tema
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <input type="hidden" id="temaId" />
+
+                <div class="mb-3">
+                    <label class="form-label text-secondary fw-semibold">Categoría</label>
+                    <select id="categoriaIdTema" class="form-select bg-dark text-white border-secondary">
+                        <option value="">Seleccione una categoría</option>
+                        @foreach (var categoria in categorias!)
+                        {
+                            <option value="@categoria.Value">@categoria.Text</option>
+                        }
+                    </select>
+                    <span id="categoriaTemaError" class="text-warning small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-secondary fw-semibold">Título</label>
+                    <input type="text" id="tituloTema" class="form-control bg-dark text-white border-secondary" placeholder="Ej: ¿Quién ganará la Champions?" />
+                    <span id="tituloTemaError" class="text-warning small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-secondary fw-semibold">Contenido</label>
+                    <textarea id="contenidoTema" class="form-control bg-dark text-white border-secondary" rows="6" placeholder="Escribe el contenido del tema..."></textarea>
+                    <span id="contenidoTemaError" class="text-warning small"></span>
+                </div>
+            </div>
+
+            <div class="modal-footer border-social">
+                <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">
+                    Cancelar
+                </button>
+
+                <button type="button" class="btn btn-football" onclick="guardarTema()">
+                    <i class="fa-solid fa-save me-2"></i>
+                    Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let temasTable;
+
+        $(document).ready(function () {
+            temasTable = $('#temasTable').DataTable({
+                language: {
+                    url: "https://cdn.datatables.net/plug-ins/2.0.8/i18n/es-ES.json"
+                },
+                pageLength: 5,
+                lengthMenu: [5, 10, 25, 50],
+                order: [[5, "desc"]],
+                columnDefs: [
+                    { orderable: false, targets: 6 }
+                ],
+                layout: {
+                    topStart: {
+                        buttons: [
+                            {
+                                extend: 'excelHtml5',
+                                text: '<i class="fa-solid fa-file-excel me-1"></i> Excel',
+                                className: 'btn btn-success btn-sm'
+                            },
+                            {
+                                extend: 'pdfHtml5',
+                                text: '<i class="fa-solid fa-file-pdf me-1"></i> PDF',
+                                className: 'btn btn-danger btn-sm'
+                            },
+                            {
+                                extend: 'print',
+                                text: '<i class="fa-solid fa-print me-1"></i> Imprimir',
+                                className: 'btn btn-secondary btn-sm'
+                            }
+                        ]
+                    }
+                }
+            });
+        });
+
+        function obtenerToken() {
+            return document.querySelector('input[name="__RequestVerificationToken"]').value;
+        }
+
+        function limpiarFormularioTema() {
+            document.getElementById("temaId").value = "";
+            document.getElementById("categoriaIdTema").value = "";
+            document.getElementById("tituloTema").value = "";
+            document.getElementById("contenidoTema").value = "";
+            limpiarErroresTema();
+        }
+
+        function limpiarErroresTema() {
+            document.getElementById("categoriaTemaError").innerText = "";
+            document.getElementById("tituloTemaError").innerText = "";
+            document.getElementById("contenidoTemaError").innerText = "";
+        }
+
+        function abrirCrearTema() {
+            limpiarFormularioTema();
+            document.getElementById("temaModalLabel").innerText = "Nuevo Tema";
+        }
+
+        async function abrirEditarTema(id) {
+            limpiarFormularioTema();
+
+            const response = await fetch(`/Tema/GetById/${id}`);
+
+            if (!response.ok) {
+                mostrarError("No se pudo cargar el tema.");
+                return;
+            }
+
+            const tema = await response.json();
+
+            document.getElementById("temaId").value = tema.temaId;
+            document.getElementById("categoriaIdTema").value = tema.categoriaId;
+            document.getElementById("tituloTema").value = tema.titulo;
+            document.getElementById("contenidoTema").value = tema.contenido;
+            document.getElementById("temaModalLabel").innerText = "Editar Tema";
+
+            const modal = new bootstrap.Modal(document.getElementById("temaModal"));
+            modal.show();
+        }
+
+        async function guardarTema() {
+            const id = document.getElementById("temaId").value;
+            const categoriaId = document.getElementById("categoriaIdTema").value;
+            const titulo = document.getElementById("tituloTema").value.trim();
+            const contenido = document.getElementById("contenidoTema").value.trim();
+
+            limpiarErroresTema();
+
+            let valido = true;
+
+            if (!categoriaId) {
+                document.getElementById("categoriaTemaError").innerText = "Debe seleccionar una categoría.";
+                valido = false;
+            }
+
+            if (!titulo) {
+                document.getElementById("tituloTemaError").innerText = "El título es obligatorio.";
+                valido = false;
+            }
+
+            if (!contenido) {
+                document.getElementById("contenidoTemaError").innerText = "El contenido es obligatorio.";
+                valido = false;
+            }
+
+            if (!valido) {
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("__RequestVerificationToken", obtenerToken());
+            formData.append("CategoriaId", categoriaId);
+            formData.append("Titulo", titulo);
+            formData.append("Contenido", contenido);
+
+            const url = id
+                ? `/Tema/EditAjax/${id}`
+                : `/Tema/CreateAjax`;
+
+            const response = await fetch(url, {
+                method: "POST",
+                body: formData
+            });
+
+            if (!response.ok) {
+                mostrarError("No se pudo guardar el tema.");
+                return;
+            }
+
+            const result = await response.json();
+
+            if (result.success) {
+                Swal.fire({
+                    icon: "success",
+                    title: "Correcto",
+                    text: result.message,
+                    timer: 1500,
+                    showConfirmButton: false,
+                    background: "#16161D",
+                    color: "#E4E4E7"
+                }).then(() => location.reload());
+            }
+        }
+
+        function eliminarTema(id, titulo) {
+            Swal.fire({
+                title: "¿Eliminar tema?",
+                text: `Se eliminará "${titulo}". Esta acción no se puede deshacer.`,
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#dc3545",
+                cancelButtonColor: "#6c757d",
+                confirmButtonText: "Sí, eliminar",
+                cancelButtonText: "Cancelar",
+                background: "#16161D",
+                color: "#E4E4E7"
+            }).then(async (result) => {
+                if (!result.isConfirmed) {
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append("__RequestVerificationToken", obtenerToken());
+
+                const response = await fetch(`/Tema/DeleteAjax/${id}`, {
+                    method: "POST",
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    mostrarError("No se pudo eliminar el tema.");
+                    return;
+                }
+
+                const data = await response.json();
+
+                if (data.success) {
+                    Swal.fire({
+                        icon: "success",
+                        title: "Eliminado",
+                        text: data.message,
+                        timer: 1500,
+                        showConfirmButton: false,
+                        background: "#16161D",
+                        color: "#E4E4E7"
+                    }).then(() => location.reload());
+                }
+            });
+        }
+
+        function mostrarError(mensaje) {
+            Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: mensaje,
+                background: "#16161D",
+                color: "#E4E4E7"
+            });
+        }
+    </script>
+}

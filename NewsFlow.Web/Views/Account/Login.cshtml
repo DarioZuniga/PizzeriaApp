@@ -1,0 +1,164 @@
+﻿@model NewsFlow.MVC.Models.LoginViewModel
+
+@{
+    ViewData["Title"] = "Iniciar Sesión";
+    Layout = "_Layout";
+}
+
+<div class="auth-stadium-page">
+
+    <div class="auth-overlay"></div>
+
+    <div class="container auth-container">
+        <div class="row justify-content-center align-items-center min-vh-100">
+
+            <div class="col-lg-6 d-none d-lg-block">
+                <div class="auth-info-panel">
+                    <h1 class="display-5 fw-bold text-white mb-3">
+                        Vive el fútbol en comunidad
+                    </h1>
+
+                    <p class="lead text-light mb-4">
+                        Debate partidos, fichajes, polémicas, jugadores, ligas y todo lo que mueve al mundo del fútbol.
+                    </p>
+
+                    <div class="row g-3">
+                        <div class="col-4">
+                            <div class="stat-card">
+                                <h3>El fútbol</h3>
+                                <span>¡La pasión que nos mueve!</span>
+                            </div>
+                        </div>
+
+                        <div class="col-4">
+                            <div class="stat-card">
+                                <h3>24/7</h3>
+                                <span>Foro activo</span>
+                            </div>
+                        </div>
+
+                        <div class="col-4">
+                            <div class="stat-card">
+                                <h3>⚽</h3>
+                                <span>Pasión</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-5 col-md-8 col-sm-11">
+                <div class="auth-glass-card">
+
+                    <div class="text-center mb-4">
+                        <div class="auth-ball-icon">
+                            <i class="fa-solid fa-futbol"></i>
+                        </div>
+
+                        <h2 class="fw-bold text-white mt-3 mb-1">
+                            NewsFlow
+                        </h2>
+
+                        <p class="text-light opacity-75">
+                            Foro de discusión futbolera
+                        </p>
+                    </div>
+
+                    <form asp-controller="Account" asp-action="Login" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="Correo" class="form-label text-light fw-semibold">
+                                Correo electrónico
+                            </label>
+
+                            <div class="input-group auth-input-group">
+                                <span class="input-group-text">
+                                    <i class="fa-solid fa-envelope"></i>
+                                </span>
+
+                                <input asp-for="Correo"
+                                       class="form-control"
+                                       placeholder="correo@ejemplo.com"
+                                       autocomplete="email" />
+                            </div>
+
+                            <span asp-validation-for="Correo" class="text-warning small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Password" class="form-label text-light fw-semibold">
+                                Contraseña
+                            </label>
+
+                            <div class="input-group auth-input-group">
+                                <span class="input-group-text">
+                                    <i class="fa-solid fa-lock"></i>
+                                </span>
+
+                                <input asp-for="Password"
+                                       id="passwordInput"
+                                       type="password"
+                                       class="form-control"
+                                       placeholder="••••••••"
+                                       autocomplete="current-password" />
+
+                                <button class="btn btn-auth-eye" type="button" id="togglePassword">
+                                    <i id="eyeIcon" class="fa-solid fa-eye"></i>
+                                </button>
+                            </div>
+
+                            <span asp-validation-for="Password" class="text-warning small"></span>
+                        </div>
+
+                        <div class="form-check mb-4">
+                            <input asp-for="Recordarme" class="form-check-input" />
+                            <label asp-for="Recordarme" class="form-check-label text-light">
+                                Recordarme
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn btn-football w-100 fw-bold py-2">
+                            <i class="fa-solid fa-right-to-bracket me-2"></i>
+                            Iniciar Sesión
+                        </button>
+
+                        <div class="text-center mt-4">
+                            <span class="text-light opacity-75">
+                                ¿No tienes cuenta?
+                            </span>
+
+                            <a asp-controller="Account"
+                               asp-action="Register"
+                               class="text-warning fw-bold text-decoration-none ms-1">
+                                Crear cuenta
+                            </a>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        const passwordInput = document.getElementById("passwordInput");
+        const togglePassword = document.getElementById("togglePassword");
+        const eyeIcon = document.getElementById("eyeIcon");
+
+        togglePassword.addEventListener("click", () => {
+            const isPassword = passwordInput.type === "password";
+            passwordInput.type = isPassword ? "text" : "password";
+
+            eyeIcon.classList.toggle("fa-eye");
+            eyeIcon.classList.toggle("fa-eye-slash");
+        });
+    </script>
+}

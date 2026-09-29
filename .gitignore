@@ -3,4 +3,17 @@ bin/
 obj/
 *.user
 *.suo
-*.vsidx
+*.vsidx 
+# Configuracion local 
+appsettings.Development.json 
+appsettings.Local.json 
+ 
+# Archivos temporales 
+*.log 
+*.tmp 
+Thumbs.db 
+.DS_Store 
+ 
+# Carpetas de build 
+publish/ 
+out/ 

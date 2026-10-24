@@ -15,90 +15,99 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - NewsFlow</title>
 
-   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-   <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
-   <link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.bootstrap5.css" />
-   <link rel="stylesheet" href="https://cdn.datatables.net/buttons/3.0.2/css/buttons.bootstrap5.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.bootstrap5.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/3.0.2/css/buttons.bootstrap5.css" />
 
     <style>
+            /* --- NUEVA ESTÉTICA NEWSFLOW (CLARA) --- */
             body {
-                background-color: #0F0F12 !important;
-                color: #E4E4E7 !important;
-                font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                background-color: #f4f6f9 !important; /* Fondo gris claro */
+                color: #2d3748 !important; /* Texto gris oscuro */
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
                 min-height: 100vh;
             }
 
+            /* Tarjetas blancas */
             .bg-social-card {
-                background-color: #16161D !important;
+                background-color: #ffffff !important;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.05);
             }
 
+            /* Bordes suaves */
             .border-social {
-                border-color: #23232F !important;
+                border-color: #e2e8f0 !important;
             }
 
-          
+            /* Texto de acento azul oscuro */
             .text-green-neon {
-                color: #00ff00 !important;
+                color: #1a365d !important;
             }
 
+            /* Botones */
             .btn-violet-neon {
-                background-color: #8B5CF6 !important;
+                background-color: #1a365d !important;
                 color: #ffffff !important;
                 border: none;
                 transition: all 0.2s ease;
             }
 
                 .btn-violet-neon:hover {
-                    background-color: #7C3AED !important;
+                    background-color: #2b6cb0 !important;
                     transform: translateY(-1px);
                 }
 
             .btn-outline-neon {
-                border: 1px solid #23232F !important;
-                color: #E4E4E7 !important;
+                border: 1px solid #cbd5e0 !important;
+                color: #2d3748 !important;
                 transition: all 0.2s;
             }
 
                 .btn-outline-neon:hover {
-                    background-color: #23232F !important;
-                    color: #ffffff !important;
+                    background-color: #f7fafc !important;
+                    color: #1a365d !important;
                 }
 
-  
+            /* Menú de navegación */
             .nav-social-link {
-                color: #ffffff !important;
-                font-weight: 500;
+                color: #4a5568 !important;
+                font-weight: 600;
                 text-decoration: none;
                 transition: color 0.2s;
             }
+
                 .nav-social-link:hover,
                 .nav-social-link.active {
-                    color: #00ff00 !important;
+                    color: #1a365d !important;
                 }
 
+            /* Dropdown (Menú de perfil) */
             .dropdown-menu-dark-custom {
-                background-color: #16161D !important;
-                border: 1px solid #23232F !important;
+                background-color: #ffffff !important;
+                border: 1px solid #e2e8f0 !important;
                 border-radius: 12px;
                 padding: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
             }
 
                 .dropdown-menu-dark-custom .dropdown-item {
-                    color: #E4E4E7 !important;
+                    color: #2d3748 !important;
                     border-radius: 6px;
                     transition: all 0.2s;
                 }
 
                     .dropdown-menu-dark-custom .dropdown-item:hover {
-                        background-color: #23232F !important;
-                        color: #ffffff !important;
+                        background-color: #f7fafc !important;
+                        color: #1a365d !important;
                     }
 
             .brand-logo {
                 letter-spacing: -1px;
                 text-decoration: none;
+                color: #1a365d !important;
             }
 
             .search-input-container {
@@ -108,19 +117,28 @@
 
             .search-input {
                 border-radius: 20px;
-                background-color: #0F0F12 !important;
+                background-color: #f7fafc !important;
+                border: 1px solid #e2e8f0 !important;
+                color: #2d3748 !important;
             }
 
             .footer-badge {
                 font-size: 0.75rem;
+                background-color: #edf2f7 !important;
+                color: #4a5568 !important;
+                border-color: #cbd5e0 !important;
             }
 
             .max-w-md {
-                max-width: 400px; 
+                max-width: 400px;
+            }
+
+            /* Corrección para el navbar */
+            .navbar {
+                background-color: #ffffff !important;
             }
     </style>
 
-    @* Permite inyectar CSS específico desde otras vistas si lo necesitas *@
     @await RenderSectionAsync("Styles", required: false)
 </head>
 
@@ -130,16 +148,16 @@
     {
         <nav class="navbar navbar-expand-md bg-social-card border-bottom border-social sticky-top py-2 px-4">
             <div class="container-fluid">
-                <!-- "Net" en blanco y "Forum" en verde neón -->
-                <a class="navbar-brand fw-bold text-white fs-3 d-flex align-items-center brand-logo" asp-controller="Home" asp-action="Index">
-                    Net<span class="text-green-neon">Forum</span>
+                <!-- Logo cambiado a NewsFlow -->
+                <a class="navbar-brand fw-bold fs-3 d-flex align-items-center brand-logo" asp-controller="Home" asp-action="Index">
+                    News<span class="text-green-neon">Flow</span>
                 </a>
 
                 <div class="collapse navbar-collapse d-flex justify-content-between">
                     <div class="search-input-container w-100 max-w-md d-none d-md-block">
                         <input type="text"
-                               class="form-control text-white border-0 py-2 small search-input text-center"
-                               placeholder="BIENVENIDOS AL FORO"
+                               class="form-control py-2 small search-input text-center"
+                               placeholder="Buscar noticias..."
                                disabled>
                     </div>
 
@@ -147,15 +165,15 @@
                         <li class="nav-item">
                             <a class="nav-social-link"
                                asp-controller="Home"
-                               asp-action="Index">Feed</a>
+                               asp-action="Index">Inicio</a>
                         </li>
 
                         <li class="nav-item">
                             <a class="nav-social-link"
                                asp-controller="Foro"
                                asp-action="Index">
-                                <i class="fa-solid fa-comments me-1"></i>
-                                Foro
+                                <i class="fa-solid fa-newspaper me-1"></i>
+                                Noticias
                             </a>
                         </li>
 
@@ -176,7 +194,6 @@
                                 </a>
                             </li>
                         }
-                        
 
                         <li class="nav-item dropdown">
                             <a class="nav-social-link dropdown-toggle d-flex align-items-center gap-1" href="#" id="navbarAccountDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -186,7 +203,7 @@
                                 }
                                 else
                                 {
-                                    <span>Account</span>
+                                    <span>Cuenta</span>
                                 }
                             </a>
 
@@ -225,41 +242,37 @@
             </div>
         </nav>
     }
-    <main class="flex-grow-1">
+
+    <main class="flex-grow-1 container py-4">
         @RenderBody()
     </main>
 
     @if (!isAuthPage)
     {
-        <footer class="text-muted bg-social-card border-top border-social py-4 mt-5">
+        <footer class="text-muted bg-social-card border-top border-social py-4 mt-auto">
             <div class="container text-center">
-                <p class="small mb-1 text-secondary">&copy; @DateTime.Now.Year NewsFlow Platform. Diseñado como un producto digital nativo en .NET 10.</p>
-                <span class="badge bg-dark text-secondary border border-social px-3 py-1 footer-badge">PA Module // Cluster Alpha</span>
+                <p class="small mb-1 text-secondary">&copy; @DateTime.Now.Year NewsFlow - Agregador de Noticias.</p>
+                <span class="badge footer-badge px-3 py-1">SC-701 Project</span>
             </div>
-        </footer >
+        </footer>
     }
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-                                @*JS de DataTables*@
-    @*DataTables con Bootstrap 5 nos dará paginación, búsqueda,
-    ordenamiento y exportación para Excel/PDF*@
+    @*JS de DataTables*@
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/2.0.8/js/dataTables.js"></script>
+    <script src="https://cdn.datatables.net/2.0.8/js/dataTables.bootstrap5.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.0.2/js/dataTables.buttons.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.0.2/js/buttons.bootstrap5.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.0.2/js/buttons.html5.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.0.2/js/buttons.print.js"></script>
 
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 
-<script src="https://cdn.datatables.net/2.0.8/js/dataTables.js"></script>
-<script src="https://cdn.datatables.net/2.0.8/js/dataTables.bootstrap5.js"></script>
-
-<script src="https://cdn.datatables.net/buttons/3.0.2/js/dataTables.buttons.js"></script>
-<script src="https://cdn.datatables.net/buttons/3.0.2/js/buttons.bootstrap5.js"></script>
-<script src="https://cdn.datatables.net/buttons/3.0.2/js/buttons.html5.js"></script>
-<script src="https://cdn.datatables.net/buttons/3.0.2/js/buttons.print.js"></script>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
-    
-    @await RenderSectionAsync("Scripts", required: false) @*Permite inyectar JS desde otra vista de ser necesario*@ 
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

@@ -1,0 +1,642 @@
+@model PizzeriaApp.MVC.Models.EditarTemaForoViewModel
+@using PizzeriaApp.Data.Entities
+
+@{
+    ViewData["Title"] = "Editar publicación";
+
+    var etiquetas =
+        ViewBag.Etiquetas as IEnumerable<Etiqueta>
+        ?? Enumerable.Empty<Etiqueta>();
+}
+
+<div class="container py-4">
+    <div class="mb-4">
+        <a asp-controller="Foro"
+           asp-action="Index"
+           class="btn btn-outline-light btn-sm">
+
+            <i class="fa-solid fa-arrow-left me-2"></i>
+            Volver al foro
+        </a>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-xl-9">
+            <div class="dashboard-panel">
+
+                <!-- ENCABEZADO -->
+                <div class="mb-4">
+                    <h1 class="h2 text-white fw-bold mb-2">
+
+                        <i class="fa-solid fa-pen-to-square
+                        text-success me-2"></i>
+
+                        Editar publicación
+                    </h1>
+                    <p class="text-secondary mb-0">
+                        Modifica el contenido, categoría o etiquetas
+                        de tu tema.
+                    </p>
+                </div>
+
+                <!-- FORMULARIO -->
+                <form id="editarTemaForm">
+                    @Html.AntiForgeryToken()
+                    <!-- ID DEL TEMA -->
+                    <input type="hidden"
+                           asp-for="TemaId"
+                           id="temaId" />
+
+                    <!-- CATEGORÍA -->
+                    <div class="mb-4">
+                        <label asp-for="CategoriaId"
+                               class="form-label text-secondary fw-semibold">
+                            Categoría
+                        </label>
+                        <select asp-for="CategoriaId"
+                                id="categoriaId"
+                                asp-items="ViewBag.Categorias"
+                                class="form-select bg-dark
+                            text-white
+                            border-secondary">
+                            <option value="">
+                                Seleccione una categoría
+                            </option>
+                        </select>
+
+                        <span id="categoriaError"
+                              class="text-warning small">
+                        </span>
+                    </div>
+
+                    <!-- ETIQUETAS -->
+                    <div class="mb-4">
+                        <label class="form-label
+                            text-secondary
+                            fw-semibold">
+
+                            Etiquetas
+                        </label>
+
+                        @if (etiquetas.Any())
+                        {
+                            <div class="d-flex flex-wrap gap-2">
+
+                                @foreach (var etiqueta in etiquetas)
+                                {
+                                    var seleccionada =
+                                        Model.EtiquetaIds.Contains(
+                                            etiqueta.EtiquetaId);
+
+                                    <label class="btn btn-sm etiqueta-opcion
+                                        @(seleccionada
+                                               ? "btn-success"
+                                               : "btn-outline-success")">
+
+                                        <input type="checkbox"
+                                               class="d-none etiqueta-checkbox"
+                                               value="@etiqueta.EtiquetaId"
+                                               checked="@seleccionada" />
+
+                                        <i class="fa-solid
+                                        fa-tag me-1"></i>
+
+                                        #@etiqueta.Nombre
+                                    </label>
+                                }
+
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-dark
+                                border border-secondary mb-0">
+
+                                <i class="fa-solid
+                                fa-circle-info
+                                text-info me-2"></i>
+
+                                No hay etiquetas disponibles.
+                            </div>
+                        }
+                        <div class="form-text
+                            text-secondary mt-2">
+
+                            Puedes seleccionar varias etiquetas.
+                        </div>
+
+                    </div>
+
+                    <!-- TÍTULO -->
+                    <div class="mb-4">
+
+                        <label asp-for="Titulo"
+                               class="form-label
+                            text-secondary
+                            fw-semibold">
+
+                            Título
+                        </label>
+
+                        <input asp-for="Titulo"
+                               id="tituloTema"
+                               maxlength="200"
+                               class="form-control
+                        bg-dark
+                        text-white
+                        border-secondary"
+                               placeholder="Escribe un título claro y descriptivo" />
+
+                        <div class="d-flex
+                            justify-content-between
+                            mt-2">
+
+                            <span id="tituloError"
+                                  class="text-warning small">
+                            </span>
+
+                            <span id="contadorTitulo"
+                                  class="text-secondary small">
+
+                                0 / 200
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    <!-- CONTENIDO -->
+                    <div class="mb-4">
+
+                        <label asp-for="Contenido"
+                               class="form-label
+                            text-secondary
+                            fw-semibold">
+
+                            Contenido
+                        </label>
+
+                        <textarea asp-for="Contenido"
+                                  id="contenidoTema"
+                                  maxlength="10000"
+                                  rows="10"
+                                  class="form-control
+                        bg-dark
+                        text-white
+                        border-secondary"
+                                  placeholder="Desarrolla aquí tu publicación..."></textarea>
+
+                        <div class="d-flex
+                            justify-content-between
+                            mt-2">
+
+                            <span id="contenidoError"
+                                  class="text-warning small">
+                            </span>
+
+                            <span id="contadorContenido"
+                                  class="text-secondary small">
+
+                                0 / 10000
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- INFORMACIÓN -->
+                    <div class="alert alert-dark
+                        border border-secondary">
+
+                        <i class="fa-solid
+                        fa-circle-info
+                        text-info me-2"></i>
+
+                        Mantén una conversación respetuosa
+                        al actualizar tu publicación.
+
+                    </div>
+
+
+                    <!-- BOTONES -->
+                    <div class="d-flex
+                        flex-wrap
+                        justify-content-end
+                        gap-2">
+
+                        <a asp-controller="Foro"
+                           asp-action="Detalle"
+                           asp-route-id="@Model.TemaId"
+                           class="btn
+                            btn-outline-light
+                            px-4">
+
+                            Cancelar
+                        </a>
+
+                        <button type="submit"
+                                id="btnGuardar"
+                                class="btn
+                            btn-football
+                            px-4">
+
+                            <i class="fa-solid
+                            fa-floppy-disk
+                            me-2"></i>
+
+                            Guardar cambios
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+
+@section Scripts {
+
+    <script>
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
+
+                const formulario =
+                    document.getElementById(
+                        "editarTemaForm"
+                    );
+
+                const titulo =
+                    document.getElementById(
+                        "tituloTema"
+                    );
+
+                const contenido =
+                    document.getElementById(
+                        "contenidoTema"
+                    );
+
+                const categoria =
+                    document.getElementById(
+                        "categoriaId"
+                    );
+
+                actualizarContadorTitulo(); // contadores del título y contenido al cargar la página
+                actualizarContadorContenido();
+
+                titulo.addEventListener( 
+                    "input",
+                    function () {
+
+                        actualizarContadorTitulo();
+
+                        document.getElementById(
+                            "tituloError"
+                        ).innerText = "";
+                    }
+                );
+
+                contenido.addEventListener( // contadores del título y contenido al cargar la página
+                    "input",
+                    function () {
+
+                        actualizarContadorContenido();
+
+                        document.getElementById(
+                            "contenidoError"
+                        ).innerText = "";
+                    }
+                );
+
+                categoria.addEventListener( // eventos de cambio de categoría para limpiar errores
+                    "change",
+                    function () {
+
+                        document.getElementById(
+                            "categoriaError"
+                        ).innerText = "";
+                    }
+                );
+
+                document.querySelectorAll( // eventos de cambio de las etiquetas para cambiar el estilo del label 
+                                            // según si está seleccionado o no
+                    ".etiqueta-checkbox"
+                ).forEach(checkbox => {
+
+                    checkbox.addEventListener(
+                        "change",
+                        function () {
+
+                            const label =
+                                this.closest("label");
+
+                            label.classList.toggle(
+                                "btn-success",
+                                this.checked
+                            );
+
+                            label.classList.toggle(
+                                "btn-outline-success",
+                                !this.checked
+                            );
+                        }
+                    );
+                });
+
+                formulario.addEventListener( // evento de envío del formulario para guardar cambios
+                    "submit",
+                    function (event) {
+
+                        event.preventDefault();
+
+                        guardarCambios();
+                    }
+                );
+
+                function actualizarContadorTitulo() { // actualiza el contador de caracteres del título
+
+                    document.getElementById(
+                        "contadorTitulo"
+                    ).textContent =
+                        `${titulo.value.length} / 200`;
+                }
+
+                function actualizarContadorContenido() { // actualiza el contador de caracteres del contenido
+
+                    document.getElementById(
+                        "contadorContenido"
+                    ).textContent =
+                        `${contenido.value.length} / 10000`;
+                }
+            }
+        );
+
+        async function guardarCambios() { // función para guardar los cambios del tema
+
+            const temaId =
+                document.getElementById(
+                    "temaId"
+                ).value;
+
+            const categoriaId =
+                document.getElementById(
+                    "categoriaId"
+                ).value;
+
+            const titulo =
+                document.getElementById(
+                    "tituloTema"
+                ).value.trim();
+
+            const contenido =
+                document.getElementById(
+                    "contenidoTema"
+                ).value.trim();
+
+            const etiquetaIds = Array.from( // obtiene los ids de las etiquetas seleccionadas
+                document.querySelectorAll(
+                    ".etiqueta-checkbox:checked"
+                )
+            ).map(
+                checkbox => checkbox.value
+            );
+
+            limpiarErrores(); // limpia los mensajes de error antes de validar
+
+
+            let valido = true; // variable para controlar si el formulario es válido, valida el frontend
+
+
+            if (!categoriaId) {
+
+                document.getElementById(
+                    "categoriaError"
+                ).innerText =
+                    "Debe seleccionar una categoría.";
+
+                valido = false;
+            }
+
+
+            if (titulo.length < 5) {
+
+                document.getElementById(
+                    "tituloError"
+                ).innerText =
+                    "El título debe contener al menos 5 caracteres.";
+
+                valido = false;
+            }
+
+
+            if (contenido.length < 10) {
+
+                document.getElementById(
+                    "contenidoError"
+                ).innerText =
+                    "El contenido debe contener al menos 10 caracteres.";
+
+                valido = false;
+            }
+
+
+            if (!valido) {
+                return;
+            }
+
+            const boton =
+                document.getElementById(
+                    "btnGuardar"
+                );
+
+            const formData = // crea un objeto FormData para enviar los datos del formulario mediante AJAX
+                new FormData();
+
+        // Token de verificación antifalsificación
+            formData.append(
+                "__RequestVerificationToken",
+                document.querySelector(
+                    'input[name="__RequestVerificationToken"]'
+                ).value
+            );
+        // ID del tema
+            formData.append(
+                "TemaId",
+                temaId
+            );
+            // Categoría
+            formData.append(
+                "CategoriaId",
+                categoriaId
+            );
+            // Título
+            formData.append(
+                "Titulo",
+                titulo
+            );
+            // Contenido
+            formData.append(
+                "Contenido",
+                contenido
+            );
+            // Etiquetas
+            etiquetaIds.forEach(
+                id => {
+
+                    formData.append(
+                        "EtiquetaIds",
+                        id
+                    );
+                }
+            );
+
+            boton.disabled = true; // deshabilita el botón de guardar mientras se realiza la petición AJAX
+
+            boton.innerHTML = `
+                <span class="spinner-border
+                             spinner-border-sm
+                             me-2">
+                </span>
+
+                Guardando...
+            `;
+
+
+            try {
+
+                const response =  // realiza la petición AJAX al servidor para guardar los cambios
+                    await fetch(
+                        "/Foro/EditarAjax",
+                        {
+                            method: "POST",
+                            body: formData
+                        }
+                    );
+
+                const data =
+                    await obtenerRespuestaJson(
+                        response
+                    );
+
+                if (!response.ok) { // si la respuesta no es correcta, muestra un mensaje de error (petición del servidor) 
+                                    // con sweetalert2 
+
+                    mostrarError(
+                        data.message ??
+                        "No se pudieron guardar los cambios."
+                    );
+
+                    return;
+                }
+
+                await Swal.fire({ // si la respuesta es correcta, muestra un mensaje de éxito con sweetalert2
+
+                    icon: "success",
+
+                    title:
+                        "Cambios guardados",
+
+                    text:
+                        data.message ??
+                        "La publicación fue actualizada correctamente.",
+
+                    timer: 1600,
+
+                    showConfirmButton: false,
+
+                    background: "#16161D",
+
+                    color: "#E4E4E7"
+                });
+        // redirige al usuario a la página de detalle del tema editado
+                window.location.href =
+                    `/Foro/Detalle/${data.temaId}`;
+
+            }
+            catch (error) {
+
+                console.error(
+                    "Error al editar el tema:",
+                    error
+                );
+
+                mostrarError(
+                    "Ocurrió un error al intentar guardar los cambios."
+                );
+            }
+            finally {
+        // habilita el botón de guardar y cambia el texto del botón a su estado original
+                boton.disabled = false;
+
+                boton.innerHTML = `
+                    <i class="fa-solid
+                              fa-floppy-disk
+                              me-2">
+                    </i>
+
+                    Guardar cambios
+                `;
+            }
+        }
+        // limpia los mensajes de error de validación en el formulario
+        function limpiarErrores() {
+
+            document.getElementById(
+                "categoriaError"
+            ).innerText = "";
+
+            document.getElementById(
+                "tituloError"
+            ).innerText = "";
+
+            document.getElementById(
+                "contenidoError"
+            ).innerText = "";
+        }
+
+        // función para obtener la respuesta JSON de la petición AJAX, si ocurre un error al parsear el JSON, 
+        // devuelve un objeto vacío
+        async function obtenerRespuestaJson(
+            response
+        ) {
+
+            try {
+
+                return await response.json();
+
+            }
+            catch {
+
+                return {};
+            }
+        }
+        function mostrarError(
+            mensaje
+        ) {
+
+            Swal.fire({
+
+                icon: "error",
+                title:
+                    "Error al actualizar",
+
+                text:
+                    mensaje,
+
+                background:
+                    "#16161D",
+
+                color:
+                    "#E4E4E7"
+            });
+        }
+
+    </script>
+}

@@ -1,6 +1,0 @@
-<Solution>
-  <Project Path="NewsFlow.Business/NewsFlow.Business.csproj" Id="f53a5b04-9b90-4fbc-b108-ce1538fe1042" />
-  <Project Path="NewsFlow.Data/NewsFlow.Data.csproj" Id="8d1c8ee7-5aed-415e-a727-b31d4bc4755b" />
-  <Project Path="NewsFlow.Web/NewsFlow.Web.csproj" Id="c8eb8f8d-f2ee-4623-860f-849aa93d4835" />
-  <Project Path="NewsFlow.Repository/NewsFlow.Repository.csproj" Id="a35fd5c7-2c8f-42df-ab9d-c41d0e622307" />
-</Solution>

@@ -1,0 +1,89 @@
+@{
+    ViewData["Title"] = "Panel de Administración";
+}
+
+<div class="container-fluid px-4 py-4">
+
+    <div class="mb-4">
+        <h2 class="fw-bold text-white">
+            <i class="fa-solid fa-screwdriver-wrench text-success me-2"></i>
+            Panel de Administración
+        </h2>
+        <p class="text-secondary mb-0">
+            Gestiona los módulos principales de PizzeriaApp.
+        </p>
+    </div>
+
+    <div class="row g-4">
+
+        <div class="col-xl-3 col-md-6">
+            <a asp-controller="Categoria" asp-action="Index" class="admin-module-card">
+                <i class="fa-solid fa-layer-group"></i>
+                <h5>Categorías</h5>
+                <span>Organización del foro</span>
+            </a>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <a asp-controller="Liga" asp-action="Index" class="admin-module-card">
+                <i class="fa-solid fa-trophy"></i>
+                <h5>Ligas</h5>
+                <span>Competencias y torneos</span>
+            </a>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <a asp-controller="Equipo" asp-action="Index" class="admin-module-card">
+                <i class="fa-solid fa-shield-halved"></i>
+                <h5>Equipos</h5>
+                <span>Clubes de fútbol</span>
+            </a>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <a asp-controller="Jugador" asp-action="Index" class="admin-module-card">
+                <i class="fa-solid fa-person-running"></i>
+                <h5>Jugadores</h5>
+                <span>Plantillas y futbolistas</span>
+            </a>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <a asp-controller="Tema" asp-action="Index" class="admin-module-card">
+                <i class="fa-solid fa-comments"></i>
+                <h5>Temas</h5>
+                <span>Publicaciones del foro</span>
+            </a>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <a asp-controller="Respuesta" asp-action="Index" class="admin-module-card">
+                <i class="fa-solid fa-reply"></i>
+                <h5>Respuestas</h5>
+                <span>Comentarios de usuarios</span>
+            </a>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <a asp-controller="Etiqueta" asp-action="Index" class="admin-module-card">
+                <i class="fa-solid fa-tags"></i>
+                <h5>Etiquetas</h5>
+                <span>Clasificación de temas</span>
+            </a>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <a asp-controller="Reporte"
+               asp-action="Index"
+               class="admin-module-card">
+
+                <i class="fa-solid fa-triangle-exclamation"></i>
+
+                <h5>Reportes</h5>
+
+                <span>Moderación de contenido</span>
+            </a>
+        </div>
+
+    </div>
+</div>

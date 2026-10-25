@@ -1,0 +1,53 @@
+@model PizzeriaApp.MVC.Models.CategoriaViewModel
+
+@{
+    ViewData["Title"] = "Nueva Categoría";
+}
+
+<div class="container py-5">
+    <div class="dashboard-panel mx-auto" style="max-width: 620px;">
+
+        <h2 class="fw-bold text-white mb-3">
+            <i class="fa-solid fa-plus text-success me-2"></i>
+            Nueva Categoría
+        </h2>
+
+        <p class="text-secondary mb-4">
+            Registra una nueva categoría para organizar los temas del foro.
+        </p>
+
+        <form asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
+
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="mb-3">
+                <label asp-for="Nombre" class="form-label text-light fw-semibold"></label>
+                <input asp-for="Nombre" class="form-control bg-dark text-white border-secondary" placeholder="Ej: Champions League" />
+                <span asp-validation-for="Nombre" class="text-warning small"></span>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="Descripcion" class="form-label text-light fw-semibold"></label>
+                <textarea asp-for="Descripcion" class="form-control bg-dark text-white border-secondary" rows="4" placeholder="Descripción de la categoría"></textarea>
+                <span asp-validation-for="Descripcion" class="text-warning small"></span>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-football px-4">
+                    <i class="fa-solid fa-save me-2"></i>
+                    Guardar
+                </button>
+
+                <a asp-action="Index" class="btn btn-outline-light px-4">
+                    Cancelar
+                </a>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

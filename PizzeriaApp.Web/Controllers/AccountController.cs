@@ -10,16 +10,11 @@ namespace PizzeriaApp.MVC.Controllers;
 
 public class AccountController : Controller
 {
-    private readonly IAuthService _authService; // AUTHENTICATION SERVICE
-    private readonly IPerfilService _perfilService; // PROFILE SERVICE
+    private readonly IAuthService _authService;
 
-
-    public AccountController(
-     IAuthService authService,
-     IPerfilService perfilService)
+    public AccountController(IAuthService authService)
     {
         _authService = authService;
-        _perfilService = perfilService;
     }
 
     [HttpGet]
@@ -46,28 +41,17 @@ public class AccountController : Controller
 
         if (usuario is null)
         {
-            ModelState.AddModelError(string.Empty, "Correo o contrase�a incorrectos.");
+            ModelState.AddModelError(string.Empty, "Correo o contraseña incorrectos.");
             return View(model);
         }
 
         var claims = new List<Claim>
-{
-    new Claim(
-        ClaimTypes.NameIdentifier,
-        usuario.UsuarioId.ToString()),
-
-    new Claim(
-        ClaimTypes.Name,
-        usuario.NombreUsuario),
-
-    new Claim(
-        ClaimTypes.Email,
-        usuario.Correo),
-
-    new Claim(
-        ClaimTypes.Role,
-        usuario.Rol.Nombre)
-};
+        {
+            new Claim(ClaimTypes.NameIdentifier, usuario.UsuarioId.ToString()),
+            new Claim(ClaimTypes.Name, usuario.NombreUsuario),
+            new Claim(ClaimTypes.Email, usuario.Correo),
+            new Claim(ClaimTypes.Role, usuario.Rol.Nombre)
+        };
 
         var claimsIdentity = new ClaimsIdentity(claims, "CookieAuth");
         var principal = new ClaimsPrincipal(claimsIdentity);
@@ -97,7 +81,7 @@ public class AccountController : Controller
             NombreUsuario = model.NombreUsuario,
             Correo = model.Email,
             EstadoId = 1,
-            RolId = 3
+            RolId = 2
         };
 
         try
@@ -110,63 +94,6 @@ public class AccountController : Controller
             ModelState.AddModelError("Email", ex.Message);
             return View(model);
         }
-    }
-
-    [HttpGet]
-    [Authorize]
-    [HttpGet]
-    [Authorize]
-    public async Task<IActionResult> Profile()
-    {
-        var usuarioIdTexto = User.FindFirstValue(
-            ClaimTypes.NameIdentifier);
-
-        if (!int.TryParse(usuarioIdTexto, out var usuarioId))
-        {
-            return RedirectToAction(nameof(Login));
-        }
-
-        var usuario = await _perfilService.ObtenerPerfilAsync(usuarioId);
-
-        if (usuario is null)
-        {
-            return NotFound();
-        }
-
-        var model = new PerfilUsuarioViewModel
-        {
-            UsuarioId = usuario.UsuarioId,
-            NombreUsuario = usuario.NombreUsuario,
-            Correo = usuario.Correo,
-            Rol = usuario.Rol.Nombre,
-            Estado = usuario.Estado.Nombre,
-            FechaRegistro = usuario.FechaRegistro,
-
-            TotalTemas =
-                await _perfilService.ContarTemasAsync(usuarioId),
-
-            TotalRespuestas =
-                await _perfilService.ContarRespuestasAsync(usuarioId),
-
-            TotalReacciones =
-                await _perfilService.ContarReaccionesAsync(usuarioId),
-
-            Temas = usuario.Temas
-                .OrderByDescending(t => t.FechaCreacion)
-                .Select(t => new PerfilTemaViewModel
-                {
-                    TemaId = t.TemaId,
-                    Titulo = t.Titulo,
-                    Categoria = t.Categoria.Nombre,
-                    Estado = t.Estado.Nombre,
-                    FechaCreacion = t.FechaCreacion,
-                    CantidadRespuestas = t.Respuestas.Count,
-                    CantidadReacciones = t.Reacciones.Count
-                })
-                .ToList()
-        };
-
-        return View(model);
     }
 
     [Authorize]

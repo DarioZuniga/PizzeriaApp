@@ -37,34 +37,9 @@ namespace PizzeriaApp.MVC
             // Repositorios
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
-            builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
-            builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
-            builder.Services.AddScoped<ILigaRepository, LigaRepository>();
-            builder.Services.AddScoped<IEquipoRepository, EquipoRepository>();
-            builder.Services.AddScoped<IJugadorRepository, JugadorRepository>();
-            builder.Services.AddScoped<ITemaRepository, TemaRepository>();
-            builder.Services.AddScoped<IRespuestaRepository, RespuestaRepository>();
-            builder.Services.AddScoped<IEtiquetaRepository, EtiquetaRepository>();
-            builder.Services.AddScoped<IReporteRepository, ReporteRepository>();
-            builder.Services.AddScoped<IReaccionRepository, ReaccionRepository>();
-            builder.Services.AddScoped<ITemaEtiquetaRepository, TemaEtiquetaRepository>();
 
             // Servicios
             builder.Services.AddScoped<IAuthService, AuthService>();
-            builder.Services.AddScoped<IDashboardService, DashboardService>();
-            builder.Services.AddScoped<ICategoriaService, CategoriaService>();
-            builder.Services.AddScoped<ILigaService, LigaService>();
-            builder.Services.AddScoped<IEquipoService, EquipoService>();
-            builder.Services.AddScoped<IJugadorService, JugadorService>();
-            builder.Services.AddScoped<ITemaService, TemaService>();
-            builder.Services.AddScoped<IRespuestaService, RespuestaService>();
-            builder.Services.AddScoped<IEtiquetaService, EtiquetaService>();
-            builder.Services.AddScoped<IReporteService, ReporteService>();
-            builder.Services.AddScoped<IReaccionService, ReaccionService>();
-            builder.Services.AddScoped<IPerfilService, PerfilService>();
-            builder.Services.AddScoped<ITemaEtiquetaService, TemaEtiquetaService>();
-
-            // ✅ NO hay bloque de FootballApi aquí
 
             var app = builder.Build();
 

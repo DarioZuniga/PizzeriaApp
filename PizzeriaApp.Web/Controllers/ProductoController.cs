@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using PizzeriaApp.Data;
 using PizzeriaApp.Data.Entities;
 
@@ -76,5 +77,20 @@ public class ProductoController : Controller
             _context.SaveChanges();
         }
         return RedirectToAction(nameof(Index));
+    }
+    [HttpGet]
+    public async Task<IActionResult> Personalizar(int id)
+    {
+        var producto = await _context.Productos
+            .Include(p => p.Categoria)
+            .FirstOrDefaultAsync(p => p.ProductoId == id);
+        
+        if (producto == null) return NotFound();
+
+        ViewBag.Ingredientes = await _context.Ingredientes.Where(i => i.Activo).ToListAsync();
+        ViewBag.Tamanos = await _context.Tamanos.Where(t => t.Activo).ToListAsync();
+        ViewBag.TiposMasa = await _context.TiposMasa.Where(t => t.Activo).ToListAsync();
+
+        return View(producto);
     }
 }

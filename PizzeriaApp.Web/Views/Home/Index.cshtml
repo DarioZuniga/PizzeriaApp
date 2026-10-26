@@ -46,9 +46,7 @@
                         </div>
                         <div class="card-footer bg-white border-0 d-flex justify-content-between align-items-center">
                             <h5 class="mb-0 fw-bold" style="color: #e53e3e;">₡@producto.Precio.ToString("N2")</h5>
-                            <button class="btn btn-sm btn-primary" style="background-color: #1a365d;">
-                                <i class="fa-solid fa-cart-plus me-1"></i> Agregar
-                            </button>
+                            <a asp-controller="Producto" asp-action="Personalizar" asp-route-id="@producto.ProductoId" class="btn btn-sm btn-primary" style="background-color: #1a365d;"><i class="fa-solid fa-cart-plus me-1"></i> Personalizar</a>
                         </div>
                     </div>
                 </div>

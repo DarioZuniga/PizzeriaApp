@@ -1,0 +1,47 @@
+@model IEnumerable<PizzeriaApp.Data.Entities.Pedido>
+@{
+    ViewData["Title"] = "Gestión de Pedidos";
+}
+
+<div class="container mt-4">
+    <h2 style="color: #1a365d;">📋 Gestión de Pedidos</h2>
+    <hr />
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Pedido #</th>
+                <th>Cliente</th>
+                <th>Fecha</th>
+                <th>Total</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var pedido in Model)
+            {
+                <tr>
+                    <td>@pedido.PedidoId</td>
+                    <td>@pedido.Usuario?.NombreUsuario</td>
+                    <td>@pedido.Fecha.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td>₡@pedido.Total.ToString("N2")</td>
+                    <td><span class="badge bg-info">@pedido.Estado</span></td>
+                    <td>
+                        <form asp-action="CambiarEstado" method="post" class="d-flex gap-2">
+                            <input type="hidden" name="pedidoId" value="@pedido.PedidoId" />
+                            <select name="nuevoEstado" class="form-select form-select-sm">
+                                <option value="Pendiente">Pendiente</option>
+                                <option value="Pagado">Pagado</option>
+                                <option value="EnPreparacion">En Preparación</option>
+                                <option value="EnCamino">En Camino</option>
+                                <option value="Entregado">Entregado</option>
+                                <option value="Cancelado">Cancelado</option>
+                            </select>
+                            <button type="submit" class="btn btn-sm btn-primary">Actualizar</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

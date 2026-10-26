@@ -27,7 +27,10 @@ namespace PizzeriaApp.MVC
                 options.AccessDeniedPath = "/Account/AccessDenied";
             });
 
-            builder.Services.AddControllersWithViews();
+            builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession();
+
+builder.Services.AddControllersWithViews();
 
             builder.Services.AddDbContext<PizzeriaAppDbContext>(options =>
                 options.UseSqlServer(
@@ -52,6 +55,7 @@ namespace PizzeriaApp.MVC
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
+app.UseSession();
             app.UseAuthentication();
             app.UseAuthorization();
 

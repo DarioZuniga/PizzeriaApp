@@ -1,0 +1,121 @@
+@model PizzeriaApp.Data.Entities.Producto
+@{
+    ViewData["Title"] = "Personalizar " + Model.Nombre;
+    var ingredientes = ViewBag.Ingredientes as List<PizzeriaApp.Data.Entities.Ingrediente>;
+    var tamanos = ViewBag.Tamanos as List<PizzeriaApp.Data.Entities.Tamano>;
+    var tiposMasa = ViewBag.TiposMasa as List<PizzeriaApp.Data.Entities.TipoMasa>;
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm" style="border-radius: 12px;">
+                <div class="card-body p-4">
+                    <h2 class="fw-bold" style="color: #1a365d;">@Model.Nombre</h2>
+                    <p class="text-muted">@Model.Descripcion</p>
+                    <hr />
+
+                    <form asp-controller="Carrito" asp-action="Agregar" method="post" id="formPersonalizar">
+                        <input type="hidden" name="productoId" value="@Model.ProductoId" />
+                        <input type="hidden" name="cantidad" value="1" />
+                        <input type="hidden" id="precioFinalInput" name="precioFinal" value="@Model.Precio" />
+
+                        <!-- Tamaño -->
+                        <div class="mb-4">
+                            <h5 class="fw-bold">1. Elegí el tamaño</h5>
+                            <select class="form-select" name="tamanoId" id="selectTamano">
+                                <option value="">Tamaño estándar</option>
+                                @foreach (var t in tamanos)
+                                {
+                                    <option value="@t.TamanoId" data-factor="@t.FactorPrecio">@t.Nombre (+₡@((Model.Precio * t.FactorPrecio - Model.Precio).ToString("N0")))</option>
+                                }
+                            </select>
+                        </div>
+
+                        <!-- Tipo de Masa -->
+                        <div class="mb-4">
+                            <h5 class="fw-bold">2. Elegí el tipo de masa</h5>
+                            <select class="form-select" name="tipoMasaId" id="selectMasa">
+                                <option value="">Masa estándar</option>
+                                @foreach (var m in tiposMasa)
+                                {
+                                    <option value="@m.TipoMasaId" data-precio="@m.PrecioExtra">@m.Nombre (+₡@m.PrecioExtra.ToString("N0"))</option>
+                                }
+                            </select>
+                        </div>
+
+                        <!-- Ingredientes -->
+                        <div class="mb-4">
+                            <h5 class="fw-bold">3. Agregá ingredientes extra</h5>
+                            <div class="row">
+                                @foreach (var ing in ingredientes)
+                                {
+                                    <div class="col-md-6 mb-2">
+                                        <div class="form-check">
+                                            <input class="form-check-input ingrediente-check" type="checkbox" name="ingredientesIds" value="@ing.IngredienteId" id="ing_@ing.IngredienteId" data-precio="@ing.PrecioExtra" />
+                                            <label class="form-check-label" for="ing_@ing.IngredienteId">
+                                                @ing.Nombre (+₡@ing.PrecioExtra.ToString("N0"))
+                                            </label>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Precio en tiempo real -->
+                        <div class="bg-light p-3 rounded mb-4 d-flex justify-content-between align-items-center">
+                            <h4 class="mb-0 fw-bold">Precio Total:</h4>
+                            <h3 class="mb-0 fw-bold text-danger" id="precioTotal">₡@Model.Precio.ToString("N2")</h3>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg w-100" style="background-color: #1a365d;">
+                            <i class="fa-solid fa-cart-plus me-2"></i> Agregar al Carrito
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const precioBase = @Model.Precio;
+        const precioTotalEl = document.getElementById('precioTotal');
+        const precioFinalInput = document.getElementById('precioFinalInput');
+        const selectTamano = document.getElementById('selectTamano');
+        const selectMasa = document.getElementById('selectMasa');
+        const checkboxesIngredientes = document.querySelectorAll('.ingrediente-check');
+
+        function calcularPrecio() {
+            let precio = precioBase;
+
+            // Sumar factor de tamaño
+            const opcionTamano = selectTamano.options[selectTamano.selectedIndex];
+            if (opcionTamano.dataset.factor) {
+                const factor = parseFloat(opcionTamano.dataset.factor);
+                precio = precio * factor;
+            }
+
+            // Sumar precio extra de masa
+            const opcionMasa = selectMasa.options[selectMasa.selectedIndex];
+            if (opcionMasa.dataset.precio) {
+                precio += parseFloat(opcionMasa.dataset.precio);
+            }
+
+            // Sumar ingredientes
+            checkboxesIngredientes.forEach(chk => {
+                if (chk.checked) {
+                    precio += parseFloat(chk.dataset.precio);
+                }
+            });
+
+            precioTotalEl.textContent = '₡' + precio.toFixed(2);
+            precioFinalInput.value = precio.toFixed(2);
+        }
+
+        selectTamano.addEventListener('change', calcularPrecio);
+        selectMasa.addEventListener('change', calcularPrecio);
+        checkboxesIngredientes.forEach(chk => chk.addEventListener('change', calcularPrecio));
+    </script>
+}

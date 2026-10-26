@@ -1,0 +1,32 @@
+@model IEnumerable<PizzeriaApp.Data.Entities.Pedido>
+@{
+    ViewData["Title"] = "Mi Historial";
+}
+
+<div class="container mt-4">
+    <h2 style="color: #1a365d;">📜 Mi Historial de Pedidos</h2>
+    <hr />
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Pedido #</th>
+                <th>Fecha</th>
+                <th>Total</th>
+                <th>Estado</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var pedido in Model)
+            {
+                <tr>
+                    <td>@pedido.PedidoId</td>
+                    <td>@pedido.Fecha.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td>₡@pedido.Total.ToString("N2")</td>
+                    <td><span class="badge bg-info">@pedido.Estado</span></td>
+                    <td><a asp-action="Seguimiento" asp-route-id="@pedido.PedidoId" class="btn btn-sm btn-primary">Ver</a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -17,6 +17,12 @@ public class PizzeriaAppDbContext : DbContext
     public DbSet<TokenRecuperacion> TokensRecuperacion => Set<TokenRecuperacion>();
     public DbSet<Categoria> Categorias => Set<Categoria>();
     public DbSet<Producto> Productos => Set<Producto>();
+    public DbSet<Ingrediente> Ingredientes => Set<Ingrediente>();
+    public DbSet<Tamano> Tamanos => Set<Tamano>();
+    public DbSet<TipoMasa> TiposMasa => Set<TipoMasa>();
+    public DbSet<Pedido> Pedidos => Set<Pedido>();
+    public DbSet<DetallePedido> DetallesPedido => Set<DetallePedido>();
+    public DbSet<DetallePedidoIngrediente> DetallePedidoIngredientes => Set<DetallePedidoIngrediente>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -29,6 +35,12 @@ public class PizzeriaAppDbContext : DbContext
         modelBuilder.Entity<TokenRecuperacion>().ToTable("TokensRecuperacion");
         modelBuilder.Entity<Categoria>().ToTable("Categorias");
         modelBuilder.Entity<Producto>().ToTable("Productos");
+        modelBuilder.Entity<Ingrediente>().ToTable("Ingredientes");
+        modelBuilder.Entity<Tamano>().ToTable("Tamanos");
+        modelBuilder.Entity<TipoMasa>().ToTable("TiposMasa");
+        modelBuilder.Entity<Pedido>().ToTable("Pedidos");
+        modelBuilder.Entity<DetallePedido>().ToTable("DetallesPedido");
+        modelBuilder.Entity<DetallePedidoIngrediente>().ToTable("DetallePedidoIngredientes");
 
         foreach (var relationship in modelBuilder.Model.GetEntityTypes()
                      .SelectMany(entity => entity.GetForeignKeys()))

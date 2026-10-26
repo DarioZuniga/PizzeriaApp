@@ -15,13 +15,20 @@ public class PedidoController : Controller
         _context = context;
     }
 
-    [Authorize]
+        [Authorize]
     public async Task<IActionResult> Seguimiento(int id)
     {
         var usuarioId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0");
         var pedido = await _context.Pedidos
             .Include(p => p.Detalles)
-            .ThenInclude(d => d.Producto)
+                .ThenInclude(d => d.Producto)
+            .Include(p => p.Detalles)
+                .ThenInclude(d => d.Tamano)
+            .Include(p => p.Detalles)
+                .ThenInclude(d => d.TipoMasa)
+            .Include(p => p.Detalles)
+                .ThenInclude(d => d.Ingredientes)
+                    .ThenInclude(i => i.Ingrediente)
             .FirstOrDefaultAsync(p => p.PedidoId == id && p.UsuarioId == usuarioId);
         
         if (pedido == null) return NotFound();

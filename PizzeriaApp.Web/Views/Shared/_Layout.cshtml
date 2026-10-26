@@ -1,278 +1,90 @@
-@* 1. La lógica Razor siempre va al inicio del archivo *@
-@using PizzeriaApp.MVC.Security
-@{
-    var isAuthPage = ViewContext.RouteData.Values["controller"]?.ToString() == "Account"
-        && (
-            ViewContext.RouteData.Values["action"]?.ToString() == "Login"
-            || ViewContext.RouteData.Values["action"]?.ToString() == "Register"
-        );
-}
-
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - PizzeriaApp</title>
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-
-    <link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.bootstrap5.css" />
-    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/3.0.2/css/buttons.bootstrap5.css" />
-
-    <style>
-            /* --- NUEVA ESTÉTICA PizzeriaApp (CLARA) --- */
-            body {
-                background-color: #f4f6f9 !important; /* Fondo gris claro */
-                color: #2d3748 !important; /* Texto gris oscuro */
-                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                min-height: 100vh;
-            }
-
-            /* Tarjetas blancas */
-            .bg-social-card {
-                background-color: #ffffff !important;
-                box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            }
-
-            /* Bordes suaves */
-            .border-social {
-                border-color: #e2e8f0 !important;
-            }
-
-            /* Texto de acento azul oscuro */
-            .text-green-neon {
-                color: #1a365d !important;
-            }
-
-            /* Botones */
-            .btn-violet-neon {
-                background-color: #1a365d !important;
-                color: #ffffff !important;
-                border: none;
-                transition: all 0.2s ease;
-            }
-
-                .btn-violet-neon:hover {
-                    background-color: #2b6cb0 !important;
-                    transform: translateY(-1px);
-                }
-
-            .btn-outline-neon {
-                border: 1px solid #cbd5e0 !important;
-                color: #2d3748 !important;
-                transition: all 0.2s;
-            }
-
-                .btn-outline-neon:hover {
-                    background-color: #f7fafc !important;
-                    color: #1a365d !important;
-                }
-
-            /* Menú de navegación */
-            .nav-social-link {
-                color: #4a5568 !important;
-                font-weight: 600;
-                text-decoration: none;
-                transition: color 0.2s;
-            }
-
-                .nav-social-link:hover,
-                .nav-social-link.active {
-                    color: #1a365d !important;
-                }
-
-            /* Dropdown (Menú de perfil) */
-            .dropdown-menu-dark-custom {
-                background-color: #ffffff !important;
-                border: 1px solid #e2e8f0 !important;
-                border-radius: 12px;
-                padding: 8px;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
-            }
-
-                .dropdown-menu-dark-custom .dropdown-item {
-                    color: #2d3748 !important;
-                    border-radius: 6px;
-                    transition: all 0.2s;
-                }
-
-                    .dropdown-menu-dark-custom .dropdown-item:hover {
-                        background-color: #f7fafc !important;
-                        color: #1a365d !important;
-                    }
-
-            .brand-logo {
-                letter-spacing: -1px;
-                text-decoration: none;
-                color: #1a365d !important;
-            }
-
-            .search-input-container {
-                width: 100%;
-                max-width: 400px;
-            }
-
-            .search-input {
-                border-radius: 20px;
-                background-color: #f7fafc !important;
-                border: 1px solid #e2e8f0 !important;
-                color: #2d3748 !important;
-            }
-
-            .footer-badge {
-                font-size: 0.75rem;
-                background-color: #edf2f7 !important;
-                color: #4a5568 !important;
-                border-color: #cbd5e0 !important;
-            }
-
-            .max-w-md {
-                max-width: 400px;
-            }
-
-            /* Corrección para el navbar */
-            .navbar {
-                background-color: #ffffff !important;
-            }
-    </style>
-
-    @await RenderSectionAsync("Styles", required: false)
 </head>
-
-<body class="d-flex flex-column">
-
-    @if (!isAuthPage)
-    {
-        <nav class="navbar navbar-expand-md bg-social-card border-bottom border-social sticky-top py-2 px-4">
-            <div class="container-fluid">
-                <!-- Logo cambiado a PizzeriaApp -->
-                <a class="navbar-brand fw-bold fs-3 d-flex align-items-center brand-logo" asp-controller="Home" asp-action="Index">
-                    News<span class="text-green-neon">Flow</span>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-light bg-white shadow-sm mb-3">
+            <div class="container">
+                <a class="navbar-brand fw-bold" asp-controller="Home" asp-action="Index" style="color: #1a365d;">
+                    <i class="fa-solid fa-pizza-slice me-1" style="color: #e53e3e;"></i> PizzeriaApp
                 </a>
-
-                <div class="collapse navbar-collapse d-flex justify-content-between">
-                    <div class="search-input-container w-100 max-w-md d-none d-md-block">
-                        <input type="text"
-                               class="form-control py-2 small search-input text-center"
-                               placeholder="Buscar noticias..."
-                               disabled>
-                    </div>
-
-                    <ul class="navbar-nav gap-4 align-items-center mb-0">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-social-link"
-                               asp-controller="Home"
-                               asp-action="Index">Inicio</a>
+                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Index">Menú</a>
                         </li>
-
-                        <li class="nav-item">
-                            <a class="nav-social-link"
-                               asp-controller="Foro"
-                               asp-action="Index">
-                                <i class="fa-solid fa-newspaper me-1"></i>
-                                Noticias
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-social-link"
-                               asp-controller="Categoria"
-                               asp-action="Index">Categorías</a>
-                        </li>
-
-                        @if (User.IsInRole(RolesSistema.Administrador))
+                        @if (User.IsInRole("Administrador"))
                         {
                             <li class="nav-item">
-                                <a class="nav-social-link"
-                                   asp-controller="Admin"
-                                   asp-action="Index">
-                                    <i class="fa-solid fa-screwdriver-wrench me-1"></i>
-                                    Administración
-                                </a>
+                                <a class="nav-link text-dark" asp-controller="Producto" asp-action="Index">Productos</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Pedido" asp-action="Gestion">Pedidos</a>
                             </li>
                         }
-
-                        <li class="nav-item dropdown">
-                            <a class="nav-social-link dropdown-toggle d-flex align-items-center gap-1" href="#" id="navbarAccountDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                @if (User.Identity != null && User.Identity.IsAuthenticated)
-                                {
-                                    <span>Hola, @User.Identity.Name</span>
-                                }
-                                else
-                                {
-                                    <span>Cuenta</span>
-                                }
-                            </a>
-
-                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark-custom shadow" aria-labelledby="navbarAccountDropdown">
-                                @if (User.Identity != null && User.Identity.IsAuthenticated)
-                                {
-                                    <li>
-                                        <a class="dropdown-item py-2" asp-controller="Account" asp-action="Profile">
-                                            👤 Ver mi Perfil
-                                        </a>
-                                    </li>
-                                    <li><hr class="dropdown-divider border-social"></li>
-                                    <li>
-                                        <a class="dropdown-item py-2 text-danger fw-semibold" asp-controller="Account" asp-action="Logout">
-                                            🚪 Cerrar Sesión
-                                        </a>
-                                    </li>
-                                }
-                                else
-                                {
-                                    <li>
-                                        <a class="dropdown-item py-2" asp-controller="Account" asp-action="Login">
-                                            🔑 Iniciar Sesión
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item py-2" asp-controller="Account" asp-action="Register">
-                                            ✨ Crear Cuenta
-                                        </a>
-                                    </li>
-                                }
-                            </ul>
-                        </li>
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Pedido" asp-action="Historial">Mi Historial</a>
+                            </li>
+                        }
+                    </ul>
+                    <ul class="navbar-nav">
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Carrito" asp-action="Index">
+                                    <i class="fa-solid fa-cart-shopping"></i> Carrito
+                                </a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                                    Hola, @User.Identity.Name
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item" asp-controller="Account" asp-action="Logout">Cerrar Sesión</a></li>
+                                </ul>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Iniciar Sesión</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Register">Registrarse</a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>
         </nav>
-    }
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
 
-    <main class="flex-grow-1 container py-4">
-        @RenderBody()
-    </main>
+    <footer class="border-top footer text-muted mt-5">
+        <div class="container text-center py-3">
+            &copy; 2026 PizzeriaApp - Pizzería Las Perlas
+        </div>
+    </footer>
 
-    @if (!isAuthPage)
-    {
-        <footer class="text-muted bg-social-card border-top border-social py-4 mt-auto">
-            <div class="container text-center">
-                <p class="small mb-1 text-secondary">&copy; @DateTime.Now.Year PizzeriaApp - Agregador de Noticias.</p>
-                <span class="badge footer-badge px-3 py-1">SC-701 Project</span>
-            </div>
-        </footer>
-    }
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    @*JS de DataTables*@
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdn.datatables.net/2.0.8/js/dataTables.js"></script>
-    <script src="https://cdn.datatables.net/2.0.8/js/dataTables.bootstrap5.js"></script>
-    <script src="https://cdn.datatables.net/buttons/3.0.2/js/dataTables.buttons.js"></script>
-    <script src="https://cdn.datatables.net/buttons/3.0.2/js/buttons.bootstrap5.js"></script>
-    <script src="https://cdn.datatables.net/buttons/3.0.2/js/buttons.html5.js"></script>
-    <script src="https://cdn.datatables.net/buttons/3.0.2/js/buttons.print.js"></script>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
-
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

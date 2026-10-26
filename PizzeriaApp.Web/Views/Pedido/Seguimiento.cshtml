@@ -1,31 +1,138 @@
 @model PizzeriaApp.Data.Entities.Pedido
 @{
     ViewData["Title"] = "Seguimiento del Pedido";
+    string colorBadge = Model.Estado switch
+    {
+        "Pendiente" => "secondary",
+        "Pagado" => "success",
+        "EnPreparacion" => "warning",
+        "EnCamino" => "info",
+        "Entregado" => "primary",
+        "Cancelado" => "danger",
+        _ => "secondary"
+    };
 }
 
 <div class="container mt-4">
-    <h2 style="color: #1a365d;">📦 Pedido #@Model.PedidoId</h2>
-    <p class="text-muted">Estado actual: <strong>@Model.Estado</strong></p>
+    <div class="d-flex justify-content-between align-items-center">
+        <h2 style="color: #1a365d;">📦 Pedido #@Model.PedidoId</h2>
+        <a asp-action="Historial" class="btn btn-outline-secondary btn-sm">← Volver al Historial</a>
+    </div>
     <hr />
-    
+
+    <!-- Estado -->
+    <div class="card border-0 shadow-sm mb-4" style="border-radius: 12px;">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <small class="text-muted">Estado actual</small>
+                    <h4><span class="badge bg-@colorBadge">@Model.Estado</span></h4>
+                </div>
+                <div class="col-md-4">
+                    <small class="text-muted">Método de pago</small>
+                    <h5>@(string.IsNullOrEmpty(Model.MetodoPago) ? "Por definir" : Model.MetodoPago)</h5>
+                </div>
+                <div class="col-md-4">
+                    <small class="text-muted">Fecha del pedido</small>
+                    <h5>@Model.Fecha.ToString("dd/MM/yyyy HH:mm")</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Timeline de estados -->
+    <div class="card border-0 shadow-sm mb-4" style="border-radius: 12px;">
+        <div class="card-body">
+            <h5 class="fw-bold mb-3">Progreso del Pedido</h5>
+            <div class="d-flex justify-content-between text-center">
+                @{
+                    var estados = new[] { "Pendiente", "Pagado", "EnPreparacion", "EnCamino", "Entregado" };
+                    var indiceActual = Array.IndexOf(estados, Model.Estado);
+                }
+                @for (int i = 0; i < estados.Length; i++)
+                {
+                    var activo = i <= indiceActual;
+                    <div style="flex: 1;">
+                        <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center"
+                             style="width: 40px; height: 40px; background-color: @(activo ? "#1a365d" : "#e2e8f0"); color: @(activo ? "white" : "#a0aec0");">
+                            @(i + 1)
+                        </div>
+                        <small class="d-block mt-2" style="color: @(activo ? "#1a365d" : "#a0aec0"); font-weight: @(activo ? "bold" : "normal");">
+                            @estados[i]
+                        </small>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Detalle de productos -->
     <div class="card border-0 shadow-sm" style="border-radius: 12px;">
         <div class="card-body">
-            <h5 class="fw-bold">Productos</h5>
-            <ul class="list-group list-group-flush">
-                @foreach (var detalle in Model.Detalles)
-                {
-                    <li class="list-group-item d-flex justify-content-between">
-                        <span>@detalle.Cantidad x @detalle.Producto.Nombre</span>
-                        <span class="fw-bold">₡@((detalle.PrecioUnitario * detalle.Cantidad).ToString("N2"))</span>
-                    </li>
-                }
-            </ul>
-            <hr />
-            <div class="d-flex justify-content-between fw-bold fs-5">
-                <span>Total:</span>
-                <span class="text-danger">₡@Model.Total.ToString("N2")</span>
+            <h5 class="fw-bold mb-3">Detalle del Pedido</h5>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead style="background-color: #f7fafc;">
+                        <tr>
+                            <th>Producto</th>
+                            <th>Personalización</th>
+                            <th class="text-center">Cantidad</th>
+                            <th class="text-end">Precio Unit.</th>
+                            <th class="text-end">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var detalle in Model.Detalles)
+                        {
+                            <tr>
+                                <td>
+                                    <strong>@detalle.Producto?.Nombre</strong>
+                                </td>
+                                <td>
+                                    <small class="text-muted">
+                                        @if (detalle.Tamano != null)
+                                        {
+                                            <span class="d-block"><i class="fa-solid fa-ruler me-1"></i>Tamaño: @detalle.Tamano.Nombre</span>
+                                        }
+                                        @if (detalle.TipoMasa != null)
+                                        {
+                                            <span class="d-block"><i class="fa-solid fa-bread-slice me-1"></i>Masa: @detalle.TipoMasa.Nombre</span>
+                                        }
+                                        @if (detalle.Ingredientes != null && detalle.Ingredientes.Any())
+                                        {
+                                            <span class="d-block">
+                                                <i class="fa-solid fa-plus me-1"></i>Extras: 
+                                                @string.Join(", ", detalle.Ingredientes.Select(i => i.Ingrediente?.Nombre))
+                                            </span>
+                                        }
+                                        @if (!string.IsNullOrEmpty(detalle.Producto?.Descripcion))
+                                        {
+                                            <span class="d-block fst-italic">@detalle.Producto.Descripcion</span>
+                                        }
+                                    </small>
+                                </td>
+                                <td class="text-center">@detalle.Cantidad</td>
+                                <td class="text-end">₡@(detalle.PrecioUnitario.ToString("N2"))</td>
+                                <td class="text-end fw-bold">₡@((detalle.PrecioUnitario * detalle.Cantidad).ToString("N2"))</td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="4" class="text-end">Subtotal:</td>
+                            <td class="text-end">₡@(Model.Subtotal.ToString("N2"))</td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" class="text-end">IVA (13%):</td>
+                            <td class="text-end">₡@(Model.Impuestos.ToString("N2"))</td>
+                        </tr>
+                        <tr style="background-color: #f7fafc;">
+                            <td colspan="4" class="text-end fw-bold fs-5">Total:</td>
+                            <td class="text-end fw-bold fs-5 text-danger">₡@(Model.Total.ToString("N2"))</td>
+                        </tr>
+                    </tfoot>
+                </table>
             </div>
-            <a asp-action="Historial" class="btn btn-secondary mt-3">Volver al Historial</a>
         </div>
     </div>
 </div>

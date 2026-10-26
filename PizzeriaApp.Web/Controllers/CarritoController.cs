@@ -35,7 +35,7 @@ public class CarritoController : Controller
         return View(carrito);
     }
 
-    [HttpPost]
+        [HttpPost]
     public async Task<IActionResult> Agregar(int productoId, int cantidad, int? tamanoId, int? tipoMasaId, List<int>? ingredientesIds, decimal? precioFinal = null)
     {
         var producto = await _context.Productos.FindAsync(productoId);
@@ -47,32 +47,44 @@ public class CarritoController : Controller
         {
             ProductoId = productoId,
             Nombre = producto.Nombre,
-            PrecioBase = precioFinal ?? producto.Precio,
+            PrecioBase = producto.Precio,
             Cantidad = cantidad,
             TamanoId = tamanoId,
             TipoMasaId = tipoMasaId,
             IngredientesIds = ingredientesIds ?? new List<int>()
         };
 
-        // Si hay tamaño, buscar nombre
+        // Calcular precio del tamaño
         if (tamanoId.HasValue)
         {
             var tamano = await _context.Tamanos.FindAsync(tamanoId.Value);
-            item.TamanoNombre = tamano?.Nombre;
+            if (tamano != null)
+            {
+                item.TamanoNombre = tamano.Nombre;
+                // El factor de precio se suma como un extra (ej. Grande = +30% del precio base)
+                item.PrecioTamano = producto.Precio * (tamano.FactorPrecio - 1);
+            }
         }
 
-        // Si hay tipo masa, buscar nombre
+        // Calcular precio del tipo de masa
         if (tipoMasaId.HasValue)
         {
             var tipoMasa = await _context.TiposMasa.FindAsync(tipoMasaId.Value);
-            item.TipoMasaNombre = tipoMasa?.Nombre;
+            if (tipoMasa != null)
+            {
+                item.TipoMasaNombre = tipoMasa.Nombre;
+                item.PrecioMasa = tipoMasa.PrecioExtra;
+            }
         }
 
-        // Si hay ingredientes, buscar nombres
+        // Calcular precio de ingredientes
         if (ingredientesIds != null && ingredientesIds.Any())
         {
-            var ingredientes = await _context.Ingredientes.Where(i => ingredientesIds.Contains(i.IngredienteId)).ToListAsync();
+            var ingredientes = await _context.Ingredientes
+                .Where(i => ingredientesIds.Contains(i.IngredienteId))
+                .ToListAsync();
             item.IngredientesNombres = ingredientes.Select(i => i.Nombre).ToList();
+            item.PrecioIngredientes = ingredientes.Sum(i => i.PrecioExtra);
         }
 
         carrito.Add(item);

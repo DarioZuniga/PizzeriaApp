@@ -8,9 +8,14 @@ public class CarritoItem
     public int Cantidad { get; set; } = 1;
     public int? TamanoId { get; set; }
     public string? TamanoNombre { get; set; }
+    public decimal PrecioTamano { get; set; }
     public int? TipoMasaId { get; set; }
     public string? TipoMasaNombre { get; set; }
+    public decimal PrecioMasa { get; set; }
     public List<int> IngredientesIds { get; set; } = new();
     public List<string> IngredientesNombres { get; set; } = new();
-    public decimal PrecioTotal => (PrecioBase + (IngredientesIds.Count * 500m)) * Cantidad; // Asumiendo 500 extra por ingrediente
+    public decimal PrecioIngredientes { get; set; }
+    
+    // El precio final se calcula con los valores reales que vienen de la BD
+    public decimal PrecioTotal => (PrecioBase + PrecioTamano + PrecioMasa + PrecioIngredientes) * Cantidad;
 }

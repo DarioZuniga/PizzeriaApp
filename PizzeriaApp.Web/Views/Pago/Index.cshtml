@@ -1,47 +1,91 @@
 @model PizzeriaApp.Data.Entities.Pedido
 @{
-    ViewData["Title"] = "Pago";
+    ViewData["Title"] = "Pasarela de Pago";
 }
 
 <div class="container mt-4">
-    <h2 style="color: #1a365d;">💳 Pago del Pedido #@Model.PedidoId</h2>
-    <hr />
-
-    <div class="row">
-        <div class="col-lg-6">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
             <div class="card border-0 shadow-sm" style="border-radius: 12px;">
-                <div class="card-body">
-                    <h4 class="fw-bold">Total a Pagar</h4>
-                    <h2 class="text-danger fw-bold">₡@Model.Total.ToString("N2")</h2>
+                <div class="card-body p-4">
+                    <h2 class="fw-bold text-center mb-4" style="color: #1a365d;">💳 Pasarela de Pago</h2>
+                    <p class="text-center text-muted">Pedido #@Model.PedidoId</p>
+                    <h1 class="text-center text-danger fw-bold mb-4">₡@(Model.Total.ToString("N2"))</h1>
                     <hr />
-                    <form asp-action="Procesar" method="post">
+
+                    <form asp-action="Procesar" method="post" id="formPago">
                         <input type="hidden" name="pedidoId" value="@Model.PedidoId" />
-                        
+
                         <h5 class="fw-bold mb-3">Seleccione método de pago:</h5>
                         
-                        <div class="form-check mb-2">
-                            <input class="form-check-input" type="radio" name="metodoPago" value="Tarjeta" id="tarjeta" checked required />
-                            <label class="form-check-label" for="tarjeta">
-                                <i class="fa-solid fa-credit-card me-2"></i> Tarjeta de Crédito/Débito (Simulado)
-                            </label>
-                        </div>
-                        
-                        <div class="form-check mb-2">
-                            <input class="form-check-input" type="radio" name="metodoPago" value="SINPE" id="sinpe" required />
-                            <label class="form-check-label" for="sinpe">
-                                <i class="fa-solid fa-mobile-screen me-2"></i> SINPE Móvil (Simulado)
-                            </label>
-                        </div>
-                        
-                        <div class="form-check mb-4">
-                            <input class="form-check-input" type="radio" name="metodoPago" value="ContraEntrega" id="contra" required />
-                            <label class="form-check-label" for="contra">
-                                <i class="fa-solid fa-money-bill me-2"></i> Pago Contra Entrega
-                            </label>
+                        <div class="row mb-4">
+                            <div class="col-md-4">
+                                <div class="form-check card p-3" style="cursor:pointer;">
+                                    <input class="form-check-input" type="radio" name="metodoPago" value="Tarjeta" id="tarjeta" checked required />
+                                    <label class="form-check-label fw-bold" for="tarjeta">
+                                        <i class="fa-solid fa-credit-card me-2"></i> Tarjeta
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-check card p-3" style="cursor:pointer;">
+                                    <input class="form-check-input" type="radio" name="metodoPago" value="SINPE" id="sinpe" required />
+                                    <label class="form-check-label fw-bold" for="sinpe">
+                                        <i class="fa-solid fa-mobile-screen me-2"></i> SINPE
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-check card p-3" style="cursor:pointer;">
+                                    <input class="form-check-input" type="radio" name="metodoPago" value="ContraEntrega" id="contra" required />
+                                    <label class="form-check-label fw-bold" for="contra">
+                                        <i class="fa-solid fa-money-bill me-2"></i> Efectivo
+                                    </label>
+                                </div>
+                            </div>
                         </div>
 
-                        <button type="submit" class="btn btn-primary w-100 btn-lg" style="background-color: #1a365d;">
-                            Pagar Ahora
+                        <!-- Formulario de Tarjeta -->
+                        <div id="formTarjeta" class="border rounded p-3 mb-4 bg-light">
+                            <h6 class="fw-bold mb-3">Datos de la Tarjeta (Simulada)</h6>
+                            <div class="mb-3">
+                                <label class="form-label">Número de Tarjeta</label>
+                                <input type="text" name="numeroTarjeta" id="numeroTarjeta" class="form-control" placeholder="1234 5678 9012 3456" maxlength="16" />
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Fecha Expiración</label>
+                                    <input type="text" name="fechaExpira" id="fechaExpira" class="form-control" placeholder="MM/AA" maxlength="5" />
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">CVV</label>
+                                    <input type="text" name="cvv" id="cvv" class="form-control" placeholder="123" maxlength="3" />
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Nombre del Titular</label>
+                                <input type="text" name="titular" id="titular" class="form-control" placeholder="Como aparece en la tarjeta" />
+                            </div>
+                        </div>
+
+                        <!-- Formulario de SINPE -->
+                        <div id="formSinpe" class="border rounded p-3 mb-4 bg-light" style="display:none;">
+                            <h6 class="fw-bold mb-3">Datos de SINPE Móvil</h6>
+                            <p class="small text-muted">Realice el pago al número <strong>8888-8888</strong> y ingrese el comprobante.</p>
+                            <div class="mb-3">
+                                <label class="form-label">Número de Comprobante</label>
+                                <input type="text" name="comprobanteSinpe" id="comprobanteSinpe" class="form-control" placeholder="Ej: 12345678" />
+                            </div>
+                        </div>
+
+                        <!-- Contra Entrega -->
+                        <div id="formContra" class="border rounded p-3 mb-4 bg-light" style="display:none;">
+                            <h6 class="fw-bold mb-3">Pago Contra Entrega</h6>
+                            <p class="small text-muted">Pague en efectivo al recibir su pedido. El repartidor llevará el vuelto.</p>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 btn-lg" style="background-color: #1a365d;" id="btnPagar">
+                            Pagar ₡@(Model.Total.ToString("N2"))
                         </button>
                     </form>
                 </div>
@@ -49,3 +93,24 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        const radios = document.querySelectorAll('input[name="metodoPago"]');
+        const formTarjeta = document.getElementById('formTarjeta');
+        const formSinpe = document.getElementById('formSinpe');
+        const formContra = document.getElementById('formContra');
+
+        radios.forEach(radio => {
+            radio.addEventListener('change', () => {
+                formTarjeta.style.display = 'none';
+                formSinpe.style.display = 'none';
+                formContra.style.display = 'none';
+
+                if (radio.value === 'Tarjeta' && radio.checked) formTarjeta.style.display = 'block';
+                if (radio.value === 'SINPE' && radio.checked) formSinpe.style.display = 'block';
+                if (radio.value === 'ContraEntrega' && radio.checked) formContra.style.display = 'block';
+            });
+        });
+    </script>
+}

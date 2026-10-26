@@ -14,6 +14,9 @@ public class PizzeriaAppDbContext : DbContext
     public DbSet<Rol> Roles => Set<Rol>();
     public DbSet<Usuario> Usuarios => Set<Usuario>();
     public DbSet<Notificacion> Notificaciones => Set<Notificacion>();
+    public DbSet<TokenRecuperacion> TokensRecuperacion => Set<TokenRecuperacion>();
+    public DbSet<Categoria> Categorias => Set<Categoria>();
+    public DbSet<Producto> Productos => Set<Producto>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -23,6 +26,9 @@ public class PizzeriaAppDbContext : DbContext
         modelBuilder.Entity<Rol>().ToTable("Roles");
         modelBuilder.Entity<Usuario>().ToTable("Usuarios");
         modelBuilder.Entity<Notificacion>().ToTable("Notificaciones");
+        modelBuilder.Entity<TokenRecuperacion>().ToTable("TokensRecuperacion");
+        modelBuilder.Entity<Categoria>().ToTable("Categorias");
+        modelBuilder.Entity<Producto>().ToTable("Productos");
 
         foreach (var relationship in modelBuilder.Model.GetEntityTypes()
                      .SelectMany(entity => entity.GetForeignKeys()))

@@ -1,20 +1,58 @@
+@model IEnumerable<PizzeriaApp.Data.Entities.Producto>
 @{
-    ViewData["Title"] = "Inicio";
+    ViewData["Title"] = "Menú";
 }
 
 <div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-8 text-center">
-            <h1 class="display-4 fw-bold mb-3" style="color: #1a365d;">
-                🍕 PizzeriaApp
-            </h1>
-            <p class="lead text-muted mb-4">
-                Sistema de gestión para la pizzería Las Perlas.
-            </p>
-            <hr />
-            <p class="text-muted">
-                Bienvenido. Pronto podrás ver aquí el menú de pizzas, bebidas y postres.
-            </p>
-        </div>
+    <!-- Hero Section -->
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold mb-3" style="color: #1a365d;">
+            🍕 PizzeriaApp
+        </h1>
+        <p class="lead text-muted">
+            El mejor menú de la pizzería Las Perlas.
+        </p>
+    </div>
+
+    <!-- Catálogo de Productos -->
+    <div class="row g-4">
+        @if (!Model.Any())
+        {
+            <div class="col-12 text-center py-5">
+                <h4 class="text-muted">Aún no hay productos en el menú.</h4>
+                <p class="text-muted">Vuelve pronto para ver nuestras deliciosas pizzas.</p>
+            </div>
+        }
+        else
+        {
+            @foreach (var producto in Model)
+            {
+                <div class="col-lg-4 col-md-6">
+                    <div class="card h-100 border-0 shadow-sm" style="border-radius: 12px; overflow: hidden;">
+                        @if (!string.IsNullOrEmpty(producto.ImagenUrl))
+                        {
+                            <img src="@producto.ImagenUrl" class="card-img-top" alt="@producto.Nombre" style="height: 200px; object-fit: cover;" />
+                        }
+                        else
+                        {
+                            <div class="bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                <i class="fa-solid fa-pizza-slice fa-4x text-muted"></i>
+                            </div>
+                        }
+                        <div class="card-body">
+                            <span class="badge bg-secondary mb-2">@producto.Categoria?.Nombre</span>
+                            <h5 class="card-title fw-bold" style="color: #1a365d;">@producto.Nombre</h5>
+                            <p class="card-text text-muted small">@producto.Descripcion</p>
+                        </div>
+                        <div class="card-footer bg-white border-0 d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0 fw-bold" style="color: #e53e3e;">₡@producto.Precio.ToString("N2")</h5>
+                            <button class="btn btn-sm btn-primary" style="background-color: #1a365d;">
+                                <i class="fa-solid fa-cart-plus me-1"></i> Agregar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
     </div>
 </div>

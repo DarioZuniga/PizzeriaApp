@@ -22,6 +22,30 @@ namespace PizzeriaApp.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("PizzeriaApp.Data.Entities.Categoria", b =>
+                {
+                    b.Property<int>("CategoriaId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CategoriaId"));
+
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Descripcion")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("CategoriaId");
+
+                    b.ToTable("Categorias", (string)null);
+                });
+
             modelBuilder.Entity("PizzeriaApp.Data.Entities.Estado", b =>
                 {
                     b.Property<int>("EstadoId")
@@ -91,6 +115,42 @@ namespace PizzeriaApp.Data.Migrations
                     b.ToTable("Notificaciones", (string)null);
                 });
 
+            modelBuilder.Entity("PizzeriaApp.Data.Entities.Producto", b =>
+                {
+                    b.Property<int>("ProductoId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProductoId"));
+
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("CategoriaId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Descripcion")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImagenUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Precio")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("ProductoId");
+
+                    b.HasIndex("CategoriaId");
+
+                    b.ToTable("Productos", (string)null);
+                });
+
             modelBuilder.Entity("PizzeriaApp.Data.Entities.Rol", b =>
                 {
                     b.Property<int>("RolId")
@@ -124,6 +184,34 @@ namespace PizzeriaApp.Data.Migrations
                             Descripcion = "Cliente de la pizzería",
                             Nombre = "Usuario"
                         });
+                });
+
+            modelBuilder.Entity("PizzeriaApp.Data.Entities.TokenRecuperacion", b =>
+                {
+                    b.Property<int>("TokenRecuperacionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TokenRecuperacionId"));
+
+                    b.Property<DateTime>("FechaExpiracion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Usado")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("int");
+
+                    b.HasKey("TokenRecuperacionId");
+
+                    b.HasIndex("UsuarioId");
+
+                    b.ToTable("TokensRecuperacion", (string)null);
                 });
 
             modelBuilder.Entity("PizzeriaApp.Data.Entities.Usuario", b =>
@@ -175,6 +263,28 @@ namespace PizzeriaApp.Data.Migrations
                     b.Navigation("Usuario");
                 });
 
+            modelBuilder.Entity("PizzeriaApp.Data.Entities.Producto", b =>
+                {
+                    b.HasOne("PizzeriaApp.Data.Entities.Categoria", "Categoria")
+                        .WithMany("Productos")
+                        .HasForeignKey("CategoriaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Categoria");
+                });
+
+            modelBuilder.Entity("PizzeriaApp.Data.Entities.TokenRecuperacion", b =>
+                {
+                    b.HasOne("PizzeriaApp.Data.Entities.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Usuario");
+                });
+
             modelBuilder.Entity("PizzeriaApp.Data.Entities.Usuario", b =>
                 {
                     b.HasOne("PizzeriaApp.Data.Entities.Estado", "Estado")
@@ -192,6 +302,11 @@ namespace PizzeriaApp.Data.Migrations
                     b.Navigation("Estado");
 
                     b.Navigation("Rol");
+                });
+
+            modelBuilder.Entity("PizzeriaApp.Data.Entities.Categoria", b =>
+                {
+                    b.Navigation("Productos");
                 });
 
             modelBuilder.Entity("PizzeriaApp.Data.Entities.Estado", b =>

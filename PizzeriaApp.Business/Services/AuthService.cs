@@ -51,7 +51,7 @@ public class AuthService : IAuthService
         return await _usuarioRepository.GetByCorreoAsync(correo);
     }
 
-    public async Task GuardarTokenRecuperacionAsync(int usuarioId, string token)
+    public async Task<string> GuardarTokenRecuperacionAsync(int usuarioId, string token)
     {
         var tokenRecuperacion = new TokenRecuperacion
         {
@@ -63,6 +63,8 @@ public class AuthService : IAuthService
 
         _context.TokensRecuperacion.Add(tokenRecuperacion);
         await _context.SaveChangesAsync();
+
+        return $"/Account/ResetPassword?token={token}";
     }
 
     public async Task<bool> CambiarPasswordConTokenAsync(string token, string nuevaPassword)

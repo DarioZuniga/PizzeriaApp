@@ -96,30 +96,35 @@ public class AccountController : Controller
             return View();
         }
 
-        // Buscamos si el usuario existe
         var usuario = await _authService.ObtenerUsuarioPorCorreoAsync(correo);
         if (usuario != null)
         {
-            // Generar token
             var token = Convert.ToHexString(RandomNumberGenerator.GetBytes(32));
+            var enlaceRecuperacion = await _authService.GuardarTokenRecuperacionAsync(usuario.UsuarioId, token);
 
-            // Guardar token en BD (esto lo manejaremos en el AuthService)
-            await _authService.GuardarTokenRecuperacionAsync(usuario.UsuarioId, token);
+            TempData["CorreoSimulado"] = correo;
+            TempData["EnlaceRecuperacion"] = enlaceRecuperacion;
 
-            // TODO: Enviar correo con MailKit. Por ahora, lo mostramos en consola.
-            Console.WriteLine($"=== TOKEN DE RECUPERACIÓN PARA {correo}: {token} ===");
+            return RedirectToAction("CorreoEnviado");
         }
 
-        // Siempre mostramos el mismo mensaje (seguridad) para no revelar si el correo existe
-        TempData["Mensaje"] = "Si el correo existe, se ha enviado un enlace de recuperación.";
-        return RedirectToAction("Login");
+        TempData["CorreoSimulado"] = correo;
+        TempData["EnlaceRecuperacion"] = null;
+        return RedirectToAction("CorreoEnviado");
+    }
+
+    [HttpGet]
+    public IActionResult CorreoEnviado()
+    {
+        ViewBag.Correo = TempData["CorreoSimulado"];
+        ViewBag.Enlace = TempData["EnlaceRecuperacion"];
+        return View();
     }
 
     [HttpGet]
     public IActionResult ResetPassword(string token)
     {
         if (string.IsNullOrWhiteSpace(token)) return RedirectToAction("Login");
-
         ViewBag.Token = token;
         return View();
     }

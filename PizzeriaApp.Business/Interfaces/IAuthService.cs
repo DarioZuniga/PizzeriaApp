@@ -8,8 +8,8 @@ public interface IAuthService
     Task<Usuario> RegistrarUsuarioAsync(Usuario usuario, string password);
     Task<bool> ExisteCorreoAsync(string correo);
 
-    // Nuevos métodos para recuperación de contraseña
+    // Métodos para recuperación de contraseña
     Task<Usuario?> ObtenerUsuarioPorCorreoAsync(string correo);
-    Task GuardarTokenRecuperacionAsync(int usuarioId, string token);
+    Task<string> GuardarTokenRecuperacionAsync(int usuarioId, string token);
     Task<bool> CambiarPasswordConTokenAsync(string token, string nuevaPassword);
 }

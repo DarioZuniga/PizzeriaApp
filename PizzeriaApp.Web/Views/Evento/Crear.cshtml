@@ -1,0 +1,20 @@
+@model PizzeriaApp.Data.Entities.Evento
+@{ ViewData["Title"] = "Nuevo Evento"; }
+<div class="container mt-4">
+    <div class="card border-0 shadow-sm" style="border-radius: 12px; max-width: 600px; margin: auto;">
+        <div class="card-body p-4">
+            <h3 class="mb-4" style="color: #1a365d;">Crear Evento</h3>
+            <form asp-action="Crear" method="post">
+                <div class="mb-3"><label class="fw-bold">Nombre</label><input asp-for="Nombre" class="form-control" required /></div>
+                <div class="mb-3"><label class="fw-bold">Descripción</label><textarea asp-for="Descripcion" class="form-control"></textarea></div>
+                <div class="row">
+                    <div class="col-md-6 mb-3"><label class="fw-bold">Inicio</label><input asp-for="FechaInicio" type="date" class="form-control" required /></div>
+                    <div class="col-md-6 mb-3"><label class="fw-bold">Fin</label><input asp-for="FechaFin" type="date" class="form-control" required /></div>
+                </div>
+                <div class="mb-4"><label class="fw-bold">Descuento (%)</label><input asp-for="PorcentajeDescuento" type="number" class="form-control" required /></div>
+                <button type="submit" class="btn btn-primary" style="background-color: #1a365d;">Guardar</button>
+                <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+            </form>
+        </div>
+    </div>
+</div>

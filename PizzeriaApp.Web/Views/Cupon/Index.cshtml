@@ -1,0 +1,48 @@
+@model IEnumerable<PizzeriaApp.Data.Entities.Cupon>
+@{
+    ViewData["Title"] = "Cupones";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 style="color: #1a365d;"><i class="fa-solid fa-ticket me-2"></i>Cupones de Descuento</h2>
+        <a asp-action="Crear" class="btn btn-primary" style="background-color: #1a365d;"><i class="fa-solid fa-plus me-2"></i>Nuevo Cupón</a>
+    </div>
+    
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Código</th>
+                <th>Descuento</th>
+                <th>Vigencia</th>
+                <th>Usos</th>
+                <th>Estado</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var c in Model)
+            {
+                <tr>
+                    <td class="fw-bold">@c.Codigo</td>
+                    <td>@c.PorcentajeDescuento%</td>
+                    <td>@c.FechaInicio.ToString("dd/MM/yy") - @c.FechaFin.ToString("dd/MM/yy")</td>
+                    <td>@c.UsosActuales / @c.UsosMaximos</td>
+                    <td>
+                        @if (c.Activo && c.FechaFin >= DateTime.Now) { <span class="badge bg-success">Activo</span> }
+                        else { <span class="badge bg-danger">Inactivo</span> }
+                    </td>
+                    <td>
+                        @if (c.Activo)
+                        {
+                            <form asp-action="Desactivar" method="post">
+                                <input type="hidden" name="id" value="@c.CuponId" />
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Desactivar</button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,46 @@
+@model PizzeriaApp.Data.Entities.Cupon
+@{
+    ViewData["Title"] = "Nuevo Cupón";
+}
+
+<div class="container mt-4">
+    <div class="card border-0 shadow-sm" style="border-radius: 12px; max-width: 600px; margin: auto;">
+        <div class="card-body p-4">
+            <h3 class="mb-4" style="color: #1a365d;">Nuevo Cupón</h3>
+            <form asp-action="Crear" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                
+                <div class="mb-3">
+                    <label asp-for="Codigo" class="form-label fw-bold">Código (Ej: PIZZA10)</label>
+                    <input asp-for="Codigo" class="form-control" required style="text-transform: uppercase;" />
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="PorcentajeDescuento" class="form-label fw-bold">Porcentaje de Descuento (%)</label>
+                    <input asp-for="PorcentajeDescuento" type="number" min="1" max="100" class="form-control" required />
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="FechaInicio" class="form-label fw-bold">Fecha Inicio</label>
+                        <input asp-for="FechaInicio" type="date" class="form-control" required />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="FechaFin" class="form-label fw-bold">Fecha Fin</label>
+                        <input asp-for="FechaFin" type="date" class="form-control" required />
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="UsosMaximos" class="form-label fw-bold">Usos Máximos</label>
+                    <input asp-for="UsosMaximos" type="number" class="form-control" value="100" required />
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary" style="background-color: #1a365d;">Guardar</button>
+                    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

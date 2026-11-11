@@ -1,0 +1,22 @@
+@model IEnumerable<PizzeriaApp.Data.Entities.Evento>
+@{ ViewData["Title"] = "Eventos"; }
+<div class="container mt-4">
+    <div class="d-flex justify-content-between mb-4">
+        <h2 style="color: #1a365d;">🎉 Eventos y Descuentos</h2>
+        <a asp-action="Crear" class="btn btn-primary" style="background-color: #1a365d;">Nuevo Evento</a>
+    </div>
+    <table class="table table-hover">
+        <thead><tr><th>Nombre</th><th>Descuento</th><th>Inicio</th><th>Fin</th><th>Estado</th></tr></thead>
+        <tbody>
+            @foreach (var e in Model) {
+                <tr>
+                    <td>@e.Nombre</td>
+                    <td>@e.PorcentajeDescuento%</td>
+                    <td>@e.FechaInicio.ToShortDateString()</td>
+                    <td>@e.FechaFin.ToShortDateString()</td>
+                    <td>@(e.Activo ? "Activo" : "Inactivo")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

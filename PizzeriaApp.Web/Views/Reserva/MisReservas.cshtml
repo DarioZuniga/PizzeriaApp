@@ -1,0 +1,49 @@
+@model IEnumerable<PizzeriaApp.Data.Entities.Reserva>
+@{
+    ViewData["Title"] = "Mis Reservas";
+}
+
+<div class="container mt-4">
+    <h2 style="color: #1a365d;">📅 Mis Reservas</h2>
+    <hr />
+    @if (TempData["Mensaje"] != null)
+    {
+        <div class="alert alert-success">@TempData["Mensaje"]</div>
+    }
+    
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Fecha y Hora</th>
+                <th>Personas</th>
+                <th>Estado</th>
+                <th>Notas</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var r in Model)
+            {
+                <tr>
+                    <td>@r.FechaHora.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td>@r.CantidadPersonas</td>
+                    <td>
+                        @if (r.Estado == "Confirmada") { <span class="badge bg-success">Confirmada</span> }
+                        else if (r.Estado == "Cancelada") { <span class="badge bg-danger">Cancelada</span> }
+                        else { <span class="badge bg-warning text-dark">Pendiente</span> }
+                    </td>
+                    <td>@r.Notas</td>
+                    <td>
+                        @if (r.Estado == "Pendiente")
+                        {
+                            <form asp-action="Cancelar" method="post" onsubmit="return confirm('¿Cancelar esta reserva?');">
+                                <input type="hidden" name="id" value="@r.ReservaId" />
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Cancelar</button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

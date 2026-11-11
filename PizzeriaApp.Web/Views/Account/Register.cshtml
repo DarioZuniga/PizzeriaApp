@@ -1,215 +1,95 @@
 @model PizzeriaApp.MVC.Models.RegisterViewModel
 
 @{
-    ViewData["Title"] = "Crear Cuenta";
-    Layout = "_Layout";
+    ViewData["Title"] = "Registro";
+    Layout = null;
 }
 
-<div class="auth-stadium-page"
-     style="background-image: linear-gradient(rgba(0,0,0,.65), rgba(0,0,0,.85)), url('/images/stadium-bg.jpg') !important;
-    background-size: cover !important;
-    background-position: center !important;
-    background-repeat: no-repeat !important;
-    min-height: 100vh !important;">
-
-    <div class="auth-overlay"></div>
-
-    <div class="container auth-container">
-        <div class="row justify-content-center align-items-center min-vh-100">
-
-            <div class="col-lg-6 d-none d-lg-block">
-                <div class="auth-info-panel">
-                    <h1 class="display-5 fw-bold text-white mb-3">
-                        Únete a la comunidad futbolera
-                    </h1>
-
-                    <p class="lead text-light mb-4">
-                        Crea tu cuenta, participa en debates, comenta temas y comparte tu opinión sobre el mundo del fútbol.
-                    </p>
-
-                    <div class="row g-3">
-                        <div class="col-4">
-                            <div class="stat-card">
-                                <h3>⚽</h3>
-                                <span>Debates</span>
-                            </div>
-                        </div>
-
-                        <div class="col-4">
-                            <div class="stat-card">
-                                <h3>Copa Mundial</h3>
-                                <span>FIFA</span>
-                            </div>
-                        </div>
-
-                        <div class="col-4">
-                            <div class="stat-card">
-                                <h3>Champions League</h3>
-                                <span>UEFA</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-5 col-md-8 col-sm-11">
-                <div class="auth-glass-card">
-
-                    <div class="text-center mb-4">
-                        <div class="auth-ball-icon">
-                            <i class="fa-solid fa-user-plus"></i>
-                        </div>
-
-                        <h2 class="fw-bold text-white mt-3 mb-1">
-                            Crear Cuenta
-                        </h2>
-
-                        <p class="text-light opacity-75">
-                            Regístrate para comenzar a participar
-                        </p>
-                    </div>
-
-                    <form asp-controller="Account" asp-action="Register" method="post">
-                        @Html.AntiForgeryToken()
-
-                        <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small"></div>
-
-                        <div class="mb-3">
-                            <label asp-for="NombreUsuario" class="form-label text-light fw-semibold">
-                                Nombre de usuario
-                            </label>
-
-                            <div class="input-group auth-input-group">
-                                <span class="input-group-text">
-                                    <i class="fa-solid fa-user"></i>
-                                </span>
-
-                                <input asp-for="NombreUsuario"
-                                       class="form-control"
-                                       placeholder="Ej: FutboleroCR"
-                                       autocomplete="username" />
-                            </div>
-
-                            <span asp-validation-for="NombreUsuario" class="text-warning small"></span>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="Email" class="form-label text-light fw-semibold">
-                                Correo electrónico
-                            </label>
-
-                            <div class="input-group auth-input-group">
-                                <span class="input-group-text">
-                                    <i class="fa-solid fa-envelope"></i>
-                                </span>
-
-                                <input asp-for="Email"
-                                       class="form-control"
-                                       placeholder="correo@ejemplo.com"
-                                       autocomplete="email" />
-                            </div>
-
-                            <span asp-validation-for="Email" class="text-warning small"></span>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="Password" class="form-label text-light fw-semibold">
-                                Contraseña
-                            </label>
-
-                            <div class="input-group auth-input-group">
-                                <span class="input-group-text">
-                                    <i class="fa-solid fa-lock"></i>
-                                </span>
-
-                                <input asp-for="Password"
-                                       id="registerPasswordInput"
-                                       type="password"
-                                       class="form-control"
-                                       placeholder="Mínimo 6 caracteres"
-                                       autocomplete="new-password" />
-
-                                <button class="btn btn-auth-eye" type="button" id="toggleRegisterPassword">
-                                    <i id="registerEyeIcon" class="fa-solid fa-eye"></i>
-                                </button>
-                            </div>
-
-                            <span asp-validation-for="Password" class="text-warning small"></span>
-                        </div>
-
-                        <div class="mb-4">
-                            <label asp-for="ConfirmPassword" class="form-label text-light fw-semibold">
-                                Confirmar contraseña
-                            </label>
-
-                            <div class="input-group auth-input-group">
-                                <span class="input-group-text">
-                                    <i class="fa-solid fa-shield-halved"></i>
-                                </span>
-
-                                <input asp-for="ConfirmPassword"
-                                       id="confirmPasswordInput"
-                                       type="password"
-                                       class="form-control"
-                                       placeholder="Repite tu contraseña"
-                                       autocomplete="new-password" />
-
-                                <button class="btn btn-auth-eye" type="button" id="toggleConfirmPassword">
-                                    <i id="confirmEyeIcon" class="fa-solid fa-eye"></i>
-                                </button>
-                            </div>
-
-                            <span asp-validation-for="ConfirmPassword" class="text-warning small"></span>
-                        </div>
-
-                        <button type="submit" class="btn btn-football w-100 fw-bold py-2">
-                            <i class="fa-solid fa-user-plus me-2"></i>
-                            Crear Cuenta
-                        </button>
-
-                        <div class="text-center mt-4">
-                            <span class="text-light opacity-75">
-                                ¿Ya tienes cuenta?
-                            </span>
-
-                            <a asp-controller="Account"
-                               asp-action="Login"
-                               class="text-warning fw-bold text-decoration-none ms-1">
-                                Iniciar sesión
-                            </a>
-                        </div>
-                    </form>
-
-                </div>
-            </div>
-
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - PizzeriaApp</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        body { background-color: #f4f6f9; height: 100vh; display: flex; align-items: center; justify-content: center; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; }
+        .login-card { background: #ffffff; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); width: 100%; max-width: 420px; }
+        .login-logo { text-align: center; font-size: 2rem; font-weight: 800; color: #1a365d; margin-bottom: 30px; letter-spacing: -1px; text-transform: uppercase; }
+        .login-logo i { color: #e53e3e; }
+        .form-label { font-weight: 600; color: #2d3748; }
+        .form-control { border-radius: 6px; border: 1px solid #cbd5e0; padding: 10px 12px; }
+        .form-control:focus { border-color: #1a365d; box-shadow: 0 0 0 3px rgba(26, 54, 93, 0.1); }
+        .btn-primary { background-color: #1a365d; border-color: #1a365d; font-weight: 600; padding: 12px; border-radius: 6px; }
+        .btn-primary:hover { background-color: #2b6cb0; border-color: #2b6cb0; }
+        .input-group-text { background-color: #f7fafc; border: 1px solid #cbd5e0; color: #718096; }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <div class="login-logo">
+            <i class="fa-solid fa-pizza-slice"></i> PizzeriaApp
         </div>
+        
+        <h4 class="text-center mb-4" style="color: #2d3748;">Crear una cuenta</h4>
+
+        <form asp-controller="Account" asp-action="Register" method="post">
+            @Html.AntiForgeryToken()
+            
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small"></div>
+
+            <div class="mb-3">
+                <label asp-for="NombreUsuario" class="form-label">Nombre Completo</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
+                    <input asp-for="NombreUsuario" class="form-control" placeholder="Tu nombre" required />
+                </div>
+                <span asp-validation-for="NombreUsuario" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label">Correo Electrónico</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fa-solid fa-envelope"></i></span>
+                    <input asp-for="Email" type="email" class="form-control" placeholder="correo@ejemplo.com" required />
+                </div>
+                <span asp-validation-for="Email" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Password" class="form-label">Contraseña</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
+                    <input asp-for="Password" type="password" class="form-control" placeholder="••••••••" required />
+                </div>
+                <span asp-validation-for="Password" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="ConfirmPassword" class="form-label">Confirmar Contraseña</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
+                    <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="••••••••" required />
+                </div>
+                <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 mb-3">
+                <i class="fa-solid fa-user-plus me-2"></i> Registrarse
+            </button>
+
+            <div class="text-center mt-4">
+                <span class="text-muted">¿Ya tienes cuenta?</span>
+                <a asp-controller="Account" asp-action="Login" class="text-decoration-none fw-bold" style="color: #1a365d;">
+                    Iniciar Sesión
+                </a>
+            </div>
+        </form>
     </div>
-</div>
 
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-
-    <script>
-        function setupPasswordToggle(inputId, buttonId, iconId) {
-            const input = document.getElementById(inputId);
-            const button = document.getElementById(buttonId);
-            const icon = document.getElementById(iconId);
-
-            if (!input || !button || !icon) {
-                return;
-            }
-
-            button.addEventListener("click", () => {
-                const isPassword = input.type === "password";
-                input.type = isPassword ? "text" : "password";
-
-                icon.classList.toggle("fa-eye");
-                icon.classList.toggle("fa-eye-slash");
-            });
-        }
-
-        setupPasswordToggle("registerPasswordInput", "toggleRegisterPassword", "registerEyeIcon");
-        setupPasswordToggle("confirmPasswordInput", "toggleConfirmPassword", "confirmEyeIcon");
-    </script>
-}
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+</body>
+</html>

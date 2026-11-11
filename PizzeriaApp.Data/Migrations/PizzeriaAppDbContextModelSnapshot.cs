@@ -46,6 +46,66 @@ namespace PizzeriaApp.Data.Migrations
                     b.ToTable("Categorias", (string)null);
                 });
 
+            modelBuilder.Entity("PizzeriaApp.Data.Entities.ConfiguracionReserva", b =>
+                {
+                    b.Property<int>("ConfiguracionReservaId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ConfiguracionReservaId"));
+
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit");
+
+                    b.Property<TimeSpan>("HoraApertura")
+                        .HasColumnType("time");
+
+                    b.Property<TimeSpan>("HoraCierre")
+                        .HasColumnType("time");
+
+                    b.Property<int>("LimiteReservasPorDia")
+                        .HasColumnType("int");
+
+                    b.HasKey("ConfiguracionReservaId");
+
+                    b.ToTable("ConfiguracionesReserva", (string)null);
+                });
+
+            modelBuilder.Entity("PizzeriaApp.Data.Entities.Cupon", b =>
+                {
+                    b.Property<int>("CuponId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CuponId"));
+
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Codigo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("FechaFin")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("FechaInicio")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("PorcentajeDescuento")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("UsosActuales")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UsosMaximos")
+                        .HasColumnType("int");
+
+                    b.HasKey("CuponId");
+
+                    b.ToTable("Cupones", (string)null);
+                });
+
             modelBuilder.Entity("PizzeriaApp.Data.Entities.DetallePedido", b =>
                 {
                     b.Property<int>("DetallePedidoId")
@@ -152,6 +212,67 @@ namespace PizzeriaApp.Data.Migrations
                         });
                 });
 
+            modelBuilder.Entity("PizzeriaApp.Data.Entities.Evaluacion", b =>
+                {
+                    b.Property<int>("EvaluacionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EvaluacionId"));
+
+                    b.Property<int>("Calificacion")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Comentario")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Fecha")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("PedidoId")
+                        .HasColumnType("int");
+
+                    b.HasKey("EvaluacionId");
+
+                    b.HasIndex("PedidoId");
+
+                    b.ToTable("Evaluaciones", (string)null);
+                });
+
+            modelBuilder.Entity("PizzeriaApp.Data.Entities.Evento", b =>
+                {
+                    b.Property<int>("EventoId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EventoId"));
+
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Descripcion")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("FechaFin")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("FechaInicio")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("PorcentajeDescuento")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("EventoId");
+
+                    b.ToTable("Eventos", (string)null);
+                });
+
             modelBuilder.Entity("PizzeriaApp.Data.Entities.Ingrediente", b =>
                 {
                     b.Property<int>("IngredienteId")
@@ -173,6 +294,81 @@ namespace PizzeriaApp.Data.Migrations
                     b.HasKey("IngredienteId");
 
                     b.ToTable("Ingredientes", (string)null);
+                });
+
+            modelBuilder.Entity("PizzeriaApp.Data.Entities.Insumo", b =>
+                {
+                    b.Property<int>("InsumoId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("InsumoId"));
+
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal>("CostoUnitario")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime?>("FechaVencimiento")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("StockActual")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("StockMinimo")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("UnidadMedida")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("InsumoId");
+
+                    b.ToTable("Insumos", (string)null);
+                });
+
+            modelBuilder.Entity("PizzeriaApp.Data.Entities.MovimientoInventario", b =>
+                {
+                    b.Property<int>("MovimientoInventarioId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MovimientoInventarioId"));
+
+                    b.Property<decimal>("Cantidad")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("CostoUnitario")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("Fecha")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("InsumoId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Motivo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TipoMovimiento")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UsuarioResponsable")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("MovimientoInventarioId");
+
+                    b.HasIndex("InsumoId");
+
+                    b.ToTable("MovimientosInventario", (string)null);
                 });
 
             modelBuilder.Entity("PizzeriaApp.Data.Entities.Notificacion", b =>
@@ -275,6 +471,95 @@ namespace PizzeriaApp.Data.Migrations
                     b.HasIndex("CategoriaId");
 
                     b.ToTable("Productos", (string)null);
+                });
+
+            modelBuilder.Entity("PizzeriaApp.Data.Entities.PuntoRecompensa", b =>
+                {
+                    b.Property<int>("PuntoRecompensaId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PuntoRecompensaId"));
+
+                    b.Property<DateTime>("Fecha")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Motivo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Puntos")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("int");
+
+                    b.HasKey("PuntoRecompensaId");
+
+                    b.HasIndex("UsuarioId");
+
+                    b.ToTable("PuntosRecompensa", (string)null);
+                });
+
+            modelBuilder.Entity("PizzeriaApp.Data.Entities.RecetaIngrediente", b =>
+                {
+                    b.Property<int>("RecetaIngredienteId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RecetaIngredienteId"));
+
+                    b.Property<decimal>("CantidadRequerida")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("InsumoId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductoId")
+                        .HasColumnType("int");
+
+                    b.HasKey("RecetaIngredienteId");
+
+                    b.HasIndex("InsumoId");
+
+                    b.HasIndex("ProductoId");
+
+                    b.ToTable("RecetaIngredientes", (string)null);
+                });
+
+            modelBuilder.Entity("PizzeriaApp.Data.Entities.Reserva", b =>
+                {
+                    b.Property<int>("ReservaId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReservaId"));
+
+                    b.Property<int>("CantidadPersonas")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Estado")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("FechaCreacion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("FechaHora")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Notas")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ReservaId");
+
+                    b.HasIndex("UsuarioId");
+
+                    b.ToTable("Reservas", (string)null);
                 });
 
             modelBuilder.Entity("PizzeriaApp.Data.Entities.Rol", b =>
@@ -476,6 +761,28 @@ namespace PizzeriaApp.Data.Migrations
                     b.Navigation("Ingrediente");
                 });
 
+            modelBuilder.Entity("PizzeriaApp.Data.Entities.Evaluacion", b =>
+                {
+                    b.HasOne("PizzeriaApp.Data.Entities.Pedido", "Pedido")
+                        .WithMany()
+                        .HasForeignKey("PedidoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Pedido");
+                });
+
+            modelBuilder.Entity("PizzeriaApp.Data.Entities.MovimientoInventario", b =>
+                {
+                    b.HasOne("PizzeriaApp.Data.Entities.Insumo", "Insumo")
+                        .WithMany("Movimientos")
+                        .HasForeignKey("InsumoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Insumo");
+                });
+
             modelBuilder.Entity("PizzeriaApp.Data.Entities.Notificacion", b =>
                 {
                     b.HasOne("PizzeriaApp.Data.Entities.Usuario", "Usuario")
@@ -507,6 +814,47 @@ namespace PizzeriaApp.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Categoria");
+                });
+
+            modelBuilder.Entity("PizzeriaApp.Data.Entities.PuntoRecompensa", b =>
+                {
+                    b.HasOne("PizzeriaApp.Data.Entities.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("PizzeriaApp.Data.Entities.RecetaIngrediente", b =>
+                {
+                    b.HasOne("PizzeriaApp.Data.Entities.Insumo", "Insumo")
+                        .WithMany("RecetaIngredientes")
+                        .HasForeignKey("InsumoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("PizzeriaApp.Data.Entities.Producto", "Producto")
+                        .WithMany()
+                        .HasForeignKey("ProductoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Insumo");
+
+                    b.Navigation("Producto");
+                });
+
+            modelBuilder.Entity("PizzeriaApp.Data.Entities.Reserva", b =>
+                {
+                    b.HasOne("PizzeriaApp.Data.Entities.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Usuario");
                 });
 
             modelBuilder.Entity("PizzeriaApp.Data.Entities.TokenRecuperacion", b =>
@@ -552,6 +900,13 @@ namespace PizzeriaApp.Data.Migrations
             modelBuilder.Entity("PizzeriaApp.Data.Entities.Estado", b =>
                 {
                     b.Navigation("Usuarios");
+                });
+
+            modelBuilder.Entity("PizzeriaApp.Data.Entities.Insumo", b =>
+                {
+                    b.Navigation("Movimientos");
+
+                    b.Navigation("RecetaIngredientes");
                 });
 
             modelBuilder.Entity("PizzeriaApp.Data.Entities.Pedido", b =>

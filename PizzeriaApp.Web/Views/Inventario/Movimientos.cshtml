@@ -1,0 +1,96 @@
+@model IEnumerable<PizzeriaApp.Data.Entities.MovimientoInventario>
+@{
+    ViewData["Title"] = "Movimientos de Inventario";
+    var insumoId = ViewBag.InsumoId;
+    var insumoNombre = ViewBag.InsumoNombre;
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 style="color: #1a365d;">Movimientos: @insumoNombre</h2>
+        <a asp-action="Index" class="btn btn-outline-secondary">← Volver al Inventario</a>
+    </div>
+
+    <!-- Formulario para registrar movimiento -->
+    <div class="card border-0 shadow-sm mb-4" style="border-radius: 12px;">
+        <div class="card-body">
+            <h5 class="fw-bold mb-3">Registrar Movimiento</h5>
+            <form asp-action="RegistrarMovimiento" method="post" class="row g-3">
+                <input type="hidden" name="insumoId" value="@insumoId" />
+                
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">Tipo</label>
+                    <select name="tipoMovimiento" class="form-select" required>
+                        <option value="Entrada">Entrada (Compra)</option>
+                        <option value="Salida">Salida (Consumo)</option>
+                        <option value="Merma">Merma (Pérdida)</option>
+                        <option value="Ajuste">Ajuste (Conteo)</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">Cantidad</label>
+                    <input type="number" name="cantidad" step="0.01" class="form-control" required />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-bold">Motivo</label>
+                    <input type="text" name="motivo" class="form-control" placeholder="Ej: Compra a proveedor" required />
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100" style="background-color: #1a365d;">Registrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Historial de movimientos -->
+    <div class="card border-0 shadow-sm" style="border-radius: 12px;">
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead style="background-color: #f7fafc;">
+                    <tr>
+                        <th class="ps-4">Fecha</th>
+                        <th>Tipo</th>
+                        <th>Cantidad</th>
+                        <th>Motivo</th>
+                        <th>Responsable</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var mov in Model)
+                    {
+                        <tr>
+                            <td class="ps-4">@mov.Fecha.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>
+                                @if (mov.TipoMovimiento == "Entrada")
+                                {
+                                    <span class="badge bg-success">Entrada</span>
+                                }
+                                else if (mov.TipoMovimiento == "Salida")
+                                {
+                                    <span class="badge bg-warning text-dark">Salida</span>
+                                }
+                                else if (mov.TipoMovimiento == "Merma")
+                                {
+                                    <span class="badge bg-danger">Merma</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-info">Ajuste</span>
+                                }
+                            </td>
+                            <td>@mov.Cantidad</td>
+                            <td>@mov.Motivo</td>
+                            <td>@mov.UsuarioResponsable</td>
+                        </tr>
+                    }
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center py-4 text-muted">No hay movimientos registrados.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

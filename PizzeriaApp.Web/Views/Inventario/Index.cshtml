@@ -1,0 +1,69 @@
+@model IEnumerable<PizzeriaApp.Data.Entities.Insumo>
+@{
+    ViewData["Title"] = "Inventario";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 style="color: #1a365d;"><i class="fa-solid fa-boxes-stacked me-2"></i>Inventario de Insumos</h2>
+        <a asp-action="CrearInsumo" class="btn btn-primary" style="background-color: #1a365d;">
+            <i class="fa-solid fa-plus me-2"></i>Nuevo Insumo
+        </a>
+    </div>
+
+    @if (TempData["Mensaje"] != null)
+    {
+        <div class="alert alert-success">@TempData["Mensaje"]</div>
+    }
+
+    <div class="card border-0 shadow-sm" style="border-radius: 12px;">
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead style="background-color: #f7fafc;">
+                    <tr>
+                        <th class="ps-4">Insumo</th>
+                        <th>Unidad</th>
+                        <th>Stock Actual</th>
+                        <th>Stock Mínimo</th>
+                        <th>Costo Unit.</th>
+                        <th>Vencimiento</th>
+                        <th class="text-end pe-4">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="ps-4 fw-bold">@item.Nombre</td>
+                            <td>@item.UnidadMedida</td>
+                            <td>
+                                @if (item.StockActual <= item.StockMinimo)
+                                {
+                                    <span class="badge bg-danger">@item.StockActual (Bajo)</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-success">@item.StockActual</span>
+                                }
+                            </td>
+                            <td>@item.StockMinimo</td>
+                            <td>₡@item.CostoUnitario.ToString("N2")</td>
+                            <td>@(item.FechaVencimiento?.ToString("dd/MM/yyyy") ?? "-")</td>
+                            <td class="text-end pe-4">
+                                <a asp-action="Movimientos" asp-route-id="@item.InsumoId" class="btn btn-sm btn-outline-primary">
+                                    <i class="fa-solid fa-arrow-right-arrow-left"></i> Movimientos
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center py-4 text-muted">No hay insumos registrados.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

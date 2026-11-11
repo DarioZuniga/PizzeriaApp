@@ -23,6 +23,15 @@ public class PizzeriaAppDbContext : DbContext
     public DbSet<Pedido> Pedidos => Set<Pedido>();
     public DbSet<DetallePedido> DetallesPedido => Set<DetallePedido>();
     public DbSet<DetallePedidoIngrediente> DetallePedidoIngredientes => Set<DetallePedidoIngrediente>();
+    public DbSet<Insumo> Insumos => Set<Insumo>();
+    public DbSet<MovimientoInventario> MovimientosInventario => Set<MovimientoInventario>();
+    public DbSet<RecetaIngrediente> RecetaIngredientes => Set<RecetaIngrediente>();
+    public DbSet<Reserva> Reservas => Set<Reserva>();
+    public DbSet<ConfiguracionReserva> ConfiguracionesReserva => Set<ConfiguracionReserva>();
+    public DbSet<Cupon> Cupones => Set<Cupon>();
+    public DbSet<Evento> Eventos => Set<Evento>();
+    public DbSet<Evaluacion> Evaluaciones => Set<Evaluacion>();
+    public DbSet<PuntoRecompensa> PuntosRecompensa => Set<PuntoRecompensa>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -41,6 +50,15 @@ public class PizzeriaAppDbContext : DbContext
         modelBuilder.Entity<Pedido>().ToTable("Pedidos");
         modelBuilder.Entity<DetallePedido>().ToTable("DetallesPedido");
         modelBuilder.Entity<DetallePedidoIngrediente>().ToTable("DetallePedidoIngredientes");
+        modelBuilder.Entity<Insumo>().ToTable("Insumos");
+        modelBuilder.Entity<MovimientoInventario>().ToTable("MovimientosInventario");
+        modelBuilder.Entity<RecetaIngrediente>().ToTable("RecetaIngredientes");
+        modelBuilder.Entity<Reserva>().ToTable("Reservas");
+        modelBuilder.Entity<ConfiguracionReserva>().ToTable("ConfiguracionesReserva");
+        modelBuilder.Entity<Cupon>().ToTable("Cupones");
+        modelBuilder.Entity<Evento>().ToTable("Eventos");
+        modelBuilder.Entity<Evaluacion>().ToTable("Evaluaciones");
+        modelBuilder.Entity<PuntoRecompensa>().ToTable("PuntosRecompensa");
 
         foreach (var relationship in modelBuilder.Model.GetEntityTypes()
                      .SelectMany(entity => entity.GetForeignKeys()))

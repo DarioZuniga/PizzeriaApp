@@ -1,0 +1,28 @@
+@model PizzeriaApp.Data.Entities.Reserva
+@{ ViewData["Title"] = "Editar Reserva"; }
+<div class="container mt-4">
+    <div class="card border-0 shadow-sm" style="border-radius: 12px; max-width: 600px; margin: auto;">
+        <div class="card-body p-4">
+            <h3 class="mb-4" style="color: #1a365d;">Editar Reserva</h3>
+            <form asp-action="Editar" method="post">
+                <input type="hidden" asp-for="ReservaId" />
+                <input type="hidden" asp-for="UsuarioId" />
+                <input type="hidden" asp-for="Estado" />
+                <div class="mb-3">
+                    <label class="fw-bold">Fecha y Hora</label>
+                    <input asp-for="FechaHora" type="datetime-local" class="form-control" required />
+                </div>
+                <div class="mb-3">
+                    <label class="fw-bold">Cantidad de Personas</label>
+                    <input asp-for="CantidadPersonas" type="number" min="1" max="20" class="form-control" required />
+                </div>
+                <div class="mb-4">
+                    <label class="fw-bold">Notas</label>
+                    <textarea asp-for="Notas" class="form-control" rows="2"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" style="background-color: #1a365d;">Guardar Cambios</button>
+                <a asp-action="MisReservas" class="btn btn-secondary">Cancelar</a>
+            </form>
+        </div>
+    </div>
+</div>

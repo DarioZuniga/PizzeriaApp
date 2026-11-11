@@ -1,0 +1,25 @@
+@model IEnumerable<PizzeriaApp.Data.Entities.Direccion>
+@{ ViewData["Title"] = "Mis Direcciones"; }
+<div class="container mt-4">
+    <div class="d-flex justify-content-between mb-4">
+        <h2 style="color: #1a365d;">📍 Mis Direcciones</h2>
+        <a asp-action="Crear" class="btn btn-primary" style="background-color: #1a365d;">Nueva Dirección</a>
+    </div>
+    <table class="table table-hover">
+        <thead><tr><th>Alias</th><th>Detalle</th><th></th></tr></thead>
+        <tbody>
+            @foreach (var d in Model) {
+                <tr>
+                    <td>@d.Alias</td>
+                    <td>@d.Detalle</td>
+                    <td>
+                        <form asp-action="Eliminar" method="post">
+                            <input type="hidden" name="id" value="@d.DireccionId" />
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,27 @@
+@model PizzeriaApp.Data.Entities.ConfiguracionReserva
+@{ ViewData["Title"] = "Configuración de Reservas"; }
+<div class="container mt-4">
+    <div class="card border-0 shadow-sm" style="border-radius: 12px; max-width: 600px; margin: auto;">
+        <div class="card-body p-4">
+            <h3 class="mb-4" style="color: #1a365d;">Configuración de Reservas</h3>
+            @if (TempData["Mensaje"] != null) { <div class="alert alert-success">@TempData["Mensaje"]</div> }
+            
+            <form asp-action="Configuracion" method="post">
+                <input type="hidden" asp-for="ConfiguracionReservaId" />
+                <div class="mb-3">
+                    <label class="fw-bold">Límite de Reservas por Día</label>
+                    <input asp-for="LimiteReservasPorDia" type="number" class="form-control" required />
+                </div>
+                <div class="mb-3">
+                    <label class="fw-bold">Hora de Apertura</label>
+                    <input asp-for="HoraApertura" type="time" class="form-control" required />
+                </div>
+                <div class="mb-4">
+                    <label class="fw-bold">Hora de Cierre</label>
+                    <input asp-for="HoraCierre" type="time" class="form-control" required />
+                </div>
+                <button type="submit" class="btn btn-primary" style="background-color: #1a365d;">Guardar Configuración</button>
+            </form>
+        </div>
+    </div>
+</div>

@@ -84,4 +84,54 @@ public class InventarioController : Controller
 
         return RedirectToAction(nameof(Movimientos), new { id = insumoId });
     }
+    [HttpGet]
+    public async Task<IActionResult> ConteoFisico()
+    {
+        var insumos = await _context.Insumos.Where(i => i.Activo).ToListAsync();
+        return View(insumos);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> GuardarConteo(List<int> insumoIds, List<decimal> cantidadesReales)
+    {
+        for (int i = 0; i < insumoIds.Count; i++)
+        {
+            var insumo = await _context.Insumos.FindAsync(insumoIds[i]);
+            if (insumo != null && insumo.StockActual != cantidadesReales[i])
+            {
+                var diferencia = cantidadesReales[i] - insumo.StockActual;
+                insumo.StockActual = cantidadesReales[i];
+                
+                _context.MovimientosInventario.Add(new MovimientoInventario
+                {
+                    InsumoId = insumo.InsumoId,
+                    TipoMovimiento = "Ajuste",
+                    Cantidad = diferencia,
+                    CostoUnitario = insumo.CostoUnitario,
+                    Motivo = "Ajuste por conteo físico",
+                    UsuarioResponsable = User.Identity?.Name ?? "Admin"
+                });
+            }
+        }
+        await _context.SaveChangesAsync();
+        TempData["Mensaje"] = "Conteo físico guardado y stock ajustado.";
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> HistorialPrecios(int id)
+    {
+        var insumo = await _context.Insumos.FindAsync(id);
+        if (insumo == null) return NotFound();
+        
+        ViewBag.InsumoNombre = insumo.Nombre;
+        ViewBag.InsumoId = id;
+        
+        var movimientos = await _context.MovimientosInventario
+            .Where(m => m.InsumoId == id && m.TipoMovimiento == "Entrada")
+            .OrderByDescending(m => m.Fecha)
+            .ToListAsync();
+            
+        return View(movimientos);
+    }
 }

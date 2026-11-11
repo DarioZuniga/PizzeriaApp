@@ -106,6 +106,35 @@ namespace PizzeriaApp.Data.Migrations
                     b.ToTable("Cupones", (string)null);
                 });
 
+            modelBuilder.Entity("PizzeriaApp.Data.Entities.DetalleOrdenCompra", b =>
+                {
+                    b.Property<int>("DetalleOrdenCompraId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DetalleOrdenCompraId"));
+
+                    b.Property<decimal>("Cantidad")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("InsumoId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OrdenCompraId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("PrecioUnitario")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("DetalleOrdenCompraId");
+
+                    b.HasIndex("InsumoId");
+
+                    b.HasIndex("OrdenCompraId");
+
+                    b.ToTable("DetallesOrdenCompra", (string)null);
+                });
+
             modelBuilder.Entity("PizzeriaApp.Data.Entities.DetallePedido", b =>
                 {
                     b.Property<int>("DetallePedidoId")
@@ -169,6 +198,35 @@ namespace PizzeriaApp.Data.Migrations
                     b.HasIndex("IngredienteId");
 
                     b.ToTable("DetallePedidoIngredientes", (string)null);
+                });
+
+            modelBuilder.Entity("PizzeriaApp.Data.Entities.Direccion", b =>
+                {
+                    b.Property<int>("DireccionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DireccionId"));
+
+                    b.Property<bool>("Activa")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Alias")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Detalle")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("int");
+
+                    b.HasKey("DireccionId");
+
+                    b.HasIndex("UsuarioId");
+
+                    b.ToTable("Direcciones", (string)null);
                 });
 
             modelBuilder.Entity("PizzeriaApp.Data.Entities.Estado", b =>
@@ -399,6 +457,34 @@ namespace PizzeriaApp.Data.Migrations
                     b.ToTable("Notificaciones", (string)null);
                 });
 
+            modelBuilder.Entity("PizzeriaApp.Data.Entities.OrdenCompra", b =>
+                {
+                    b.Property<int>("OrdenCompraId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrdenCompraId"));
+
+                    b.Property<string>("Estado")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Fecha")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ProveedorId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Total")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("OrdenCompraId");
+
+                    b.HasIndex("ProveedorId");
+
+                    b.ToTable("OrdenesCompra", (string)null);
+                });
+
             modelBuilder.Entity("PizzeriaApp.Data.Entities.Pedido", b =>
                 {
                     b.Property<int>("PedidoId")
@@ -471,6 +557,38 @@ namespace PizzeriaApp.Data.Migrations
                     b.HasIndex("CategoriaId");
 
                     b.ToTable("Productos", (string)null);
+                });
+
+            modelBuilder.Entity("PizzeriaApp.Data.Entities.Proveedor", b =>
+                {
+                    b.Property<int>("ProveedorId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProveedorId"));
+
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Correo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Direccion")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Telefono")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ProveedorId");
+
+                    b.ToTable("Proveedores", (string)null);
                 });
 
             modelBuilder.Entity("PizzeriaApp.Data.Entities.PuntoRecompensa", b =>
@@ -709,6 +827,25 @@ namespace PizzeriaApp.Data.Migrations
                     b.ToTable("Usuarios", (string)null);
                 });
 
+            modelBuilder.Entity("PizzeriaApp.Data.Entities.DetalleOrdenCompra", b =>
+                {
+                    b.HasOne("PizzeriaApp.Data.Entities.Insumo", "Insumo")
+                        .WithMany()
+                        .HasForeignKey("InsumoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("PizzeriaApp.Data.Entities.OrdenCompra", "OrdenCompra")
+                        .WithMany("Detalles")
+                        .HasForeignKey("OrdenCompraId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Insumo");
+
+                    b.Navigation("OrdenCompra");
+                });
+
             modelBuilder.Entity("PizzeriaApp.Data.Entities.DetallePedido", b =>
                 {
                     b.HasOne("PizzeriaApp.Data.Entities.Pedido", "Pedido")
@@ -761,6 +898,17 @@ namespace PizzeriaApp.Data.Migrations
                     b.Navigation("Ingrediente");
                 });
 
+            modelBuilder.Entity("PizzeriaApp.Data.Entities.Direccion", b =>
+                {
+                    b.HasOne("PizzeriaApp.Data.Entities.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Usuario");
+                });
+
             modelBuilder.Entity("PizzeriaApp.Data.Entities.Evaluacion", b =>
                 {
                     b.HasOne("PizzeriaApp.Data.Entities.Pedido", "Pedido")
@@ -792,6 +940,17 @@ namespace PizzeriaApp.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("PizzeriaApp.Data.Entities.OrdenCompra", b =>
+                {
+                    b.HasOne("PizzeriaApp.Data.Entities.Proveedor", "Proveedor")
+                        .WithMany("OrdenesCompra")
+                        .HasForeignKey("ProveedorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Proveedor");
                 });
 
             modelBuilder.Entity("PizzeriaApp.Data.Entities.Pedido", b =>
@@ -909,9 +1068,19 @@ namespace PizzeriaApp.Data.Migrations
                     b.Navigation("RecetaIngredientes");
                 });
 
+            modelBuilder.Entity("PizzeriaApp.Data.Entities.OrdenCompra", b =>
+                {
+                    b.Navigation("Detalles");
+                });
+
             modelBuilder.Entity("PizzeriaApp.Data.Entities.Pedido", b =>
                 {
                     b.Navigation("Detalles");
+                });
+
+            modelBuilder.Entity("PizzeriaApp.Data.Entities.Proveedor", b =>
+                {
+                    b.Navigation("OrdenesCompra");
                 });
 
             modelBuilder.Entity("PizzeriaApp.Data.Entities.Rol", b =>

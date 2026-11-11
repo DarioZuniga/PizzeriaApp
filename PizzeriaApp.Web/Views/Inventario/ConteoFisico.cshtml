@@ -1,0 +1,25 @@
+@model IEnumerable<PizzeriaApp.Data.Entities.Insumo>
+@{ ViewData["Title"] = "Conteo Físico"; }
+<div class="container mt-4">
+    <h2 style="color: #1a365d;">📋 Conteo Físico de Inventario</h2>
+    <p class="text-muted">Ingresá la cantidad real contada para ajustar el sistema.</p>
+    <form asp-action="GuardarConteo" method="post">
+        <table class="table table-hover">
+            <thead><tr><th>Insumo</th><th>Stock en Sistema</th><th>Cantidad Real</th></tr></thead>
+            <tbody>
+                @foreach (var i in Model) {
+                    <tr>
+                        <td class="fw-bold">@i.Nombre</td>
+                        <td>@i.StockActual @i.UnidadMedida</td>
+                        <td>
+                            <input type="hidden" name="insumoIds" value="@i.InsumoId" />
+                            <input type="number" name="cantidadesReales" step="0.01" value="@i.StockActual" class="form-control" style="max-width: 150px;" required />
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <button type="submit" class="btn btn-primary" style="background-color: #1a365d;">Guardar Ajustes</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>

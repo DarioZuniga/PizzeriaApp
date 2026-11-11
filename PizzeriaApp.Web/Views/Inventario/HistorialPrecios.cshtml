@@ -1,0 +1,23 @@
+@model IEnumerable<PizzeriaApp.Data.Entities.MovimientoInventario>
+@{ ViewData["Title"] = "Historial de Precios"; }
+<div class="container mt-4">
+    <div class="d-flex justify-content-between mb-4">
+        <h2 style="color: #1a365d;">💲 Historial de Precios: @ViewBag.InsumoNombre</h2>
+        <a asp-action="Index" class="btn btn-outline-secondary">← Volver</a>
+    </div>
+    <table class="table table-hover">
+        <thead><tr><th>Fecha</th><th>Precio de Compra</th><th>Proveedor / Motivo</th></tr></thead>
+        <tbody>
+            @foreach (var m in Model) {
+                <tr>
+                    <td>@m.Fecha.ToString("dd/MM/yyyy")</td>
+                    <td>₡@m.CostoUnitario.ToString("N2")</td>
+                    <td>@m.Motivo</td>
+                </tr>
+            }
+            @if (!Model.Any()) {
+                <tr><td colspan="3" class="text-center text-muted py-4">No hay compras registradas.</td></tr>
+            }
+        </tbody>
+    </table>
+</div>

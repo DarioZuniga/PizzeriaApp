@@ -104,4 +104,52 @@ public class ReservaController : Controller
             .ToListAsync();
         return View(reservas);
     }
+    [HttpGet]
+    public async Task<IActionResult> Editar(int id)
+    {
+        var reserva = await _context.Reservas.FindAsync(id);
+        if (reserva == null) return NotFound();
+        return View(reserva);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Editar(Reserva reserva)
+    {
+        if (ModelState.IsValid)
+        {
+            _context.Reservas.Update(reserva);
+            await _context.SaveChangesAsync();
+            TempData["Mensaje"] = "Reserva actualizada exitosamente.";
+            return RedirectToAction(nameof(MisReservas));
+        }
+        return View(reserva);
+    }
+
+    [Authorize(Roles = "Administrador")]
+    public async Task<IActionResult> Configuracion()
+    {
+        var config = await _context.ConfiguracionesReserva.FirstOrDefaultAsync();
+        if (config == null)
+        {
+            config = new ConfiguracionReserva();
+            _context.ConfiguracionesReserva.Add(config);
+            await _context.SaveChangesAsync();
+        }
+        return View(config);
+    }
+
+    [HttpPost]
+    [Authorize(Roles = "Administrador")]
+    public async Task<IActionResult> Configuracion(ConfiguracionReserva config)
+    {
+        if (ModelState.IsValid)
+        {
+            _context.ConfiguracionesReserva.Update(config);
+            await _context.SaveChangesAsync();
+            TempData["Mensaje"] = "Configuración guardada.";
+            return RedirectToAction(nameof(Configuracion));
+        }
+        return View(config);
+    }
 }

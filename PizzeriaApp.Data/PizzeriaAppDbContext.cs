@@ -30,6 +30,10 @@ public class PizzeriaAppDbContext : DbContext
     public DbSet<ConfiguracionReserva> ConfiguracionesReserva => Set<ConfiguracionReserva>();
     public DbSet<Cupon> Cupones => Set<Cupon>();
     public DbSet<Evento> Eventos => Set<Evento>();
+    public DbSet<Direccion> Direcciones => Set<Direccion>();
+    public DbSet<OrdenCompra> OrdenesCompra => Set<OrdenCompra>();
+    public DbSet<Proveedor> Proveedores => Set<Proveedor>();
+    public DbSet<DetalleOrdenCompra> DetallesOrdenCompra => Set<DetalleOrdenCompra>();
     public DbSet<Evaluacion> Evaluaciones => Set<Evaluacion>();
     public DbSet<PuntoRecompensa> PuntosRecompensa => Set<PuntoRecompensa>();
 
@@ -57,6 +61,10 @@ public class PizzeriaAppDbContext : DbContext
         modelBuilder.Entity<ConfiguracionReserva>().ToTable("ConfiguracionesReserva");
         modelBuilder.Entity<Cupon>().ToTable("Cupones");
         modelBuilder.Entity<Evento>().ToTable("Eventos");
+        modelBuilder.Entity<Direccion>().ToTable("Direcciones");
+        modelBuilder.Entity<OrdenCompra>().ToTable("OrdenesCompra");
+        modelBuilder.Entity<Proveedor>().ToTable("Proveedores");
+        modelBuilder.Entity<DetalleOrdenCompra>().ToTable("DetallesOrdenCompra");
         modelBuilder.Entity<Evaluacion>().ToTable("Evaluaciones");
         modelBuilder.Entity<PuntoRecompensa>().ToTable("PuntosRecompensa");
 

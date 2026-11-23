@@ -1,1 +1,15 @@
-﻿No se puede sobrescribir la variable Error porque es de solo lectura o constante. No se encuentra la ruta de acceso 'C:\Users\josed\Desktop\Proyectos\PizzeriaApp\PizzeriaApp.Web\appsettings.Development.json' porque no existe.
+﻿@{
+    ViewData["Title"] = "Error";
+}
+
+<div class="container py-5">
+    <div class="text-center">
+        <h1 class="text-danger">Ha ocurrido un error</h1>
+        <p class="lead">
+            Lo sentimos, ocurrió un problema al procesar tu solicitud.
+        </p>
+        <a asp-controller="Home" asp-action="Index" class="btn btn-primary">
+            Volver al inicio
+        </a>
+    </div>
+</div>

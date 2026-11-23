@@ -97,7 +97,8 @@ namespace PizzeriaApp.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<decimal>("PorcentajeDescuento")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
 
                     b.Property<int>("UsosActuales")
                         .HasColumnType("int");
@@ -119,7 +120,8 @@ namespace PizzeriaApp.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DetalleOrdenCompraId"));
 
                     b.Property<decimal>("Cantidad")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
 
                     b.Property<int>("InsumoId")
                         .HasColumnType("int");
@@ -128,6 +130,7 @@ namespace PizzeriaApp.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("PrecioUnitario")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("DetalleOrdenCompraId");
@@ -154,6 +157,7 @@ namespace PizzeriaApp.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("PrecioUnitario")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("ProductoId")
@@ -193,6 +197,7 @@ namespace PizzeriaApp.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("PrecioExtra")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("DetallePedidoIngredienteId");
@@ -342,7 +347,8 @@ namespace PizzeriaApp.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("PorcentajeDescuento")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
 
                     b.HasKey("EventoId");
 
@@ -365,6 +371,7 @@ namespace PizzeriaApp.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("PrecioExtra")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("IngredienteId");
@@ -384,6 +391,7 @@ namespace PizzeriaApp.Data.Migrations
                         .HasColumnType("bit");
 
                     b.Property<decimal>("CostoUnitario")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime?>("FechaVencimiento")
@@ -394,10 +402,12 @@ namespace PizzeriaApp.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("StockActual")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
 
                     b.Property<decimal>("StockMinimo")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
 
                     b.Property<string>("UnidadMedida")
                         .IsRequired()
@@ -417,9 +427,11 @@ namespace PizzeriaApp.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MovimientoInventarioId"));
 
                     b.Property<decimal>("Cantidad")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
 
                     b.Property<decimal>("CostoUnitario")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("Fecha")
@@ -494,6 +506,7 @@ namespace PizzeriaApp.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("Total")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("OrdenCompraId");
@@ -519,6 +532,7 @@ namespace PizzeriaApp.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<decimal>("Impuestos")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("MetodoPago")
@@ -526,9 +540,11 @@ namespace PizzeriaApp.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("Subtotal")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("Total")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("UsuarioId")
@@ -568,6 +584,7 @@ namespace PizzeriaApp.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("Precio")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("ProductoId");
@@ -575,6 +592,50 @@ namespace PizzeriaApp.Data.Migrations
                     b.HasIndex("CategoriaId");
 
                     b.ToTable("Productos", (string)null);
+                });
+
+            modelBuilder.Entity("PizzeriaApp.Data.Entities.PromocionPersonalizada", b =>
+                {
+                    b.Property<int>("PromocionPersonalizadaId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PromocionPersonalizadaId"));
+
+                    b.Property<bool>("Activa")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Descripcion")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("DiasVentana")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("FechaCreacion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("MinimoCompras")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("MontoDescontado")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("PorcentajeDescuento")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<int>("VecesAplicada")
+                        .HasColumnType("int");
+
+                    b.HasKey("PromocionPersonalizadaId");
+
+                    b.ToTable("PromocionesPersonalizadas");
                 });
 
             modelBuilder.Entity("PizzeriaApp.Data.Entities.Proveedor", b =>
@@ -646,7 +707,8 @@ namespace PizzeriaApp.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RecetaIngredienteId"));
 
                     b.Property<decimal>("CantidadRequerida")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
 
                     b.Property<int>("InsumoId")
                         .HasColumnType("int");
@@ -749,7 +811,8 @@ namespace PizzeriaApp.Data.Migrations
                         .HasColumnType("bit");
 
                     b.Property<decimal>("FactorPrecio")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(8, 4)
+                        .HasColumnType("decimal(8,4)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
@@ -776,6 +839,7 @@ namespace PizzeriaApp.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("PrecioExtra")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("TipoMasaId");

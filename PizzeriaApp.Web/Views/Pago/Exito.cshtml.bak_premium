@@ -1,0 +1,364 @@
+﻿@model PizzeriaApp.Data.Entities.Pedido
+@{
+    ViewData["Title"] = "Pago Exitoso";
+    var numeroFactura = ViewBag.NumeroFactura as string ?? $"FAC-{Model.Fecha:yyyyMMdd}-{Model.PedidoId:D4}";
+    var numeroPedido = $"PED-{Model.Fecha:yyyyMMdd}-{Model.PedidoId:D4}";
+}
+
+<style>
+    .exito-wrapper { padding: 30px 0; }
+    .exito-card {
+        background: white;
+        border-radius: 24px;
+        box-shadow: 0 25px 60px rgba(15,23,42,0.12);
+        overflow: hidden;
+        position: relative;
+        animation: cardIn 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @@keyframes cardIn {
+        from { opacity: 0; transform: translateY(40px) scale(0.96); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .exito-header {
+        background: linear-gradient(135deg, #0f172a 0%, #1a365d 60%, #2c5282 100%);
+        color: white;
+        padding: 50px 30px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+    .exito-header::before {
+        content: '';
+        position: absolute;
+        top: -50%; left: -50%;
+        width: 200%; height: 200%;
+        background: radial-gradient(circle, rgba(212,175,55,0.15) 0%, transparent 60%);
+        animation: shimmer 8s infinite linear;
+    }
+    @@keyframes shimmer {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+    .check-circle {
+        width: 90px; height: 90px;
+        background: white;
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        margin: 0 auto 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        animation: pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both;
+    }
+    @@keyframes pop {
+        from { transform: scale(0); }
+        to { transform: scale(1); }
+    }
+    .check-circle i {
+        color: #22c55e;
+        font-size: 3rem;
+        animation: drawCheck 0.6s ease-out 0.6s both;
+    }
+    @@keyframes drawCheck {
+        from { opacity: 0; transform: scale(0) rotate(-45deg); }
+        to { opacity: 1; transform: scale(1) rotate(0); }
+    }
+    .exito-title {
+        font-size: 2rem;
+        font-weight: 800;
+        margin: 0;
+        letter-spacing: -0.5px;
+    }
+    .exito-subtitle {
+        color: rgba(255,255,255,0.85);
+        margin-top: 8px;
+        font-size: 1rem;
+    }
+    .exito-badges {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin-top: 20px;
+        flex-wrap: wrap;
+    }
+    .badge-info {
+        background: rgba(255,255,255,0.15);
+        padding: 8px 16px;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.2);
+    }
+    .factura-ticket {
+        background: #f8fafc;
+        margin: 0;
+        padding: 0;
+        position: relative;
+    }
+    .ticket-body {
+        padding: 40px;
+        position: relative;
+    }
+    .ticket-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 20px;
+        border-bottom: 2px dashed #cbd5e0;
+        margin-bottom: 25px;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+    .ticket-title {
+        font-size: 1.3rem;
+        font-weight: 800;
+        color: #1a365d;
+        margin: 0;
+    }
+    .ticket-subtitle {
+        color: #64748b;
+        font-size: 0.9rem;
+        margin: 0;
+    }
+    .ticket-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin-bottom: 12px;
+        font-size: 0.95rem;
+    }
+    .ticket-row .label {
+        color: #64748b;
+    }
+    .ticket-row .value {
+        font-weight: 700;
+        color: #1e293b;
+        text-align: right;
+    }
+    .detalle-tabla {
+        margin-top: 25px;
+        border-collapse: separate;
+        border-spacing: 0;
+        width: 100%;
+    }
+    .detalle-tabla th {
+        background: #1a365d;
+        color: white;
+        padding: 12px 15px;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        text-align: left;
+    }
+    .detalle-tabla th:first-child { border-top-left-radius: 10px; }
+    .detalle-tabla th:last-child { border-top-right-radius: 10px; text-align: right; }
+    .detalle-tabla td {
+        padding: 15px;
+        border-bottom: 1px solid #e2e8f0;
+        font-size: 0.95rem;
+    }
+    .detalle-tabla tbody tr:hover {
+        background: #f1f5f9;
+        transition: background 0.2s;
+    }
+    .detalle-tabla tbody tr:last-child td { border-bottom: none; }
+    .total-box {
+        background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
+        color: white;
+        padding: 25px;
+        border-radius: 16px;
+        margin-top: 25px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+    .total-label {
+        font-size: 0.9rem;
+        opacity: 0.9;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    .total-value {
+        font-size: 2rem;
+        font-weight: 800;
+        margin: 0;
+    }
+    .subtle-total {
+        display: flex;
+        justify-content: flex-end;
+        gap: 30px;
+        margin-top: 15px;
+        font-size: 0.9rem;
+        color: #64748b;
+    }
+    .actions {
+        padding: 30px 40px;
+        background: white;
+        border-top: 1px solid #e2e8f0;
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    .btn-premium {
+        padding: 14px 28px;
+        border-radius: 50px;
+        font-weight: 700;
+        border: none;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .btn-primary-premium {
+        background: linear-gradient(135deg, #1a365d, #2c5282);
+        color: white;
+        box-shadow: 0 10px 25px rgba(26,54,93,0.3);
+    }
+    .btn-primary-premium:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 35px rgba(26,54,93,0.4);
+        color: white;
+    }
+    .btn-pdf-premium {
+        background: linear-gradient(135deg, #dc2626, #b91c1c);
+        color: white;
+        box-shadow: 0 10px 25px rgba(220,38,38,0.3);
+    }
+    .btn-pdf-premium:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 35px rgba(220,38,38,0.4);
+        color: white;
+    }
+    .btn-outline-premium {
+        background: white;
+        color: #1a365d;
+        border: 2px solid #cbd5e0;
+    }
+    .btn-outline-premium:hover {
+        border-color: #1a365d;
+        background: #f8fafc;
+        color: #1a365d;
+    }
+    .perforacion {
+        position: relative;
+        height: 20px;
+        background: #f8fafc;
+    }
+    .perforacion::before {
+        content: '';
+        position: absolute;
+        top: 50%; left: 0; right: 0;
+        height: 2px;
+        background: repeating-linear-gradient(to right, #cbd5e0 0, #cbd5e0 10px, transparent 10px, transparent 20px);
+        transform: translateY(-50%);
+    }
+</style>
+
+<div class="container exito-wrapper">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <div class="exito-card">
+                <!-- HEADER -->
+                <div class="exito-header">
+                    <div class="check-circle">
+                        <i class="fa-solid fa-check"></i>
+                    </div>
+                    <h1 class="exito-title">¡Pago Exitoso!</h1>
+                    <p class="exito-subtitle">Gracias por tu compra. Tu pedido está siendo procesado.</p>
+                    <div class="exito-badges">
+                        <span class="badge-info"><i class="fa-solid fa-receipt me-1"></i> @numeroPedido</span>
+                        <span class="badge-info"><i class="fa-solid fa-clock me-1"></i> @Model.Fecha.ToString("HH:mm")</span>
+                        <span class="badge-info"><i class="fa-solid fa-credit-card me-1"></i> @Model.MetodoPago</span>
+                    </div>
+                </div>
+
+                <!-- FACTURA TICKET -->
+                <div class="factura-ticket">
+                    <div class="ticket-body">
+                        <div class="ticket-header">
+                            <div>
+                                <h3 class="ticket-title"><i class="fa-solid fa-file-invoice-dollar me-2"></i> Factura Electrónica</h3>
+                                <p class="ticket-subtitle">Comprobante de pago</p>
+                            </div>
+                            <div class="text-end">
+                                <div style="font-size: 0.8rem; color: #64748b;">FACTURA N°</div>
+                                <div style="font-size: 1.1rem; font-weight: 800; color: #1a365d;">@numeroFactura</div>
+                            </div>
+                        </div>
+
+                        <div class="ticket-row">
+                            <span class="label">Cliente:</span>
+                            <span class="value">@Model.Usuario?.NombreUsuario</span>
+                        </div>
+                        <div class="ticket-row">
+                            <span class="label">Correo:</span>
+                            <span class="value">@Model.Usuario?.Correo</span>
+                        </div>
+                        <div class="ticket-row">
+                            <span class="label">Fecha:</span>
+                            <span class="value">@Model.Fecha.ToString("dd/MM/yyyy HH:mm")</span>
+                        </div>
+                        <div class="ticket-row">
+                            <span class="label">Estado:</span>
+                            <span class="value"><span class="badge bg-success">Pagado</span></span>
+                        </div>
+
+                        <table class="detalle-tabla">
+                            <thead>
+                                <tr>
+                                    <th>Producto</th>
+                                    <th style="text-align: center; width: 80px;">Cant.</th>
+                                    <th style="text-align: right; width: 120px;">Precio</th>
+                                    <th style="text-align: right; width: 120px;">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var d in Model.Detalles)
+                                {
+                                    <tr>
+                                        <td><strong>@d.Producto?.Nombre</strong></td>
+                                        <td class="text-center">@d.Cantidad</td>
+                                        <td class="text-end">₡@d.PrecioUnitario.ToString("N2")</td>
+                                        <td class="text-end"><strong>₡@((d.PrecioUnitario * d.Cantidad).ToString("N2"))</strong></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+
+                        <div class="subtle-total">
+                            <div>Subtotal: <strong>₡@Model.Subtotal.ToString("N2")</strong></div>
+                            <div>IVA (13%): <strong>₡@Model.Impuestos.ToString("N2")</strong></div>
+                        </div>
+
+                        <div class="total-box">
+                            <div>
+                                <div class="total-label">Total Pagado</div>
+                                <h2 class="total-value">₡@Model.Total.ToString("N2")</h2>
+                            </div>
+                            <div class="text-end" style="font-size: 0.85rem; opacity: 0.9;">
+                                <i class="fa-solid fa-circle-check"></i> Pago verificado<br />
+                                <i class="fa-solid fa-shield-halved"></i> Transacción segura
+                            </div>
+                        </div>
+                    </div>
+                    <div class="perforacion"></div>
+                </div>
+
+                <!-- ACCIONES -->
+                <div class="actions">
+                    <a asp-action="DescargarFactura" asp-route-pedidoId="@Model.PedidoId" class="btn-premium btn-pdf-premium">
+                        <i class="fa-solid fa-file-pdf"></i> Descargar PDF
+                    </a>
+                    <a asp-controller="Pedido" asp-action="Seguimiento" asp-route-id="@Model.PedidoId" class="btn-premium btn-primary-premium">
+                        <i class="fa-solid fa-location-dot"></i> Seguir Pedido
+                    </a>
+                    <a asp-controller="Home" asp-action="Index" class="btn-premium btn-outline-premium">
+                        <i class="fa-solid fa-house"></i> Volver al Menú
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

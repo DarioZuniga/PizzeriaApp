@@ -1,20 +1,82 @@
-@model PizzeriaApp.Data.Entities.Evento
+﻿@model PizzeriaApp.Data.Entities.Evento
 @{ ViewData["Title"] = "Nuevo Evento"; }
+
+<style>
+    .form-card {
+        background: white; border-radius: 24px; padding: 40px;
+        box-shadow: 0 15px 40px rgba(15,23,42,0.08); max-width: 700px; margin: 0 auto;
+    }
+    .form-header { text-align: center; margin-bottom: 35px; }
+    .form-header-icon {
+        width: 80px; height: 80px; border-radius: 24px;
+        background: linear-gradient(135deg, #d4af37, #b8941f);
+        display: flex; align-items: center; justify-content: center;
+        margin: 0 auto 20px; font-size: 2rem; color: white;
+        box-shadow: 0 15px 30px rgba(212,175,55,0.3);
+    }
+    .form-header h2 { font-weight: 800; color: #1a365d; margin-bottom: 5px; }
+    .form-header p { color: #64748b; margin: 0; }
+    .form-label-premium {
+        font-weight: 700; color: #1a365d; font-size: 0.9rem;
+        text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;
+    }
+    .form-control-premium {
+        padding: 14px 18px; border: 2px solid #e2e8f0; border-radius: 12px;
+        transition: all 0.2s; font-size: 1rem;
+    }
+    .form-control-premium:focus {
+        border-color: #d4af37; box-shadow: 0 0 0 4px rgba(212,175,55,0.15); outline: none;
+    }
+    .btn-submit-premium {
+        background: linear-gradient(135deg, #1a365d, #2c5282); color: white;
+        border: none; padding: 16px; border-radius: 12px; font-weight: 700;
+        font-size: 1rem; width: 100%; transition: all 0.3s;
+    }
+    .btn-submit-premium:hover { transform: translateY(-2px); }
+    .btn-cancelar { display: block; text-align: center; margin-top: 15px; color: #64748b; text-decoration: none; padding: 12px; }
+</style>
+
 <div class="container mt-4">
-    <div class="card border-0 shadow-sm" style="border-radius: 12px; max-width: 600px; margin: auto;">
-        <div class="card-body p-4">
-            <h3 class="mb-4" style="color: #1a365d;">Crear Evento</h3>
-            <form asp-action="Crear" method="post">
-                <div class="mb-3"><label class="fw-bold">Nombre</label><input asp-for="Nombre" class="form-control" required /></div>
-                <div class="mb-3"><label class="fw-bold">Descripción</label><textarea asp-for="Descripcion" class="form-control"></textarea></div>
-                <div class="row">
-                    <div class="col-md-6 mb-3"><label class="fw-bold">Inicio</label><input asp-for="FechaInicio" type="date" class="form-control" required /></div>
-                    <div class="col-md-6 mb-3"><label class="fw-bold">Fin</label><input asp-for="FechaFin" type="date" class="form-control" required /></div>
-                </div>
-                <div class="mb-4"><label class="fw-bold">Descuento (%)</label><input asp-for="PorcentajeDescuento" type="number" class="form-control" required /></div>
-                <button type="submit" class="btn btn-primary" style="background-color: #1a365d;">Guardar</button>
-                <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
-            </form>
+    <div class="form-card">
+        <div class="form-header">
+            <div class="form-header-icon"><i class="fa-solid fa-calendar-plus"></i></div>
+            <h2>Nuevo Evento</h2>
+            <p>Creá un evento especial con descuento</p>
         </div>
+
+        <form asp-action="Crear" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="mb-4">
+                <label class="form-label-premium">Nombre del Evento</label>
+                <input asp-for="Nombre" class="form-control form-control-premium" required placeholder="Ej: Black Friday, Navidad..." />
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label-premium">Descripción</label>
+                <textarea asp-for="Descripcion" class="form-control form-control-premium" rows="3" required placeholder="Describí el evento..."></textarea>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label-premium">% Descuento</label>
+                <input asp-for="PorcentajeDescuento" type="number" min="1" max="100" class="form-control form-control-premium" required />
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <label class="form-label-premium">Fecha Inicio</label>
+                    <input asp-for="FechaInicio" type="date" class="form-control form-control-premium" required />
+                </div>
+                <div class="col-md-6 mb-4">
+                    <label class="form-label-premium">Fecha Fin</label>
+                    <input asp-for="FechaFin" type="date" class="form-control form-control-premium" required />
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit-premium">
+                <i class="fa-solid fa-check me-2"></i> Crear Evento
+            </button>
+            <a asp-action="Index" class="btn-cancelar">Cancelar</a>
+        </form>
     </div>
 </div>

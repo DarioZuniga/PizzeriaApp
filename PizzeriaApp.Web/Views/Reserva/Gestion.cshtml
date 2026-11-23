@@ -1,36 +1,144 @@
-@model IEnumerable<PizzeriaApp.Data.Entities.Reserva>
+﻿@model IEnumerable<PizzeriaApp.Data.Entities.Reserva>
 @{
     ViewData["Title"] = "Gestión de Reservas";
+    var pendientes = Model.Count(r => r.Estado == "Pendiente");
+    var confirmadas = Model.Count(r => r.Estado == "Confirmada");
+    var canceladas = Model.Count(r => r.Estado == "Cancelada");
+    var hoy = Model.Count(r => r.FechaHora.Date == DateTime.Today && r.Estado != "Cancelada");
 }
 
+<style>
+    .admin-header {
+        background: linear-gradient(135deg, #0f172a 0%, #1a365d 100%);
+        border-radius: 24px; padding: 35px; color: white; margin-bottom: 30px;
+        position: relative; overflow: hidden;
+    }
+    .admin-header::before {
+        content: '📅'; position: absolute; right: -20px; bottom: -40px;
+        font-size: 10rem; opacity: 0.08;
+    }
+    .admin-header h1 { font-size: 1.9rem; font-weight: 800; margin: 0; position: relative; }
+    .admin-header p { margin: 6px 0 0 0; opacity: 0.85; position: relative; }
+    .btn-premium {
+        background: linear-gradient(135deg, #d4af37, #b8941f); color: #0f172a;
+        border: none; padding: 12px 24px; border-radius: 50px; font-weight: 700;
+        text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+        transition: all 0.3s; box-shadow: 0 8px 20px rgba(212,175,55,0.3);
+    }
+    .btn-premium:hover { transform: translateY(-2px); color: #0f172a; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px; }
+    .stat-card {
+        background: white; border-radius: 16px; padding: 25px;
+        box-shadow: 0 8px 25px rgba(15,23,42,0.06); border: 1px solid #e2e8f0;
+        display: flex; align-items: center; gap: 15px;
+    }
+    .stat-icon {
+        width: 50px; height: 50px; border-radius: 14px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.3rem; flex-shrink: 0;
+    }
+    .stat-info h3 { font-size: 1.8rem; font-weight: 800; margin: 0; color: #1a365d; }
+    .stat-info p { margin: 0; color: #64748b; font-size: 0.85rem; }
+    .tabla-premium {
+        background: white; border-radius: 20px; overflow: hidden;
+        box-shadow: 0 10px 30px rgba(15,23,42,0.08);
+    }
+    .tabla-premium table { margin: 0; width: 100%; }
+    .tabla-premium thead { background: linear-gradient(135deg, #1a365d, #2c5282); color: white; }
+    .tabla-premium thead th { padding: 18px 20px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 700; border: none; }
+    .tabla-premium tbody td { padding: 18px 20px; border-bottom: 1px solid #e2e8f0; vertical-align: middle; }
+    .tabla-premium tbody tr:hover { background: #f8fafc; }
+    .badge-estado { padding: 6px 14px; border-radius: 50px; font-weight: 700; font-size: 0.75rem; }
+    .codigo-badge {
+        font-family: 'Courier New', monospace; font-weight: 800; font-size: 0.9rem;
+        background: #f1f5f9; padding: 4px 10px; border-radius: 6px; color: #1a365d;
+    }
+    .btn-accion {
+        padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: 0.85rem;
+        text-decoration: none; border: none; transition: all 0.2s;
+    }
+</style>
+
 <div class="container mt-4">
-    <h2 style="color: #1a365d;">📋 Gestión de Reservas</h2>
-    <hr />
-    <table class="table table-hover">
-        <thead>
-            <tr>
-                <th>Cliente</th>
-                <th>Fecha y Hora</th>
-                <th>Personas</th>
-                <th>Estado</th>
-                <th>Notas</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var r in Model)
-            {
-                <tr>
-                    <td>@r.Usuario?.NombreUsuario</td>
-                    <td>@r.FechaHora.ToString("dd/MM/yyyy HH:mm")</td>
-                    <td>@r.CantidadPersonas</td>
-                    <td>
-                        @if (r.Estado == "Confirmada") { <span class="badge bg-success">Confirmada</span> }
-                        else if (r.Estado == "Cancelada") { <span class="badge bg-danger">Cancelada</span> }
-                        else { <span class="badge bg-warning text-dark">Pendiente</span> }
-                    </td>
-                    <td>@r.Notas</td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    <div class="admin-header">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <h1><i class="fa-solid fa-calendar-check me-2"></i>Gestión de Reservas</h1>
+                <p>Todas las reservas de tus clientes</p>
+            </div>
+            <a asp-action="Configuracion" class="btn-premium">
+                <i class="fa-solid fa-gear"></i> Configuración
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["Mensaje"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" style="border-radius: 12px; border: none; background: #dcfce7; color: #16a34a;">
+            <i class="fa-solid fa-circle-check me-2"></i> @TempData["Mensaje"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: #dbeafe; color: #1e40af;"><i class="fa-solid fa-calendar"></i></div>
+            <div class="stat-info"><h3>@Model.Count()</h3><p>Total Reservas</p></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background: #fef3c7; color: #d97706;"><i class="fa-solid fa-clock"></i></div>
+            <div class="stat-info"><h3>@pendientes</h3><p>Pendientes</p></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background: #dcfce7; color: #16a34a;"><i class="fa-solid fa-check"></i></div>
+            <div class="stat-info"><h3>@confirmadas</h3><p>Confirmadas</p></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background: #fce7f3; color: #be185d;"><i class="fa-solid fa-calendar-day"></i></div>
+            <div class="stat-info"><h3>@hoy</h3><p>Para Hoy</p></div>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info text-center py-5" style="border-radius: 16px;">
+            <h4>No hay reservas registradas</h4>
+            <p class="mb-0">Las reservas de los clientes aparecerán acá.</p>
+        </div>
+    }
+    else
+    {
+        <div class="tabla-premium">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Cliente</th>
+                        <th>Fecha y Hora</th>
+                        <th>Personas</th>
+                        <th>Código</th>
+                        <th>Estado</th>
+                        <th>Notas</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var r in Model)
+                    {
+                        var estadoBadge = r.Estado == "Confirmada" ? "background:#dcfce7;color:#16a34a" : r.Estado == "Cancelada" ? "background:#fee2e2;color:#dc2626" : "background:#fef3c7;color:#d97706";
+                        var esHoy = r.FechaHora.Date == DateTime.Today;
+                        <tr>
+                            <td><strong>@r.Usuario?.NombreUsuario</strong></td>
+                            <td>
+                                <div style="font-weight: 600;">@r.FechaHora.ToString("dd/MM/yyyy")</div>
+                                <div style="color: #64748b; font-size: 0.85rem;">@r.FechaHora.ToString("HH:mm") @(esHoy ? "· HOY" : "")</div>
+                            </td>
+                            <td><span style="font-weight: 700; color: #1a365d;">@r.CantidadPersonas</span> 👤</td>
+                            <td><span class="codigo-badge">@r.CodigoConfirmacion</span></td>
+                            <td><span class="badge-estado" style="@estadoBadge">@r.Estado</span></td>
+                            <td><small class="text-muted">@(string.IsNullOrEmpty(r.Notas) ? "—" : r.Notas)</small></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
 </div>

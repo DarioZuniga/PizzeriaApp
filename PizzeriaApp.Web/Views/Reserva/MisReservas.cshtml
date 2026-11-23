@@ -10,7 +10,7 @@
         <tbody>
             @foreach (var r in Model) {
                 <tr>
-                    <td>@r.FechaHora.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td>@r.FechaHora.ToString("dd/MM/yyyy HH:mm") <br /> <small class="text-muted">Código: <strong>@r.CodigoConfirmacion</strong></small></td>
                     <td>@r.CantidadPersonas</td>
                     <td>
                         @if (r.Estado == "Confirmada") { <span class="badge bg-success">Confirmada</span> }

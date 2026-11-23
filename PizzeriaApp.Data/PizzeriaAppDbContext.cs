@@ -29,6 +29,7 @@ public class PizzeriaAppDbContext : DbContext
     public DbSet<Reserva> Reservas => Set<Reserva>();
     public DbSet<ConfiguracionReserva> ConfiguracionesReserva => Set<ConfiguracionReserva>();
     public DbSet<Cupon> Cupones => Set<Cupon>();
+    public DbSet<PromocionPersonalizada> PromocionesPersonalizadas => Set<PromocionPersonalizada>();
     public DbSet<Evento> Eventos => Set<Evento>();
     public DbSet<Direccion> Direcciones => Set<Direccion>();
     public DbSet<OrdenCompra> OrdenesCompra => Set<OrdenCompra>();
@@ -87,7 +88,7 @@ public class PizzeriaAppDbContext : DbContext
 
         modelBuilder.Entity<Rol>().HasData(
             new Rol { RolId = 1, Nombre = "Administrador", Descripcion = "Control total del sistema" },
-            new Rol { RolId = 2, Nombre = "Usuario", Descripcion = "Cliente de la pizzería" }
+            new Rol { RolId = 2, Nombre = "Usuario", Descripcion = "Cliente de la pizzerÃ­a" }
         );
     }
 }

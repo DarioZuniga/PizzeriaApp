@@ -1,47 +1,105 @@
-@model IEnumerable<PizzeriaApp.Data.Entities.Pedido>
+﻿@model IEnumerable<PizzeriaApp.Data.Entities.Pedido>
 @{
     ViewData["Title"] = "Gestión de Pedidos";
 }
 
 <div class="container mt-4">
-    <h2 style="color: #1a365d;">📋 Gestión de Pedidos</h2>
+    <h2 style="color: #1a365d;"><i class="fa-solid fa-clipboard-list me-2"></i> Gestión de Pedidos</h2>
     <hr />
-    <table class="table table-hover">
-        <thead>
-            <tr>
-                <th>Pedido #</th>
-                <th>Cliente</th>
-                <th>Fecha</th>
-                <th>Total</th>
-                <th>Estado</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var pedido in Model)
-            {
+
+    @if (TempData["Mensaje"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fa-solid fa-circle-check me-2"></i> @TempData["Mensaje"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fa-solid fa-triangle-exclamation me-2"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info text-center py-4">
+            No hay pedidos registrados todavía.
+        </div>
+    }
+    else
+    {
+        <table class="table table-hover align-middle">
+            <thead>
                 <tr>
-                    <td>@pedido.PedidoId</td>
-                    <td>@pedido.Usuario?.NombreUsuario</td>
-                    <td>@pedido.Fecha.ToString("dd/MM/yyyy HH:mm")</td>
-                    <td>₡@pedido.Total.ToString("N2")</td>
-                    <td><span class="badge bg-info">@pedido.Estado</span></td>
-                    <td>
-                        <form asp-action="CambiarEstado" method="post" class="d-flex gap-2">
-                            <input type="hidden" name="pedidoId" value="@pedido.PedidoId" />
-                            <select name="nuevoEstado" class="form-select form-select-sm">
-                                <option value="Pendiente">Pendiente</option>
-                                <option value="Pagado">Pagado</option>
-                                <option value="EnPreparacion">En Preparación</option>
-                                <option value="EnCamino">En Camino</option>
-                                <option value="Entregado">Entregado</option>
-                                <option value="Cancelado">Cancelado</option>
-                            </select>
-                            <button type="submit" class="btn btn-sm btn-primary">Actualizar</button>
-                        </form>
-                    </td>
+                    <th>Pedido</th>
+                    <th>Cliente</th>
+                    <th>Fecha</th>
+                    <th>Total</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var pedido in Model)
+                {
+                    var numeroUnico = $"PED-{pedido.Fecha:yyyyMMdd}-{pedido.PedidoId:D4}";
+                    var estadoBadge = pedido.Estado switch
+                    {
+                        "Pendiente" => "bg-secondary",
+                        "Pagado" => "bg-info",
+                        "EnPreparacion" => "bg-warning text-dark",
+                        "EnCamino" => "bg-primary",
+                        "Entregado" => "bg-success",
+                        "Cancelado" => "bg-danger",
+                        _ => "bg-secondary"
+                    };
+                    var bloqueado = pedido.Estado == "Entregado" || pedido.Estado == "Cancelado";
+
+                    <tr>
+                        <td><strong>@numeroUnico</strong></td>
+                        <td>@pedido.Usuario?.NombreUsuario</td>
+                        <td>@pedido.Fecha.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td>₡@pedido.Total.ToString("N2")</td>
+                        <td><span class="badge @estadoBadge">@pedido.Estado</span></td>
+                        <td>
+                            @if (!bloqueado)
+                            {
+                                <div class="d-flex gap-2 flex-wrap">
+                                    <a asp-controller="Pago" asp-action="DescargarFactura" asp-route-pedidoId="@pedido.PedidoId" class="btn btn-sm btn-outline-primary" title="Descargar factura">
+                                        <i class="fa-solid fa-file-pdf"></i> Factura
+                                    </a>
+                                    <form asp-action="CambiarEstado" method="post" class="d-flex gap-1">
+                                        <input type="hidden" name="pedidoId" value="@pedido.PedidoId" />
+                                        <select name="nuevoEstado" class="form-select form-select-sm" style="width: 160px;">
+                                            <option value="Pendiente" selected="@(pedido.Estado == "Pendiente")">Pendiente</option>
+                                            <option value="Pagado" selected="@(pedido.Estado == "Pagado")">Pagado</option>
+                                            <option value="EnPreparacion" selected="@(pedido.Estado == "EnPreparacion")">En Preparación</option>
+                                            <option value="EnCamino" selected="@(pedido.Estado == "EnCamino")">En Camino</option>
+                                            <option value="Entregado" selected="@(pedido.Estado == "Entregado")">Entregado</option>
+                                        </select>
+                                        <button type="submit" class="btn btn-sm btn-primary">Actualizar</button>
+                                    </form>
+                                    <form asp-action="Cancelar" method="post" onsubmit="return confirm('¿Cancelar este pedido? Se notificará al cliente.');">
+                                        <input type="hidden" name="pedidoId" value="@pedido.PedidoId" />
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                            <i class="fa-solid fa-xmark me-1"></i> Cancelar
+                                        </button>
+                                    </form>
+                                </div>
+                            }
+                            else
+                            {
+                                <a asp-controller="Pago" asp-action="DescargarFactura" asp-route-pedidoId="@pedido.PedidoId" class="btn btn-sm btn-outline-primary">
+                                    <i class="fa-solid fa-file-pdf"></i> Factura
+                                </a>
+                                <span class="text-muted small ms-2">Pedido cerrado</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
 </div>

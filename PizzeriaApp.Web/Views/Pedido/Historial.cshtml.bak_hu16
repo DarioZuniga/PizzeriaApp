@@ -1,0 +1,96 @@
+@model IEnumerable<PizzeriaApp.Data.Entities.Pedido>
+@{
+    ViewData["Title"] = "Mi Historial";
+}
+
+<div class="container mt-4">
+    <h2 style="color: #1a365d;"><i class="fa-solid fa-scroll me-2"></i> Mi Historial de Pedidos</h2>
+    <hr />
+
+    @if (TempData["Mensaje"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fa-solid fa-circle-check me-2"></i> @TempData["Mensaje"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fa-solid fa-triangle-exclamation me-2"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info text-center py-5">
+            <h4>No tenés pedidos todavía</h4>
+            <a asp-controller="Home" asp-action="Index" class="btn btn-primary mt-3" style="background-color: #1a365d;">Ver Menú</a>
+        </div>
+    }
+    else
+    {
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Pedido</th>
+                    <th>Fecha</th>
+                    <th>Productos</th>
+                    <th>Total</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var pedido in Model)
+                {
+                    var numeroUnico = $"PED-{pedido.Fecha:yyyyMMdd}-{pedido.PedidoId:D4}";
+                    var estadoBadge = pedido.Estado switch
+                    {
+                        "Pendiente" => "bg-secondary",
+                        "Pagado" => "bg-info",
+                        "EnPreparacion" => "bg-warning text-dark",
+                        "EnCamino" => "bg-primary",
+                        "Entregado" => "bg-success",
+                        "Cancelado" => "bg-danger",
+                        _ => "bg-secondary"
+                    };
+                    <tr>
+                        <td><strong>@numeroUnico</strong></td>
+                        <td>@pedido.Fecha.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td>
+                            <small class="text-muted">
+                                @string.Join(", ", pedido.Detalles.Select(d => $"{d.Cantidad}x {d.Producto?.Nombre}"))
+                            </small>
+                        </td>
+                        <td class="fw-bold text-danger">₡@pedido.Total.ToString("N2")</td>
+                        <td><span class="badge @estadoBadge">@pedido.Estado</span></td>
+                        <td>
+                            <div class="d-flex gap-1 flex-wrap">
+                                <a asp-action="Seguimiento" asp-route-id="@pedido.PedidoId" class="btn btn-sm btn-primary">
+                                    <i class="fa-solid fa-eye me-1"></i> Ver
+                                </a>
+                                @if (pedido.Estado != "Cancelado")
+                                {
+                                    <form asp-action="Repetir" method="post" class="d-inline">
+                                        <input type="hidden" name="id" value="@pedido.PedidoId" />
+                                        <button type="submit" class="btn btn-sm btn-outline-success">
+                                            <i class="fa-solid fa-rotate-right me-1"></i> Repetir
+                                        </button>
+                                    </form>
+                                }
+                                @if (pedido.Estado == "Entregado" || pedido.Estado == "Pagado")
+                                {
+                                    <a asp-controller="Evaluacion" asp-action="Crear" asp-route-pedidoId="@pedido.PedidoId" class="btn btn-sm btn-outline-warning text-dark">
+                                        <i class="fa-solid fa-star"></i> Calificar
+                                    </a>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

@@ -1,22 +1,135 @@
-@model IEnumerable<PizzeriaApp.Data.Entities.Evento>
+﻿@model IEnumerable<PizzeriaApp.Data.Entities.Evento>
 @{ ViewData["Title"] = "Eventos"; }
+
+<style>
+    .admin-header {
+        background: linear-gradient(135deg, #0f172a 0%, #1a365d 100%);
+        border-radius: 24px; padding: 35px; color: white; margin-bottom: 30px;
+        position: relative; overflow: hidden;
+    }
+    .admin-header::before {
+        content: '🎉'; position: absolute; right: -20px; bottom: -40px;
+        font-size: 10rem; opacity: 0.08;
+    }
+    .admin-header h1 { font-size: 1.9rem; font-weight: 800; margin: 0; position: relative; }
+    .admin-header p { margin: 6px 0 0 0; opacity: 0.85; position: relative; }
+    .btn-premium {
+        background: linear-gradient(135deg, #d4af37, #b8941f); color: #0f172a;
+        border: none; padding: 12px 24px; border-radius: 50px; font-weight: 700;
+        text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+        transition: all 0.3s; box-shadow: 0 8px 20px rgba(212,175,55,0.3);
+    }
+    .btn-premium:hover { transform: translateY(-2px); color: #0f172a; }
+    .eventos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px; }
+    .evento-card {
+        background: white; border-radius: 20px; overflow: hidden;
+        box-shadow: 0 10px 30px rgba(15,23,42,0.08);
+        transition: all 0.3s; border: 1px solid #e2e8f0;
+    }
+    .evento-card:hover { transform: translateY(-5px); box-shadow: 0 20px 50px rgba(15,23,42,0.15); }
+    .evento-header {
+        background: linear-gradient(135deg, #1a365d, #2c5282);
+        padding: 30px; color: white; position: relative;
+    }
+    .evento-descuento-badge {
+        position: absolute; top: 15px; right: 15px;
+        background: #d4af37; color: #0f172a;
+        padding: 8px 16px; border-radius: 50px;
+        font-weight: 800; font-size: 1.1rem;
+    }
+    .evento-header h3 { font-size: 1.4rem; font-weight: 800; margin: 0 0 8px 0; }
+    .evento-header p { margin: 0; opacity: 0.85; font-size: 0.9rem; }
+    .evento-body { padding: 25px; }
+    .evento-vigencia {
+        display: flex; align-items: center; gap: 8px;
+        color: #64748b; font-size: 0.85rem; margin-bottom: 15px;
+    }
+    .evento-estado { display: inline-block; padding: 6px 14px; border-radius: 50px; font-weight: 700; font-size: 0.75rem; }
+    .evento-actions { display: flex; gap: 8px; padding: 0 25px 25px; flex-wrap: wrap; }
+    .btn-accion {
+        padding: 10px 18px; border-radius: 10px; font-weight: 600; font-size: 0.85rem;
+        text-decoration: none; border: none; transition: all 0.2s;
+        display: inline-flex; align-items: center; gap: 6px;
+    }
+    .btn-editar { background: #dbeafe; color: #1e40af; }
+    .btn-editar:hover { background: #1e40af; color: white; }
+    .btn-desactivar { background: #fee2e2; color: #dc2626; }
+    .btn-desactivar:hover { background: #dc2626; color: white; }
+    .btn-activar { background: #dcfce7; color: #16a34a; }
+    .btn-activar:hover { background: #16a34a; color: white; }
+</style>
+
 <div class="container mt-4">
-    <div class="d-flex justify-content-between mb-4">
-        <h2 style="color: #1a365d;">🎉 Eventos y Descuentos</h2>
-        <a asp-action="Crear" class="btn btn-primary" style="background-color: #1a365d;">Nuevo Evento</a>
+    <div class="admin-header">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <h1><i class="fa-solid fa-calendar-star me-2"></i>Gestión de Eventos</h1>
+                <p>Crea eventos especiales con descuentos para tus clientes</p>
+            </div>
+            <a asp-action="Crear" class="btn-premium">
+                <i class="fa-solid fa-plus"></i> Nuevo Evento
+            </a>
+        </div>
     </div>
-    <table class="table table-hover">
-        <thead><tr><th>Nombre</th><th>Descuento</th><th>Inicio</th><th>Fin</th><th>Estado</th></tr></thead>
-        <tbody>
-            @foreach (var e in Model) {
-                <tr>
-                    <td>@e.Nombre</td>
-                    <td>@e.PorcentajeDescuento%</td>
-                    <td>@e.FechaInicio.ToShortDateString()</td>
-                    <td>@e.FechaFin.ToShortDateString()</td>
-                    <td>@(e.Activo ? "Activo" : "Inactivo")</td>
-                </tr>
+
+    @if (TempData["Mensaje"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" style="border-radius: 12px; border: none; background: #dcfce7; color: #16a34a;">
+            <i class="fa-solid fa-circle-check me-2"></i> @TempData["Mensaje"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info text-center py-5" style="border-radius: 16px;">
+            <h4>No hay eventos creados</h4>
+            <p class="mb-0">Creá el primer evento para atraer clientes.</p>
+        </div>
+    }
+    else
+    {
+        <div class="eventos-grid">
+            @foreach (var e in Model)
+            {
+                var vencido = e.FechaFin < DateTime.Now;
+                var estadoBadge = !e.Activo ? "background:#f1f5f9;color:#64748b" : vencido ? "background:#fef3c7;color:#d97706" : "background:#dcfce7;color:#16a34a";
+                var estadoTexto = !e.Activo ? "Cancelado" : vencido ? "Vencido" : "Activo";
+
+                <div class="evento-card">
+                    <div class="evento-header">
+                        <div class="evento-descuento-badge">@e.PorcentajeDescuento% OFF</div>
+                        <h3>@e.Nombre</h3>
+                        <p>@e.Descripcion</p>
+                    </div>
+                    <div class="evento-body">
+                        <div class="evento-vigencia">
+                            <i class="fa-solid fa-calendar"></i>
+                            @e.FechaInicio.ToString("dd/MM/yyyy") → @e.FechaFin.ToString("dd/MM/yyyy")
+                        </div>
+                        <span class="evento-estado" style="@estadoBadge">@estadoTexto</span>
+                    </div>
+                    <div class="evento-actions">
+                        <a asp-action="Editar" asp-route-id="@e.EventoId" class="btn-accion btn-editar">
+                            <i class="fa-solid fa-pen"></i> Editar
+                        </a>
+                        @if (e.Activo)
+                        {
+                            <form asp-action="Cancelar" method="post" onsubmit="return confirm('¿Cancelar este evento?');" style="display:inline;">
+                                <input type="hidden" name="id" value="@e.EventoId" />
+                                <button type="submit" class="btn-accion btn-desactivar"><i class="fa-solid fa-ban"></i> Cancelar</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <form asp-action="Activar" method="post" style="display:inline;">
+                                <input type="hidden" name="id" value="@e.EventoId" />
+                                <button type="submit" class="btn-accion btn-activar"><i class="fa-solid fa-check"></i> Activar</button>
+                            </form>
+                        }
+                    </div>
+                </div>
             }
-        </tbody>
-    </table>
+        </div>
+    }
 </div>

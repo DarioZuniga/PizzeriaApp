@@ -1,63 +1,94 @@
-@model PizzeriaApp.Data.Entities.Producto
+﻿@model PizzeriaApp.Data.Entities.Producto
 @{
     ViewData["Title"] = "Nuevo Producto";
     var categorias = ViewBag.Categorias as List<PizzeriaApp.Data.Entities.Categoria>;
 }
 
+<style>
+    .form-card {
+        background: white; border-radius: 24px; padding: 40px;
+        box-shadow: 0 15px 40px rgba(15,23,42,0.08); max-width: 750px; margin: 0 auto;
+    }
+    .form-header { text-align: center; margin-bottom: 35px; }
+    .form-header-icon {
+        width: 80px; height: 80px; border-radius: 24px;
+        background: linear-gradient(135deg, #d4af37, #b8941f);
+        display: flex; align-items: center; justify-content: center;
+        margin: 0 auto 20px; font-size: 2rem; color: white;
+        box-shadow: 0 15px 30px rgba(212,175,55,0.3);
+    }
+    .form-header h2 { font-weight: 800; color: #1a365d; margin-bottom: 5px; }
+    .form-header p { color: #64748b; margin: 0; }
+    .form-label-premium {
+        font-weight: 700; color: #1a365d; font-size: 0.9rem;
+        text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;
+    }
+    .form-control-premium {
+        padding: 14px 18px; border: 2px solid #e2e8f0; border-radius: 12px;
+        transition: all 0.2s; font-size: 1rem;
+    }
+    .form-control-premium:focus {
+        border-color: #d4af37; box-shadow: 0 0 0 4px rgba(212,175,55,0.15); outline: none;
+    }
+    .btn-submit-premium {
+        background: linear-gradient(135deg, #1a365d, #2c5282); color: white;
+        border: none; padding: 16px; border-radius: 12px; font-weight: 700;
+        font-size: 1rem; width: 100%; transition: all 0.3s;
+    }
+    .btn-submit-premium:hover { transform: translateY(-2px); }
+    .btn-cancelar { display: block; text-align: center; margin-top: 15px; color: #64748b; text-decoration: none; padding: 12px; }
+</style>
+
 <div class="container mt-4">
-    <div class="card border-0 shadow-sm" style="border-radius: 12px;">
-        <div class="card-body p-4">
-            <h3 class="mb-4" style="color: #1a365d;">Nuevo Producto</h3>
-            <form asp-action="Create" method="post">
-                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-                
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label asp-for="Nombre" class="form-label fw-bold">Nombre</label>
-                        <input asp-for="Nombre" class="form-control" required />
-                        <span asp-validation-for="Nombre" class="text-danger small"></span>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label asp-for="CategoriaId" class="form-label fw-bold">Categoría</label>
-                        <select asp-for="CategoriaId" class="form-select" required>
-                            <option value="">Seleccione una categoría</option>
-                            @if (categorias != null)
-                            {
-                                foreach (var cat in categorias)
-                                {
-                                    <option value="@cat.CategoriaId">@cat.Nombre</option>
-                                }
-                            }
-                        </select>
-                    </div>
-                </div>
-
-                <div class="mb-3">
-                    <label asp-for="Descripcion" class="form-label fw-bold">Descripción</label>
-                    <textarea asp-for="Descripcion" class="form-control" rows="3"></textarea>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label asp-for="Precio" class="form-label fw-bold">Precio (₡)</label>
-                        <input asp-for="Precio" type="number" step="0.01" class="form-control" required />
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label asp-for="ImagenUrl" class="form-label fw-bold">URL de Imagen</label>
-                        <input asp-for="ImagenUrl" class="form-control" placeholder="https://..." />
-                    </div>
-                </div>
-
-                <div class="form-check mb-4">
-                    <input asp-for="Activo" class="form-check-input" checked />
-                    <label asp-for="Activo" class="form-check-label">Activo</label>
-                </div>
-
-                <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-primary" style="background-color: #1a365d;">Guardar</button>
-                    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
-                </div>
-            </form>
+    <div class="form-card">
+        <div class="form-header">
+            <div class="form-header-icon"><i class="fa-solid fa-pizza-slice"></i></div>
+            <h2>Nuevo Producto</h2>
+            <p>Agregá un producto al menú</p>
         </div>
+
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="mb-4">
+                <label class="form-label-premium">Nombre del Producto</label>
+                <input asp-for="Nombre" class="form-control form-control-premium" required placeholder="Ej: Pizza Margarita" />
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label-premium">Descripción</label>
+                <textarea asp-for="Descripcion" class="form-control form-control-premium" rows="3" placeholder="Describí los ingredientes y características..."></textarea>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <label class="form-label-premium">Precio</label>
+                    <input asp-for="Precio" type="number" step="0.01" min="0" class="form-control form-control-premium" required />
+                </div>
+                <div class="col-md-6 mb-4">
+                    <label class="form-label-premium">Categoría</label>
+                    <select asp-for="CategoriaId" class="form-control form-control-premium" required>
+                        <option value="">Seleccionar...</option>
+                        @if (categorias != null)
+                        {
+                            @foreach (var c in categorias)
+                            {
+                                <option value="@c.CategoriaId">@c.Nombre</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label-premium">URL de Imagen (Opcional)</label>
+                <input asp-for="ImagenUrl" class="form-control form-control-premium" placeholder="https://ejemplo.com/imagen.jpg" />
+            </div>
+
+            <button type="submit" class="btn-submit-premium">
+                <i class="fa-solid fa-check me-2"></i> Crear Producto
+            </button>
+            <a asp-action="Index" class="btn-cancelar">Cancelar</a>
+        </form>
     </div>
 </div>

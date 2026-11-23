@@ -1,48 +1,179 @@
-@model IEnumerable<PizzeriaApp.Data.Entities.Cupon>
-@{
-    ViewData["Title"] = "Cupones";
-}
+﻿@model IEnumerable<PizzeriaApp.Data.Entities.Cupon>
+@{ ViewData["Title"] = "Cupones"; }
+
+<style>
+    .admin-header {
+        background: linear-gradient(135deg, #0f172a 0%, #1a365d 100%);
+        border-radius: 24px; padding: 35px; color: white; margin-bottom: 30px;
+        position: relative; overflow: hidden;
+    }
+    .admin-header::before {
+        content: '🎟️'; position: absolute; right: -20px; bottom: -40px;
+        font-size: 10rem; opacity: 0.08;
+    }
+    .admin-header h1 { font-size: 1.9rem; font-weight: 800; margin: 0; position: relative; }
+    .admin-header p { margin: 6px 0 0 0; opacity: 0.85; position: relative; }
+    .btn-premium {
+        background: linear-gradient(135deg, #d4af37, #b8941f); color: #0f172a;
+        border: none; padding: 12px 24px; border-radius: 50px; font-weight: 700;
+        text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+        transition: all 0.3s; box-shadow: 0 8px 20px rgba(212,175,55,0.3);
+    }
+    .btn-premium:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(212,175,55,0.4); color: #0f172a; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px; }
+    .stat-card {
+        background: white; border-radius: 16px; padding: 25px;
+        box-shadow: 0 8px 25px rgba(15,23,42,0.06); border: 1px solid #e2e8f0;
+        display: flex; align-items: center; gap: 15px;
+    }
+    .stat-icon {
+        width: 50px; height: 50px; border-radius: 14px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.3rem; flex-shrink: 0;
+    }
+    .stat-info h3 { font-size: 1.8rem; font-weight: 800; margin: 0; color: #1a365d; }
+    .stat-info p { margin: 0; color: #64748b; font-size: 0.85rem; }
+    .tabla-premium {
+        background: white; border-radius: 20px; overflow: hidden;
+        box-shadow: 0 10px 30px rgba(15,23,42,0.08);
+    }
+    .tabla-premium table { margin: 0; width: 100%; }
+    .tabla-premium thead {
+        background: linear-gradient(135deg, #1a365d, #2c5282); color: white;
+    }
+    .tabla-premium thead th {
+        padding: 18px 20px; font-size: 0.8rem; text-transform: uppercase;
+        letter-spacing: 0.8px; font-weight: 700; border: none;
+    }
+    .tabla-premium tbody td { padding: 18px 20px; border-bottom: 1px solid #e2e8f0; vertical-align: middle; }
+    .tabla-premium tbody tr:hover { background: #f8fafc; }
+    .tabla-premium tbody tr:last-child td { border-bottom: none; }
+    .badge-estado { padding: 6px 14px; border-radius: 50px; font-weight: 700; font-size: 0.75rem; }
+    .codigo-badge {
+        font-family: 'Courier New', monospace; font-weight: 800; font-size: 1rem;
+        background: #f1f5f9; padding: 6px 12px; border-radius: 8px;
+        color: #1a365d; letter-spacing: 1px;
+    }
+    .descuento-badge {
+        font-size: 1.2rem; font-weight: 800; color: #dc2626;
+        background: #fee2e2; padding: 4px 12px; border-radius: 8px;
+    }
+    .btn-accion {
+        padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: 0.85rem;
+        text-decoration: none; border: none; transition: all 0.2s;
+    }
+    .btn-editar { background: #dbeafe; color: #1e40af; }
+    .btn-editar:hover { background: #1e40af; color: white; }
+    .btn-desactivar { background: #fee2e2; color: #dc2626; }
+    .btn-desactivar:hover { background: #dc2626; color: white; }
+    .btn-activar { background: #dcfce7; color: #16a34a; }
+    .btn-activar:hover { background: #16a34a; color: white; }
+</style>
 
 <div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 style="color: #1a365d;"><i class="fa-solid fa-ticket me-2"></i>Cupones de Descuento</h2>
-        <a asp-action="Crear" class="btn btn-primary" style="background-color: #1a365d;"><i class="fa-solid fa-plus me-2"></i>Nuevo Cupón</a>
+    <div class="admin-header">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <h1><i class="fa-solid fa-ticket me-2"></i>Gestión de Cupones</h1>
+                <p>Administra los códigos de descuento de la pizzería</p>
+            </div>
+            <a asp-action="Crear" class="btn-premium">
+                <i class="fa-solid fa-plus"></i> Nuevo Cupón
+            </a>
+        </div>
     </div>
-    
-    <table class="table table-hover">
-        <thead>
-            <tr>
-                <th>Código</th>
-                <th>Descuento</th>
-                <th>Vigencia</th>
-                <th>Usos</th>
-                <th>Estado</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var c in Model)
-            {
-                <tr>
-                    <td class="fw-bold">@c.Codigo</td>
-                    <td>@c.PorcentajeDescuento%</td>
-                    <td>@c.FechaInicio.ToString("dd/MM/yy") - @c.FechaFin.ToString("dd/MM/yy")</td>
-                    <td>@c.UsosActuales / @c.UsosMaximos</td>
-                    <td>
-                        @if (c.Activo && c.FechaFin >= DateTime.Now) { <span class="badge bg-success">Activo</span> }
-                        else { <span class="badge bg-danger">Inactivo</span> }
-                    </td>
-                    <td>
-                        @if (c.Activo)
-                        {
-                            <form asp-action="Desactivar" method="post">
-                                <input type="hidden" name="id" value="@c.CuponId" />
-                                <button type="submit" class="btn btn-sm btn-outline-danger">Desactivar</button>
-                            </form>
-                        }
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+
+    @if (TempData["Mensaje"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" style="border-radius: 12px; border: none; background: #dcfce7; color: #16a34a;">
+            <i class="fa-solid fa-circle-check me-2"></i> @TempData["Mensaje"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: #dbeafe; color: #1e40af;"><i class="fa-solid fa-ticket"></i></div>
+            <div class="stat-info"><h3>@Model.Count()</h3><p>Total Cupones</p></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background: #dcfce7; color: #16a34a;"><i class="fa-solid fa-check"></i></div>
+            <div class="stat-info"><h3>@Model.Count(c => c.Activo)</h3><p>Activos</p></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background: #fee2e2; color: #dc2626;"><i class="fa-solid fa-ban"></i></div>
+            <div class="stat-info"><h3>@Model.Count(c => !c.Activo)</h3><p>Inactivos</p></div>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info text-center py-5" style="border-radius: 16px;">
+            <h4>No hay cupones creados</h4>
+            <p class="mb-0">Creá el primer cupón para empezar.</p>
+        </div>
+    }
+    else
+    {
+        <div class="tabla-premium">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Descuento</th>
+                        <th>Vigencia</th>
+                        <th>Usos</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var c in Model)
+                    {
+                        var vencido = c.FechaFin < DateTime.Now;
+                        var agotado = c.UsosActuales >= c.UsosMaximos;
+                        var estadoBadge = !c.Activo ? "background:#f1f5f9;color:#64748b" : vencido ? "background:#fef3c7;color:#d97706" : agotado ? "background:#fee2e2;color:#dc2626" : "background:#dcfce7;color:#16a34a";
+                        var estadoTexto = !c.Activo ? "Inactivo" : vencido ? "Vencido" : agotado ? "Agotado" : "Activo";
+                        <tr>
+                            <td><span class="codigo-badge">@c.Codigo</span></td>
+                            <td><span class="descuento-badge">@c.PorcentajeDescuento%</span></td>
+                            <td>
+                                <div style="font-size: 0.85rem; color: #64748b;">
+                                    @c.FechaInicio.ToString("dd/MM/yyyy") → @c.FechaFin.ToString("dd/MM/yyyy")
+                                </div>
+                            </td>
+                            <td>
+                                <div style="font-weight: 700; color: #1a365d;">@c.UsosActuales / @c.UsosMaximos</div>
+                                <div style="background: #e2e8f0; height: 6px; border-radius: 3px; margin-top: 5px;">
+                                    <div style="background: linear-gradient(90deg, #d4af37, #1a365d); height: 100%; border-radius: 3px; width: @(Math.Min(100, (c.UsosActuales * 100) / Math.Max(1, c.UsosMaximos)))%;"></div>
+                                </div>
+                            </td>
+                            <td><span class="badge-estado" style="@estadoBadge">@estadoTexto</span></td>
+                            <td>
+                                <div class="d-flex gap-2 flex-wrap">
+                                    <a asp-action="Editar" asp-route-id="@c.CuponId" class="btn-accion btn-editar">
+                                        <i class="fa-solid fa-pen"></i> Editar
+                                    </a>
+                                    @if (c.Activo)
+                                    {
+                                        <form asp-action="Desactivar" method="post" onsubmit="return confirm('¿Desactivar este cupón?');" style="display:inline;">
+                                            <input type="hidden" name="id" value="@c.CuponId" />
+                                            <button type="submit" class="btn-accion btn-desactivar"><i class="fa-solid fa-ban"></i> Desactivar</button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <form asp-action="Activar" method="post" style="display:inline;">
+                                            <input type="hidden" name="id" value="@c.CuponId" />
+                                            <button type="submit" class="btn-accion btn-activar"><i class="fa-solid fa-check"></i> Activar</button>
+                                        </form>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
 </div>

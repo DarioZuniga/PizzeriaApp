@@ -1,25 +1,90 @@
-@model IEnumerable<PizzeriaApp.Data.Entities.Direccion>
+﻿@model IEnumerable<PizzeriaApp.Data.Entities.Direccion>
 @{ ViewData["Title"] = "Mis Direcciones"; }
+
+<style>
+    .page-header {
+        background: linear-gradient(135deg, #0f172a 0%, #1a365d 100%);
+        border-radius: 24px; padding: 35px; color: white; margin-bottom: 30px;
+        position: relative; overflow: hidden;
+    }
+    .page-header::before { content: '📍'; position: absolute; right: -20px; bottom: -40px; font-size: 10rem; opacity: 0.08; }
+    .page-header h1 { font-size: 1.9rem; font-weight: 800; margin: 0; position: relative; }
+    .page-header p { margin: 6px 0 0 0; opacity: 0.85; position: relative; }
+    .btn-premium {
+        background: linear-gradient(135deg, #d4af37, #b8941f); color: #0f172a;
+        border: none; padding: 12px 24px; border-radius: 50px; font-weight: 700;
+        text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+        transition: all 0.3s; box-shadow: 0 8px 20px rgba(212,175,55,0.3);
+    }
+    .btn-premium:hover { transform: translateY(-2px); color: #0f172a; }
+    .direcciones-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+    .direccion-card {
+        background: white; border-radius: 20px; padding: 25px;
+        box-shadow: 0 10px 30px rgba(15,23,42,0.08); border: 1px solid #e2e8f0;
+        transition: all 0.3s; position: relative;
+    }
+    .direccion-card:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(15,23,42,0.12); }
+    .direccion-icon {
+        width: 50px; height: 50px; border-radius: 14px;
+        background: linear-gradient(135deg, #1a365d, #2c5282); color: white;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.3rem; margin-bottom: 15px;
+    }
+    .direccion-alias { font-weight: 800; color: #1a365d; font-size: 1.1rem; margin-bottom: 8px; }
+    .direccion-texto { color: #64748b; font-size: 0.9rem; line-height: 1.5; }
+    .direccion-acciones { display: flex; gap: 8px; margin-top: 15px; }
+    .btn-accion {
+        padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: 0.85rem;
+        text-decoration: none; border: none; transition: all 0.2s; cursor: pointer;
+    }
+    .btn-editar { background: #dbeafe; color: #1e40af; }
+    .btn-editar:hover { background: #1e40af; color: white; }
+    .btn-eliminar { background: #fee2e2; color: #dc2626; }
+    .btn-eliminar:hover { background: #dc2626; color: white; }
+</style>
+
 <div class="container mt-4">
-    <div class="d-flex justify-content-between mb-4">
-        <h2 style="color: #1a365d;">📍 Mis Direcciones</h2>
-        <a asp-action="Crear" class="btn btn-primary" style="background-color: #1a365d;">Nueva Dirección</a>
+    <div class="page-header">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <h1><i class="fa-solid fa-location-dot me-2"></i>Mis Direcciones</h1>
+                <p>Gestioná tus direcciones de envío</p>
+            </div>
+            <a asp-action="Crear" class="btn-premium">
+                <i class="fa-solid fa-plus"></i> Nueva Dirección
+            </a>
+        </div>
     </div>
-    <table class="table table-hover">
-        <thead><tr><th>Alias</th><th>Detalle</th><th></th></tr></thead>
-        <tbody>
-            @foreach (var d in Model) {
-                <tr>
-                    <td>@d.Alias</td>
-                    <td>@d.Detalle</td>
-                    <td>
-                        <form asp-action="Eliminar" method="post">
-                            <input type="hidden" name="id" value="@d.DireccionId" />
-                            <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
-                        </form>
-                    </td>
-                </tr>
+
+    @if (TempData["Mensaje"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" style="border-radius: 12px; border: none; background: #dcfce7; color: #16a34a;">
+            <i class="fa-solid fa-circle-check me-2"></i> @TempData["Mensaje"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info text-center py-5" style="border-radius: 16px;">
+            <h4>No tenés direcciones guardadas</h4>
+            <p class="mb-0">Agregá una dirección para agilizar tus pedidos.</p>
+        </div>
+    }
+    else
+    {
+        <div class="direcciones-grid">
+            @foreach (var d in Model)
+            {
+                <div class="direccion-card">
+                    <div class="direccion-icon"><i class="fa-solid fa-house"></i></div>
+                    <div class="direccion-alias">@d.Alias</div>
+                    <div class="direccion-texto">@d.Detalle</div>
+                    <div class="direccion-acciones">
+                        <a asp-action="Crear" class="btn-accion btn-editar"><i class="fa-solid fa-pen"></i> Editar</a>
+                    </div>
+                </div>
             }
-        </tbody>
-    </table>
+        </div>
+    }
 </div>

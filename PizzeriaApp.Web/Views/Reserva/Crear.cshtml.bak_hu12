@@ -1,0 +1,34 @@
+@{
+    ViewData["Title"] = "Nueva Reserva";
+}
+
+<div class="container mt-4">
+    <div class="card border-0 shadow-sm" style="border-radius: 12px; max-width: 600px; margin: auto;">
+        <div class="card-body p-4">
+            <h3 class="mb-4" style="color: #1a365d;">Reservar Mesa</h3>
+            <form asp-action="Crear" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Fecha y Hora</label>
+                    <input type="datetime-local" name="fechaHora" class="form-control" required />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Cantidad de Personas</label>
+                    <input type="number" name="cantidadPersonas" class="form-control" min="1" max="20" required />
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-bold">Notas (Opcional)</label>
+                    <textarea name="notas" class="form-control" rows="2" placeholder="Ej: Mesa cerca de la ventana"></textarea>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary" style="background-color: #1a365d;">Reservar</button>
+                    <a asp-action="MisReservas" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

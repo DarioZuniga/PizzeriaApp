@@ -1,0 +1,279 @@
+﻿@{
+    ViewData["Title"] = "Reportes y Dashboard";
+    int totalPedidos = ViewBag.TotalPedidos ?? 0;
+    decimal ventasHoy = ViewBag.VentasHoy ?? 0;
+    decimal ventasSemana = ViewBag.VentasSemana ?? 0;
+    decimal ventasMes = ViewBag.VentasMes ?? 0;
+    decimal ventasTotal = ViewBag.VentasTotal ?? 0;
+    int pendientes = ViewBag.Pendientes ?? 0;
+    int pagados = ViewBag.Pagados ?? 0;
+    int enPreparacion = ViewBag.EnPreparacion ?? 0;
+    int enCamino = ViewBag.EnCamino ?? 0;
+    int entregados = ViewBag.Entregados ?? 0;
+    int cancelados = ViewBag.Cancelados ?? 0;
+    int totalCupones = ViewBag.TotalCupones ?? 0;
+    int cuponesActivos = ViewBag.CuponesActivos ?? 0;
+    var ventasPorDia = ViewBag.VentasPorDia as List<object> ?? new List<object>();
+    var productosMasVendidos = ViewBag.ProductosMasVendidos as IEnumerable<dynamic> ?? new List<dynamic>();
+    var cuponesMasUsados = ViewBag.CuponesMasUsados as IEnumerable<dynamic> ?? new List<dynamic>();
+    var clientesFrecuentes = ViewBag.ClientesFrecuentes as IEnumerable<dynamic> ?? new List<dynamic>();
+    var maxVenta = 0m;
+    foreach (dynamic v in ventasPorDia) { if ((decimal)v.Total > maxVenta) maxVenta = (decimal)v.Total; }
+}
+
+<style>
+    .admin-header {
+        background: linear-gradient(135deg, #0f172a 0%, #1a365d 50%, #2c5282 100%);
+        border-radius: 24px; padding: 40px; color: white; margin-bottom: 30px;
+        position: relative; overflow: hidden;
+    }
+    .admin-header::before { content: '📊'; position: absolute; right: -20px; bottom: -50px; font-size: 12rem; opacity: 0.08; }
+    .admin-header h1 { font-size: 2rem; font-weight: 800; margin: 0 0 8px 0; position: relative; }
+    .admin-header p { margin: 0; opacity: 0.85; position: relative; }
+    .admin-header .btn-export {
+        background: rgba(255,255,255,0.15); color: white; border: 2px solid rgba(255,255,255,0.3);
+        padding: 12px 24px; border-radius: 50px; font-weight: 700; text-decoration: none;
+        display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s;
+    }
+    .admin-header .btn-export:hover { background: rgba(255,255,255,0.25); color: white; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 25px; }
+    .stat-card {
+        background: white; border-radius: 18px; padding: 25px;
+        box-shadow: 0 8px 25px rgba(15,23,42,0.06); border: 1px solid #e2e8f0;
+        display: flex; align-items: center; gap: 18px;
+    }
+    .stat-icon {
+        width: 55px; height: 55px; border-radius: 16px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.4rem; flex-shrink: 0; color: white;
+    }
+    .stat-info h3 { font-size: 1.7rem; font-weight: 800; margin: 0; color: #1a365d; }
+    .stat-info p { margin: 0; color: #64748b; font-size: 0.85rem; }
+    .section-card {
+        background: white; border-radius: 20px; padding: 30px;
+        box-shadow: 0 10px 30px rgba(15,23,42,0.08); margin-bottom: 25px;
+    }
+    .section-title { font-weight: 800; color: #1a365d; margin-bottom: 20px; font-size: 1.2rem; }
+    .chart-bars { display: flex; align-items: flex-end; gap: 15px; height: 200px; padding: 10px 0; border-bottom: 2px solid #e2e8f0; }
+    .chart-bar-wrapper { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; height: 100%; justify-content: flex-end; }
+    .chart-bar {
+        width: 100%; background: linear-gradient(180deg, #1a365d, #2c5282);
+        border-radius: 8px 8px 0 0; min-height: 5px; transition: all 0.3s;
+        position: relative;
+    }
+    .chart-bar:hover { background: linear-gradient(180deg, #d4af37, #b8941f); }
+    .chart-bar-wrapper .label { font-size: 0.75rem; color: #64748b; font-weight: 600; }
+    .chart-bar-wrapper .valor { font-size: 0.7rem; color: #1a365d; font-weight: 800; }
+    .tabla-mini { width: 100%; }
+    .tabla-mini th { background: #f8fafc; padding: 12px; font-size: 0.8rem; text-transform: uppercase; color: #64748b; font-weight: 700; border-bottom: 2px solid #e2e8f0; }
+    .tabla-mini td { padding: 12px; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem; }
+    .tabla-mini tbody tr:hover { background: #f8fafc; }
+    .estado-pill { padding: 4px 12px; border-radius: 50px; font-weight: 700; font-size: 0.75rem; display: inline-block; }
+    .rank-number { width: 28px; height: 28px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.85rem; color: white; }
+    .progress-bar-mini { height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; }
+    .progress-bar-mini .fill { height: 100%; background: linear-gradient(90deg, #d4af37, #1a365d); }
+</style>
+
+<div class="container mt-4">
+    <div class="admin-header">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <h1><i class="fa-solid fa-chart-line me-2"></i>Dashboard de Reportes</h1>
+                <p>Análisis completo del rendimiento de la pizzería</p>
+            </div>
+            <div class="d-flex gap-2 flex-wrap">
+                <a asp-action="ExportarCsv" class="btn-export"><i class="fa-solid fa-file-csv"></i> Pedidos CSV</a>
+                <a asp-action="ExportarProductosCsv" class="btn-export"><i class="fa-solid fa-file-csv"></i> Productos CSV</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- VENTAS POR PERÍODO -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: linear-gradient(135deg, #dc2626, #b91c1c);"><i class="fa-solid fa-calendar-day"></i></div>
+            <div class="stat-info"><h3>₡@ventasHoy.ToString("N0")</h3><p>Ventas Hoy</p></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background: linear-gradient(135deg, #d97706, #b45309);"><i class="fa-solid fa-calendar-week"></i></div>
+            <div class="stat-info"><h3>₡@ventasSemana.ToString("N0")</h3><p>Ventas Semana</p></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background: linear-gradient(135deg, #16a34a, #15803d);"><i class="fa-solid fa-calendar"></i></div>
+            <div class="stat-info"><h3>₡@ventasMes.ToString("N0")</h3><p>Ventas Mes</p></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background: linear-gradient(135deg, #1a365d, #2c5282);"><i class="fa-solid fa-sack-dollar"></i></div>
+            <div class="stat-info"><h3>₡@ventasTotal.ToString("N0")</h3><p>Ventas Totales</p></div>
+        </div>
+    </div>
+
+    <!-- PEDIDOS POR ESTADO -->
+    <div class="section-card">
+        <h3 class="section-title"><i class="fa-solid fa-clipboard-list me-2"></i>Pedidos por Estado</h3>
+        <div class="row g-3">
+            <div class="col-md-2 col-6">
+                <div class="text-center p-3" style="background: #f8fafc; border-radius: 12px;">
+                    <div style="font-size: 1.8rem; font-weight: 800; color: #64748b;">@pendientes</div>
+                    <div style="font-size: 0.8rem; color: #64748b;">Pendientes</div>
+                </div>
+            </div>
+            <div class="col-md-2 col-6">
+                <div class="text-center p-3" style="background: #dbeafe; border-radius: 12px;">
+                    <div style="font-size: 1.8rem; font-weight: 800; color: #1e40af;">@pagados</div>
+                    <div style="font-size: 0.8rem; color: #1e40af;">Pagados</div>
+                </div>
+            </div>
+            <div class="col-md-2 col-6">
+                <div class="text-center p-3" style="background: #fef3c7; border-radius: 12px;">
+                    <div style="font-size: 1.8rem; font-weight: 800; color: #d97706;">@enPreparacion</div>
+                    <div style="font-size: 0.8rem; color: #d97706;">En Preparación</div>
+                </div>
+            </div>
+            <div class="col-md-2 col-6">
+                <div class="text-center p-3" style="background: #e0e7ff; border-radius: 12px;">
+                    <div style="font-size: 1.8rem; font-weight: 800; color: #4338ca;">@enCamino</div>
+                    <div style="font-size: 0.8rem; color: #4338ca;">En Camino</div>
+                </div>
+            </div>
+            <div class="col-md-2 col-6">
+                <div class="text-center p-3" style="background: #dcfce7; border-radius: 12px;">
+                    <div style="font-size: 1.8rem; font-weight: 800; color: #16a34a;">@entregados</div>
+                    <div style="font-size: 0.8rem; color: #16a34a;">Entregados</div>
+                </div>
+            </div>
+            <div class="col-md-2 col-6">
+                <div class="text-center p-3" style="background: #fee2e2; border-radius: 12px;">
+                    <div style="font-size: 1.8rem; font-weight: 800; color: #dc2626;">@cancelados</div>
+                    <div style="font-size: 0.8rem; color: #dc2626;">Cancelados</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- GRÁFICO DE VENTAS ÚLTIMOS 7 DÍAS -->
+        <div class="col-lg-7">
+            <div class="section-card">
+                <h3 class="section-title"><i class="fa-solid fa-chart-column me-2"></i>Ventas Últimos 7 Días</h3>
+                @if (ventasPorDia.Any())
+                {
+                    <div class="chart-bars">
+                        @foreach (dynamic v in ventasPorDia)
+                        {
+                            var total = (decimal)v.Total;
+                            var altura = maxVenta > 0 ? (double)(total / maxVenta) * 100 : 0;
+                            <div class="chart-bar-wrapper">
+                                <div class="valor">₡@(((decimal)v.Total).ToString("N0"))</div>
+                                <div class="chart-bar" style="height: @(altura)%;"></div>
+                                <div class="label">@v.Fecha</div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted">No hay ventas en los últimos 7 días.</p>
+                }
+            </div>
+        </div>
+
+        <!-- CUPONES MÁS USADOS -->
+        <div class="col-lg-5">
+            <div class="section-card">
+                <h3 class="section-title"><i class="fa-solid fa-ticket me-2"></i>Cupones Más Usados</h3>
+                <div class="mb-3">
+                    <span class="badge" style="background: #1a365d; padding: 8px 14px;">@totalCupones cupones · @cuponesActivos activos</span>
+                </div>
+                @if (!cuponesMasUsados.Any())
+                {
+                    <p class="text-muted">No hay cupones creados.</p>
+                }
+                else
+                {
+                    <table class="tabla-mini">
+                        <thead><tr><th>Código</th><th>Descuento</th><th>Usos</th></tr></thead>
+                        <tbody>
+                            @foreach (dynamic c in cuponesMasUsados)
+                            {
+                                var porcentaje = (int)c.UsosMaximos > 0 ? ((int)c.UsosActuales * 100.0 / (int)c.UsosMaximos) : 0;
+                                <tr>
+                                    <td><strong>@c.Codigo</strong></td>
+                                    <td>@c.PorcentajeDescuento%</td>
+                                    <td>
+                                        <div style="font-size: 0.8rem;">@c.UsosActuales / @c.UsosMaximos</div>
+                                        <div class="progress-bar-mini"><div class="fill" style="width: @porcentaje%;"></div></div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- PRODUCTOS MÁS VENDIDOS -->
+        <div class="col-lg-6">
+            <div class="section-card">
+                <h3 class="section-title"><i class="fa-solid fa-fire me-2"></i>Productos Más Vendidos (Top 10)</h3>
+                @if (!productosMasVendidos.Any())
+                {
+                    <p class="text-muted">No hay ventas registradas.</p>
+                }
+                else
+                {
+                    <table class="tabla-mini">
+                        <thead><tr><th>#</th><th>Producto</th><th>Cant.</th><th>Total</th></tr></thead>
+                        <tbody>
+                            @{ int rank = 1; }
+                            @foreach (dynamic p in productosMasVendidos)
+                            {
+                                var color = rank == 1 ? "#d4af37" : rank == 2 ? "#94a3b8" : rank == 3 ? "#b45309" : "#64748b";
+                                <tr>
+                                    <td><span class="rank-number" style="background: @color;">@rank</span></td>
+                                    <td><strong>@p.Nombre</strong></td>
+                                    <td>@p.Cantidad</td>
+                                    <td class="fw-bold" style="color: #1a365d;">₡@(((decimal)p.Total).ToString("N0"))</td>
+                                </tr>
+                                rank++;
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        </div>
+
+        <!-- CLIENTES FRECUENTES -->
+        <div class="col-lg-6">
+            <div class="section-card">
+                <h3 class="section-title"><i class="fa-solid fa-crown me-2"></i>Mejores Clientes (Top 5)</h3>
+                @if (!clientesFrecuentes.Any())
+                {
+                    <p class="text-muted">No hay clientes con pedidos.</p>
+                }
+                else
+                {
+                    <table class="tabla-mini">
+                        <thead><tr><th>#</th><th>Cliente</th><th>Pedidos</th><th>Total</th></tr></thead>
+                        <tbody>
+                            @{ int rankC = 1; }
+                            @foreach (dynamic c in clientesFrecuentes)
+                            {
+                                var color = rankC == 1 ? "#d4af37" : rankC == 2 ? "#94a3b8" : rankC == 3 ? "#b45309" : "#64748b";
+                                <tr>
+                                    <td><span class="rank-number" style="background: @color;">@rankC</span></td>
+                                    <td><strong>@c.Nombre</strong></td>
+                                    <td>@c.Pedidos</td>
+                                    <td class="fw-bold" style="color: #1a365d;">₡@(((decimal)c.Total).ToString("N0"))</td>
+                                </tr>
+                                rankC++;
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        </div>
+    </div>
+</div>

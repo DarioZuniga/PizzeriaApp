@@ -1,0 +1,241 @@
+﻿@model IEnumerable<PizzeriaApp.Data.Entities.Evaluacion>
+@{
+    ViewData["Title"] = "Moderación de Reseñas";
+    var filtro = ViewBag.Filtro as string ?? "todos";
+    int total = ViewBag.Total ?? 0;
+    int pendientes = ViewBag.Pendientes ?? 0;
+    int aprobadas = ViewBag.Aprobadas ?? 0;
+    double promedio = ViewBag.Promedio ?? 0;
+}
+
+<style>
+    .admin-header {
+        background: linear-gradient(135deg, #0f172a 0%, #1a365d 100%);
+        border-radius: 24px; padding: 35px; color: white; margin-bottom: 30px;
+        position: relative; overflow: hidden;
+    }
+    .admin-header::before {
+        content: '⭐'; position: absolute; right: -20px; bottom: -40px;
+        font-size: 10rem; opacity: 0.08;
+    }
+    .admin-header h1 { font-size: 1.9rem; font-weight: 800; margin: 0; position: relative; }
+    .admin-header p { margin: 6px 0 0 0; opacity: 0.85; position: relative; }
+    .btn-premium {
+        background: linear-gradient(135deg, #d4af37, #b8941f); color: #0f172a;
+        border: none; padding: 12px 24px; border-radius: 50px; font-weight: 700;
+        text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+        transition: all 0.3s; box-shadow: 0 8px 20px rgba(212,175,55,0.3);
+    }
+    .btn-premium:hover { transform: translateY(-2px); color: #0f172a; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px; }
+    .stat-card {
+        background: white; border-radius: 16px; padding: 25px;
+        box-shadow: 0 8px 25px rgba(15,23,42,0.06); border: 1px solid #e2e8f0;
+        display: flex; align-items: center; gap: 15px;
+    }
+    .stat-icon {
+        width: 50px; height: 50px; border-radius: 14px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.3rem; flex-shrink: 0;
+    }
+    .stat-info h3 { font-size: 1.8rem; font-weight: 800; margin: 0; color: #1a365d; }
+    .stat-info p { margin: 0; color: #64748b; font-size: 0.85rem; }
+    .filtros { display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; }
+    .filtro-btn {
+        padding: 10px 20px; border-radius: 50px; text-decoration: none;
+        font-weight: 600; font-size: 0.9rem; transition: all 0.2s;
+        border: 2px solid #e2e8f0; color: #64748b; background: white;
+    }
+    .filtro-btn:hover { border-color: #1a365d; color: #1a365d; }
+    .filtro-btn.active { background: linear-gradient(135deg, #1a365d, #2c5282); color: white; border-color: transparent; }
+    .resena-card {
+        background: white; border-radius: 20px; padding: 25px;
+        box-shadow: 0 8px 25px rgba(15,23,42,0.06); border: 1px solid #e2e8f0;
+        margin-bottom: 15px; transition: all 0.3s;
+    }
+    .resena-card:hover { box-shadow: 0 15px 40px rgba(15,23,42,0.1); }
+    .resena-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
+    .estrellas { color: #d4af37; font-size: 1rem; }
+    .cliente-info { display: flex; align-items: center; gap: 12px; }
+    .avatar {
+        width: 45px; height: 45px; border-radius: 50%;
+        background: linear-gradient(135deg, #1a365d, #2c5282);
+        color: white; display: flex; align-items: center; justify-content: center;
+        font-weight: 800; font-size: 1.1rem;
+    }
+    .cliente-nombre { font-weight: 700; color: #1a365d; margin: 0; }
+    .cliente-meta { font-size: 0.8rem; color: #64748b; margin: 0; }
+    .comentario-texto {
+        font-style: italic; color: #475569; font-size: 1rem;
+        line-height: 1.6; margin: 15px 0;
+        padding: 15px; background: #f8fafc; border-radius: 12px;
+        border-left: 4px solid #d4af37;
+    }
+    .respuesta-admin {
+        background: #dbeafe; padding: 15px; border-radius: 12px;
+        margin-top: 15px; border-left: 4px solid #1e40af;
+    }
+    .respuesta-admin strong { color: #1e40af; }
+    .acciones-resena { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; align-items: center; }
+    .btn-accion {
+        padding: 10px 18px; border-radius: 10px; font-weight: 600; font-size: 0.85rem;
+        text-decoration: none; border: none; transition: all 0.2s;
+        display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
+    }
+    .btn-aprobar { background: #dcfce7; color: #16a34a; }
+    .btn-aprobar:hover { background: #16a34a; color: white; }
+    .btn-eliminar { background: #fee2e2; color: #dc2626; }
+    .btn-eliminar:hover { background: #dc2626; color: white; }
+    .btn-responder { background: #dbeafe; color: #1e40af; }
+    .btn-responder:hover { background: #1e40af; color: white; }
+    .respuesta-form { display: flex; gap: 10px; flex: 1; min-width: 300px; }
+    .respuesta-input {
+        flex: 1; padding: 10px 16px; border: 2px solid #e2e8f0;
+        border-radius: 10px; font-size: 0.9rem; transition: all 0.2s;
+    }
+    .respuesta-input:focus { border-color: #1a365d; outline: none; box-shadow: 0 0 0 3px rgba(26,54,93,0.1); }
+</style>
+
+<div class="container mt-4">
+    <div class="admin-header">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <h1><i class="fa-solid fa-comments me-2"></i>Moderación de Reseñas</h1>
+                <p>Revisá, aprobá y respondé las reseñas de tus clientes</p>
+            </div>
+            <a asp-action="Reporte" class="btn-premium">
+                <i class="fa-solid fa-chart-simple"></i> Ver Reporte
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["Mensaje"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" style="border-radius: 12px; border: none; background: #dcfce7; color: #16a34a;">
+            <i class="fa-solid fa-circle-check me-2"></i> @TempData["Mensaje"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" style="border-radius: 12px; border: none; background: #fee2e2; color: #dc2626;">
+            <i class="fa-solid fa-triangle-exclamation me-2"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: #dbeafe; color: #1e40af;"><i class="fa-solid fa-comments"></i></div>
+            <div class="stat-info"><h3>@total</h3><p>Total Reseñas</p></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background: #fef3c7; color: #d97706;"><i class="fa-solid fa-clock"></i></div>
+            <div class="stat-info"><h3>@pendientes</h3><p>Pendientes</p></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background: #dcfce7; color: #16a34a;"><i class="fa-solid fa-check"></i></div>
+            <div class="stat-info"><h3>@aprobadas</h3><p>Aprobadas</p></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background: #fef3c7; color: #d4af37;"><i class="fa-solid fa-star"></i></div>
+            <div class="stat-info"><h3>@promedio.ToString("N1")</h3><p>Promedio / 10</p></div>
+        </div>
+    </div>
+
+    <div class="filtros">
+        <a asp-action="Index" asp-route-filtro="todos" class="filtro-btn @(filtro == "todos" ? "active" : "")">
+            <i class="fa-solid fa-list me-1"></i> Todas
+        </a>
+        <a asp-action="Index" asp-route-filtro="pendientes" class="filtro-btn @(filtro == "pendientes" ? "active" : "")">
+            <i class="fa-solid fa-clock me-1"></i> Pendientes
+        </a>
+        <a asp-action="Index" asp-route-filtro="aprobadas" class="filtro-btn @(filtro == "aprobadas" ? "active" : "")">
+            <i class="fa-solid fa-check me-1"></i> Aprobadas
+        </a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info text-center py-5" style="border-radius: 16px;">
+            <h4>No hay reseñas para este filtro</h4>
+            <p class="mb-0">Probá con otro filtro o esperá a que lleguen nuevas reseñas.</p>
+        </div>
+    }
+    else
+    {
+        @foreach (var ev in Model)
+        {
+            var cliente = ev.Pedido?.Usuario?.NombreUsuario ?? "Cliente";
+            var inicial = cliente.Length > 0 ? cliente.Substring(0, 1).ToUpper() : "?";
+            var estadoBadge = ev.Aprobada ? "background:#dcfce7;color:#16a34a" : "background:#fef3c7;color:#d97706";
+            var estadoTexto = ev.Aprobada ? "Aprobada" : "Pendiente";
+            var estrellasLlenas = (int)Math.Round(ev.Calificacion / 2.0);
+
+            <div class="resena-card">
+                <div class="resena-header">
+                    <div class="cliente-info">
+                        <div class="avatar">@inicial</div>
+                        <div>
+                            <p class="cliente-nombre">@cliente</p>
+                            <p class="cliente-meta">Pedido #@ev.PedidoId · @ev.Fecha.ToString("dd/MM/yyyy HH:mm")</p>
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        <div class="estrellas mb-1">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                <i class="fa-solid fa-star @(i <= estrellasLlenas ? "" : "text-muted")"></i>
+                            }
+                        </div>
+                        <span style="@estadoBadge; padding: 4px 12px; border-radius: 50px; font-size: 0.75rem; font-weight: 700;">@estadoTexto</span>
+                        <div class="fw-bold mt-1" style="color: #1a365d;">@ev.Calificacion/10</div>
+                    </div>
+                </div>
+
+                @if (!string.IsNullOrWhiteSpace(ev.Comentario))
+                {
+                    <div class="comentario-texto">
+                        <i class="fa-solid fa-quote-left me-2" style="color: #d4af37;"></i>
+                        @ev.Comentario
+                    </div>
+                }
+
+                @if (!string.IsNullOrWhiteSpace(ev.RespuestaAdmin))
+                {
+                    <div class="respuesta-admin">
+                        <strong><i class="fa-solid fa-reply me-1"></i> Respuesta del Admin:</strong>
+                        <p class="mb-0 mt-1">@ev.RespuestaAdmin</p>
+                        <small class="text-muted">@ev.FechaRespuesta?.ToString("dd/MM/yyyy HH:mm")</small>
+                    </div>
+                }
+
+                <div class="acciones-resena">
+                    @if (!ev.Aprobada)
+                    {
+                        <form asp-action="Aprobar" method="post" style="display:inline;">
+                            <input type="hidden" name="id" value="@ev.EvaluacionId" />
+                            <button type="submit" class="btn-accion btn-aprobar">
+                                <i class="fa-solid fa-check"></i> Aprobar
+                            </button>
+                        </form>
+                    }
+                    <form asp-action="Rechazar" method="post" onsubmit="return confirm('¿Eliminar esta reseña?');" style="display:inline;">
+                        <input type="hidden" name="id" value="@ev.EvaluacionId" />
+                        <button type="submit" class="btn-accion btn-eliminar">
+                            <i class="fa-solid fa-trash"></i> Eliminar
+                        </button>
+                    </form>
+
+                    <form asp-action="Responder" method="post" class="respuesta-form">
+                        <input type="hidden" name="id" value="@ev.EvaluacionId" />
+                        <input type="text" name="respuesta" class="respuesta-input" placeholder="Escribí una respuesta al cliente..." value="@ev.RespuestaAdmin" required />
+                        <button type="submit" class="btn-accion btn-responder">
+                            <i class="fa-solid fa-paper-plane"></i> Enviar
+                        </button>
+                    </form>
+                </div>
+            </div>
+        }
+    }
+</div>

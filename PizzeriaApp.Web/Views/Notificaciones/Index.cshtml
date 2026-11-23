@@ -1,0 +1,105 @@
+﻿@model IEnumerable<PizzeriaApp.Data.Entities.Notificacion>
+@{ ViewData["Title"] = "Notificaciones"; }
+
+<style>
+    .page-header {
+        background: linear-gradient(135deg, #0f172a 0%, #1a365d 100%);
+        border-radius: 24px; padding: 35px; color: white; margin-bottom: 30px;
+        position: relative; overflow: hidden;
+    }
+    .page-header::before { content: '🔔'; position: absolute; right: -20px; bottom: -40px; font-size: 10rem; opacity: 0.08; }
+    .page-header h1 { font-size: 1.9rem; font-weight: 800; margin: 0; position: relative; }
+    .page-header p { margin: 6px 0 0 0; opacity: 0.85; position: relative; }
+    .notif-card {
+        background: white; border-radius: 16px; padding: 20px 25px;
+        box-shadow: 0 8px 25px rgba(15,23,42,0.06); border: 1px solid #e2e8f0;
+        margin-bottom: 12px; transition: all 0.3s; display: flex; gap: 15px; align-items: flex-start;
+    }
+    .notif-card:hover { box-shadow: 0 12px 35px rgba(15,23,42,0.1); }
+    .notif-card.nueva { border-left: 4px solid #d4af37; background: #fffbeb; }
+    .notif-icon {
+        width: 45px; height: 45px; border-radius: 50%; flex-shrink: 0;
+        background: linear-gradient(135deg, #1a365d, #2c5282); color: white;
+        display: flex; align-items: center; justify-content: center;
+    }
+    .notif-card.nueva .notif-icon { background: linear-gradient(135deg, #d4af37, #b8941f); color: #0f172a; }
+    .notif-content { flex: 1; }
+    .notif-mensaje { font-weight: 600; color: #1e293b; margin: 0 0 6px 0; }
+    .notif-fecha { font-size: 0.8rem; color: #64748b; }
+    .btn-marcar {
+        background: #f1f5f9; color: #1a365d; border: none; padding: 8px 14px;
+        border-radius: 8px; font-size: 0.8rem; font-weight: 600; transition: all 0.2s;
+    }
+    .btn-marcar:hover { background: #1a365d; color: white; }
+    .btn-todas {
+        background: linear-gradient(135deg, #1a365d, #2c5282); color: white;
+        border: none; padding: 12px 24px; border-radius: 50px; font-weight: 700;
+        transition: all 0.3s;
+    }
+    .btn-todas:hover { transform: translateY(-2px); }
+</style>
+
+<div class="container mt-4">
+    <div class="page-header">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <h1><i class="fa-solid fa-bell me-2"></i>Notificaciones</h1>
+                <p>@Model.Count(n => !n.Leida) sin leer de @Model.Count() en total</p>
+            </div>
+            @if (Model.Any(n => !n.Leida))
+            {
+                <form asp-action="MarcarTodasLeidas" method="post">
+                    <button type="submit" class="btn-todas">
+                        <i class="fa-solid fa-check-double me-1"></i> Marcar todas como leídas
+                    </button>
+                </form>
+            }
+        </div>
+    </div>
+
+    @if (TempData["Mensaje"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" style="border-radius: 12px; border: none; background: #dcfce7; color: #16a34a;">
+            <i class="fa-solid fa-circle-check me-2"></i> @TempData["Mensaje"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info text-center py-5" style="border-radius: 16px;">
+            <h4>No tenés notificaciones</h4>
+            <p class="mb-0">Cuando tengas novedades aparecerán acá.</p>
+        </div>
+    }
+    else
+    {
+        @foreach (var n in Model)
+        {
+            <div class="notif-card @(!n.Leida ? "nueva" : "")">
+                <div class="notif-icon">
+                    <i class="fa-solid @(!n.Leida ? "fa-star" : "fa-bell")"></i>
+                </div>
+                <div class="notif-content">
+                    <p class="notif-mensaje">
+                        @if (!n.Leida)
+                        {
+                            <span style="background: #d4af37; color: #0f172a; padding: 2px 8px; border-radius: 50px; font-size: 0.7rem; margin-right: 6px; font-weight: 800;">NUEVA</span>
+                        }
+                        @n.Mensaje
+                    </p>
+                    <div class="notif-fecha"><i class="fa-regular fa-clock me-1"></i>@n.FechaCreacion.ToString("dd/MM/yyyy HH:mm")</div>
+                </div>
+                @if (!n.Leida)
+                {
+                    <form asp-action="MarcarLeida" method="post">
+                        <input type="hidden" name="id" value="@n.NotificacionId" />
+                        <button type="submit" class="btn-marcar" title="Marcar como leída">
+                            <i class="fa-solid fa-check"></i>
+                        </button>
+                    </form>
+                }
+            </div>
+        }
+    }
+</div>

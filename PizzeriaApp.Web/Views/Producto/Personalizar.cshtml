@@ -1,4 +1,4 @@
-@model PizzeriaApp.Data.Entities.Producto
+﻿@model PizzeriaApp.Data.Entities.Producto
 @{
     ViewData["Title"] = "Personalizar " + Model.Nombre;
     var ingredientes = ViewBag.Ingredientes as List<PizzeriaApp.Data.Entities.Ingrediente>;
@@ -6,116 +6,358 @@
     var tiposMasa = ViewBag.TiposMasa as List<PizzeriaApp.Data.Entities.TipoMasa>;
 }
 
-<div class="container mt-4">
-    <div class="row">
-        <div class="col-lg-7">
-            <div class="card border-0 shadow-sm" style="border-radius: 12px;">
-                <div class="card-body p-4">
-                    <h2 class="fw-bold" style="color: #1a365d;">@Model.Nombre</h2>
-                    <p class="text-muted">@Model.Descripcion</p>
-                    <hr />
+<style>
+    .personalizar-wrapper { padding: 30px 0; }
+    .producto-header {
+        background: linear-gradient(135deg, #0f172a 0%, #1a365d 100%);
+        border-radius: 24px; padding: 40px; color: white; margin-bottom: 30px;
+        position: relative; overflow: hidden;
+    }
+    .producto-header::before { content: '🍕'; position: absolute; right: -20px; bottom: -40px; font-size: 12rem; opacity: 0.08; transform: rotate(-15deg); }
+    .producto-header h1 { font-size: 2.2rem; font-weight: 800; margin: 0; position: relative; }
+    .producto-header p { margin: 8px 0 0 0; opacity: 0.85; position: relative; }
+    .step-card {
+        background: white; border-radius: 20px; padding: 30px; margin-bottom: 20px;
+        box-shadow: 0 10px 30px rgba(15,23,42,0.06); border: 1px solid #e2e8f0;
+    }
+    .step-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+    .step-number {
+        width: 40px; height: 40px; border-radius: 12px;
+        background: linear-gradient(135deg, #d4af37, #b8941f); color: white;
+        display: flex; align-items: center; justify-content: center;
+        font-weight: 800; font-size: 1.2rem; flex-shrink: 0;
+    }
+    .step-title { font-size: 1.2rem; font-weight: 700; color: #1a365d; margin: 0; }
+    .step-subtitle { font-size: 0.85rem; color: #64748b; margin: 0; }
 
-                    <form asp-controller="Carrito" asp-action="Agregar" method="post" id="formPersonalizar">
-                        <input type="hidden" name="productoId" value="@Model.ProductoId" />
-                        <input type="hidden" name="cantidad" value="1" />
-                        <input type="hidden" id="precioFinalInput" name="precioFinal" value="@Model.Precio" />
+    /* TAMAÑOS */
+    .tamano-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+    .tamano-card {
+        background: #f8fafc !important;
+        border: 2px solid #e2e8f0 !important;
+        border-radius: 16px;
+        padding: 20px 15px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .tamano-card:hover {
+        border-color: #d4af37 !important;
+        transform: translateY(-3px);
+    }
+    .tamano-card.selected {
+        background: linear-gradient(135deg, #1a365d, #2c5282) !important;
+        color: white !important;
+        border-color: #1a365d !important;
+        box-shadow: 0 10px 25px rgba(26,54,93,0.3) !important;
+        transform: translateY(-3px);
+    }
+    .tamano-card.selected .tamano-nombre,
+    .tamano-card.selected .tamano-precio { color: white !important; }
+    .tamano-icono { font-size: 2rem; margin-bottom: 8px; display: block; }
+    .tamano-nombre { font-weight: 700; font-size: 0.95rem; margin-bottom: 4px; }
+    .tamano-precio { font-size: 0.8rem; opacity: 0.8; }
 
-                        <!-- Tamaño -->
-                        <div class="mb-4">
-                            <h5 class="fw-bold">1. Elegí el tamaño</h5>
-                            <select class="form-select" name="tamanoId" id="selectTamano">
-                                <option value="">Tamaño estándar</option>
-                                @foreach (var t in tamanos)
-                                {
-                                    <option value="@t.TamanoId" data-factor="@t.FactorPrecio">@t.Nombre (+₡@((Model.Precio * t.FactorPrecio - Model.Precio).ToString("N0")))</option>
-                                }
-                            </select>
+    /* MASAS */
+    .masa-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
+    .masa-card {
+        background: #f8fafc !important;
+        border: 2px solid #e2e8f0 !important;
+        border-radius: 14px;
+        padding: 15px 18px;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .masa-card:hover { border-color: #d4af37 !important; }
+    .masa-card.selected {
+        background: #1a365d !important;
+        color: white !important;
+        border-color: #1a365d !important;
+        box-shadow: 0 10px 20px rgba(26,54,93,0.3) !important;
+    }
+    .masa-card.selected .masa-nombre { color: white !important; }
+    .masa-nombre { font-weight: 600; font-size: 0.95rem; }
+    .masa-precio { font-size: 0.8rem; background: #d4af37; color: #0f172a; padding: 2px 8px; border-radius: 50px; font-weight: 700; }
+
+    /* INGREDIENTES */
+    .ingredientes-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+    .ingrediente-item {
+        background: #f8fafc !important;
+        border: 2px solid #e2e8f0 !important;
+        border-radius: 12px;
+        padding: 12px 15px;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        user-select: none;
+    }
+    .ingrediente-item:hover { border-color: #d4af37 !important; }
+    .ingrediente-item.selected {
+        background: #fef3c7 !important;
+        border-color: #d4af37 !important;
+        box-shadow: 0 4px 15px rgba(212,175,55,0.25) !important;
+    }
+    .ingrediente-item input { display: none; }
+    .ingrediente-nombre { font-weight: 600; font-size: 0.9rem; color: #1e293b; }
+    .ingrediente-precio { font-weight: 700; color: #d4af37; font-size: 0.85rem; }
+    .check-icon {
+        width: 22px; height: 22px; border-radius: 50%;
+        border: 2px solid #cbd5e0;
+        display: flex; align-items: center; justify-content: center;
+        transition: all 0.2s;
+    }
+    .ingrediente-item.selected .check-icon {
+        background: #d4af37 !important;
+        border-color: #d4af37 !important;
+        color: white !important;
+    }
+
+    /* PRECIO STICKY */
+    .precio-sticky {
+        position: sticky; top: 20px; background: white; border-radius: 20px;
+        padding: 30px; box-shadow: 0 15px 40px rgba(15,23,42,0.12); border: 1px solid #e2e8f0;
+    }
+    .precio-sticky h3 { color: #1a365d; font-weight: 800; margin-bottom: 20px; }
+    .desglose-item { display: flex; justify-content: space-between; padding: 8px 0; font-size: 0.9rem; color: #64748b; border-bottom: 1px dashed #e2e8f0; }
+    .desglose-item:last-child { border-bottom: none; }
+    .desglose-item span:last-child { font-weight: 700; color: #1e293b; }
+    .precio-total { background: linear-gradient(135deg, #1a365d, #2c5282); color: white; padding: 20px; border-radius: 14px; text-align: center; margin-bottom: 20px; }
+    .precio-total .label { font-size: 0.85rem; opacity: 0.85; text-transform: uppercase; letter-spacing: 1px; }
+    .precio-total .value { font-size: 2.2rem; font-weight: 800; margin: 0; line-height: 1.2; }
+    .btn-agregar {
+        background: linear-gradient(135deg, #d4af37, #b8941f); color: #0f172a; border: none;
+        padding: 18px; border-radius: 14px; font-weight: 800; font-size: 1.05rem; width: 100%;
+        transition: all 0.3s; box-shadow: 0 10px 25px rgba(212,175,55,0.3);
+    }
+    .btn-agregar:hover { transform: translateY(-2px); color: #0f172a; }
+</style>
+
+<div class="container personalizar-wrapper">
+    <div class="producto-header">
+        <h1>@Model.Nombre</h1>
+        <p><i class="fa-solid fa-quote-left me-2"></i>@Model.Descripcion</p>
+    </div>
+
+    <form asp-controller="Carrito" asp-action="Agregar" method="post" id="formPersonalizar">
+        <input type="hidden" name="productoId" value="@Model.ProductoId" />
+        <input type="hidden" name="cantidad" value="1" />
+        <input type="hidden" id="precioFinalInput" name="precioFinal" value="@Model.Precio" />
+        <input type="hidden" id="tamanoInput" name="tamanoId" value="" />
+        <input type="hidden" id="masaInput" name="tipoMasaId" value="" />
+
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-number">1</div>
+                        <div><h3 class="step-title">Elegí el tamaño</h3><p class="step-subtitle">Seleccioná el tamaño de tu pizza</p></div>
+                    </div>
+                    <div class="tamano-grid">
+                        <div class="tamano-card selected" data-tamano-id="" data-factor="1">
+                            <span class="tamano-icono">🍕</span>
+                            <div class="tamano-nombre">Estándar</div>
+                            <div class="tamano-precio">₡@Model.Precio.ToString("N0")</div>
                         </div>
+                        @if (tamanos != null)
+                        {
+                            @foreach (var t in tamanos)
+                            {
+                                var precioTamano = Model.Precio * t.FactorPrecio;
+                                <div class="tamano-card" data-tamano-id="@t.TamanoId" data-factor="@t.FactorPrecio">
+                                    <span class="tamano-icono">🍕</span>
+                                    <div class="tamano-nombre">@t.Nombre</div>
+                                    <div class="tamano-precio">₡@precioTamano.ToString("N0")</div>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
 
-                        <!-- Tipo de Masa -->
-                        <div class="mb-4">
-                            <h5 class="fw-bold">2. Elegí el tipo de masa</h5>
-                            <select class="form-select" name="tipoMasaId" id="selectMasa">
-                                <option value="">Masa estándar</option>
-                                @foreach (var m in tiposMasa)
-                                {
-                                    <option value="@m.TipoMasaId" data-precio="@m.PrecioExtra">@m.Nombre (+₡@m.PrecioExtra.ToString("N0"))</option>
-                                }
-                            </select>
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-number">2</div>
+                        <div><h3 class="step-title">Tipo de masa</h3><p class="step-subtitle">Seleccioná la base de tu pizza</p></div>
+                    </div>
+                    <div class="masa-grid">
+                        <div class="masa-card selected" data-masa-id="" data-precio="0">
+                            <span class="masa-nombre">Estándar</span>
+                            <span class="masa-precio">Incluida</span>
                         </div>
+                        @if (tiposMasa != null)
+                        {
+                            @foreach (var m in tiposMasa)
+                            {
+                                <div class="masa-card" data-masa-id="@m.TipoMasaId" data-precio="@m.PrecioExtra">
+                                    <span class="masa-nombre">@m.Nombre</span>
+                                    <span class="masa-precio">+₡@m.PrecioExtra.ToString("N0")</span>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
 
-                        <!-- Ingredientes -->
-                        <div class="mb-4">
-                            <h5 class="fw-bold">3. Agregá ingredientes extra</h5>
-                            <div class="row">
-                                @foreach (var ing in ingredientes)
-                                {
-                                    <div class="col-md-6 mb-2">
-                                        <div class="form-check">
-                                            <input class="form-check-input ingrediente-check" type="checkbox" name="ingredientesIds" value="@ing.IngredienteId" id="ing_@ing.IngredienteId" data-precio="@ing.PrecioExtra" />
-                                            <label class="form-check-label" for="ing_@ing.IngredienteId">
-                                                @ing.Nombre (+₡@ing.PrecioExtra.ToString("N0"))
-                                            </label>
-                                        </div>
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-number">3</div>
+                        <div><h3 class="step-title">Ingredientes extra</h3><p class="step-subtitle">Agregá los ingredientes que quieras</p></div>
+                    </div>
+                    <div class="ingredientes-grid">
+                        @if (ingredientes != null)
+                        {
+                            @foreach (var ing in ingredientes)
+                            {
+                                <label class="ingrediente-item" data-ingrediente-id="@ing.IngredienteId">
+                                    <div>
+                                        <div class="ingrediente-nombre">@ing.Nombre</div>
+                                        <div class="ingrediente-precio">+₡@ing.PrecioExtra.ToString("N0")</div>
                                     </div>
-                                }
-                            </div>
-                        </div>
+                                    <div class="check-icon"><i class="fa-solid fa-check" style="font-size: 0.7rem; opacity: 0;"></i></div>
+                                    <input type="checkbox" name="ingredientesIds" value="@ing.IngredienteId" data-precio="@ing.PrecioExtra" class="ingrediente-check" />
+                                </label>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
 
-                        <!-- Precio en tiempo real -->
-                        <div class="bg-light p-3 rounded mb-4 d-flex justify-content-between align-items-center">
-                            <h4 class="mb-0 fw-bold">Precio Total:</h4>
-                            <h3 class="mb-0 fw-bold text-danger" id="precioTotal">₡@Model.Precio.ToString("N2")</h3>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary btn-lg w-100" style="background-color: #1a365d;">
-                            <i class="fa-solid fa-cart-plus me-2"></i> Agregar al Carrito
-                        </button>
-                    </form>
+            <div class="col-lg-4">
+                <div class="precio-sticky">
+                    <h3><i class="fa-solid fa-receipt me-2"></i>Resumen</h3>
+                    <div class="desglose-item"><span>Precio base</span><span id="precioBaseDesglose">₡@Model.Precio.ToString("N0")</span></div>
+                    <div class="desglose-item"><span>Tamaño</span><span id="precioTamanoDesglose">₡0</span></div>
+                    <div class="desglose-item"><span>Masa</span><span id="precioMasaDesglose">₡0</span></div>
+                    <div class="desglose-item"><span>Ingredientes</span><span id="precioIngredientesDesglose">₡0</span></div>
+                    <div class="precio-total mt-3">
+                        <div class="label">Total</div>
+                        <h2 class="value" id="precioTotal">₡@Model.Precio.ToString("N0")</h2>
+                    </div>
+                    <button type="submit" class="btn-agregar">
+                        <i class="fa-solid fa-cart-plus me-2"></i> Agregar al Carrito
+                    </button>
                 </div>
             </div>
         </div>
-    </div>
+    </form>
 </div>
 
 @section Scripts {
     <script>
-        const precioBase = @Model.Precio;
-        const precioTotalEl = document.getElementById('precioTotal');
-        const precioFinalInput = document.getElementById('precioFinalInput');
-        const selectTamano = document.getElementById('selectTamano');
-        const selectMasa = document.getElementById('selectMasa');
-        const checkboxesIngredientes = document.querySelectorAll('.ingrediente-check');
+    const precioBase = @Model.Precio.ToString("F2", System.Globalization.CultureInfo.InvariantCulture);
+    const tamanoCards = document.querySelectorAll('.tamano-card');
+    const masaCards = document.querySelectorAll('.masa-card');
+    const ingredienteItems = document.querySelectorAll('.ingrediente-item');
+    const tamanoInput = document.getElementById('tamanoInput');
+    const masaInput = document.getElementById('masaInput');
+    const precioTotalEl = document.getElementById('precioTotal');
+    const precioFinalInput = document.getElementById('precioFinalInput');
+    const precioTamanoDesglose = document.getElementById('precioTamanoDesglose');
+    const precioMasaDesglose = document.getElementById('precioMasaDesglose');
+    const precioIngredientesDesglose = document.getElementById('precioIngredientesDesglose');
+    const precioBaseDesglose = document.getElementById('precioBaseDesglose');
 
-        function calcularPrecio() {
-            let precio = precioBase;
+    let tamanoActual = { factor: 1, id: '', nombre: 'Mediana' };
+    let masaActual = { precio: 0, id: '', nombre: 'Estándar' };
 
-            // Sumar factor de tamaño
-            const opcionTamano = selectTamano.options[selectTamano.selectedIndex];
-            if (opcionTamano.dataset.factor) {
-                const factor = parseFloat(opcionTamano.dataset.factor);
-                precio = precio * factor;
+    // TAMAÑOS
+    tamanoCards.forEach(card => {
+        card.addEventListener('click', () => {
+            tamanoCards.forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            tamanoActual.factor = parseFloat(card.dataset.factor) || 1;
+            tamanoActual.id = card.dataset.tamanoId || '';
+            tamanoActual.nombre = card.querySelector('.tamano-nombre')?.textContent || '';
+            tamanoInput.value = tamanoActual.id;
+            actualizarPrecios();
+        });
+    });
+
+    // MASAS
+    masaCards.forEach(card => {
+        card.addEventListener('click', () => {
+            masaCards.forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            masaActual.precio = parseFloat(card.dataset.precio) || 0;
+            masaActual.id = card.dataset.masaId || '';
+            masaActual.nombre = card.querySelector('.masa-nombre')?.textContent || '';
+            masaInput.value = masaActual.id;
+            actualizarPrecios();
+        });
+    });
+
+    // INGREDIENTES
+    ingredienteItems.forEach(item => {
+        item.addEventListener('click', (e) => {
+            e.preventDefault();
+            const check = item.querySelector('.ingrediente-check');
+            const icon = item.querySelector('.check-icon i');
+            check.checked = !check.checked;
+            if (check.checked) {
+                item.classList.add('selected');
+                if (icon) icon.style.opacity = '1';
+            } else {
+                item.classList.remove('selected');
+                if (icon) icon.style.opacity = '0';
             }
+            actualizarPrecios();
+        });
+    });
 
-            // Sumar precio extra de masa
-            const opcionMasa = selectMasa.options[selectMasa.selectedIndex];
-            if (opcionMasa.dataset.precio) {
-                precio += parseFloat(opcionMasa.dataset.precio);
-            }
+    function actualizarPrecios() {
+        // FÓRMULA: (PrecioBase * FactorTamaño) + Masa + Ingredientes
+        const precioTamano = precioBase * tamanoActual.factor;
+        const diffTamano = precioTamano - precioBase;
+        const precioMasa = masaActual.precio;
 
-            // Sumar ingredientes
-            checkboxesIngredientes.forEach(chk => {
-                if (chk.checked) {
-                    precio += parseFloat(chk.dataset.precio);
-                }
-            });
+        let precioIngredientes = 0;
+        ingredienteItems.forEach(item => {
+            const check = item.querySelector('.ingrediente-check');
+            if (check && check.checked) precioIngredientes += parseFloat(check.dataset.precio) || 0;
+        });
 
-            precioTotalEl.textContent = '₡' + precio.toFixed(2);
-            precioFinalInput.value = precio.toFixed(2);
+        const total = precioTamano + precioMasa + precioIngredientes;
+
+        // Desglose: Precio base
+        if (precioBaseDesglose) {
+            precioBaseDesglose.textContent = '₡' + precioBase.toFixed(0);
         }
 
-        selectTamano.addEventListener('change', calcularPrecio);
-        selectMasa.addEventListener('change', calcularPrecio);
-        checkboxesIngredientes.forEach(chk => chk.addEventListener('change', calcularPrecio));
-    </script>
+        // Desglose: Tamaño
+        if (diffTamano === 0) {
+            precioTamanoDesglose.textContent = 'Incluido';
+            precioTamanoDesglose.style.color = '#64748b';
+        } else {
+            precioTamanoDesglose.textContent = (diffTamano > 0 ? '+' : '-') + '₡' + Math.abs(diffTamano).toFixed(0);
+            precioTamanoDesglose.style.color = diffTamano > 0 ? '#dc2626' : '#16a34a';
+        }
+
+        // Desglose: Masa
+        if (precioMasa > 0) {
+            precioMasaDesglose.textContent = '+₡' + precioMasa.toFixed(0);
+            precioMasaDesglose.style.color = '#dc2626';
+        } else {
+            precioMasaDesglose.textContent = 'Incluida';
+            precioMasaDesglose.style.color = '#64748b';
+        }
+
+        // Desglose: Ingredientes
+        if (precioIngredientes > 0) {
+            precioIngredientesDesglose.textContent = '+₡' + precioIngredientes.toFixed(0);
+            precioIngredientesDesglose.style.color = '#dc2626';
+        } else {
+            precioIngredientesDesglose.textContent = 'Sin extras';
+            precioIngredientesDesglose.style.color = '#64748b';
+        }
+
+        // Total
+        precioTotalEl.textContent = '₡' + total.toFixed(0);
+        precioFinalInput.value = total.toFixed(2);
+    }
+
+    actualizarPrecios();
+</script>
 }

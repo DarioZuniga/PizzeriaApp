@@ -1,28 +1,86 @@
-@model PizzeriaApp.Data.Entities.Reserva
+﻿@model PizzeriaApp.Data.Entities.Reserva
 @{ ViewData["Title"] = "Editar Reserva"; }
+
+<style>
+    .form-card {
+        background: white; border-radius: 24px; padding: 40px;
+        box-shadow: 0 15px 40px rgba(15,23,42,0.08); max-width: 650px; margin: 0 auto;
+    }
+    .form-header { text-align: center; margin-bottom: 35px; }
+    .form-header-icon {
+        width: 80px; height: 80px; border-radius: 24px;
+        background: linear-gradient(135deg, #1a365d, #2c5282);
+        display: flex; align-items: center; justify-content: center;
+        margin: 0 auto 20px; font-size: 2rem; color: white;
+        box-shadow: 0 15px 30px rgba(26,54,93,0.3);
+    }
+    .form-header h2 { font-weight: 800; color: #1a365d; margin-bottom: 5px; }
+    .form-header p { color: #64748b; margin: 0; }
+    .codigo-box {
+        background: #f8fafc; border-radius: 12px; padding: 15px;
+        text-align: center; margin-bottom: 25px; border: 2px dashed #cbd5e0;
+    }
+    .codigo-box .label { font-size: 0.8rem; color: #64748b; text-transform: uppercase; letter-spacing: 1px; }
+    .codigo-box .valor { font-family: 'Courier New', monospace; font-size: 1.5rem; font-weight: 800; color: #1a365d; }
+    .form-label-premium {
+        font-weight: 700; color: #1a365d; font-size: 0.9rem;
+        text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;
+    }
+    .form-control-premium {
+        padding: 14px 18px; border: 2px solid #e2e8f0; border-radius: 12px;
+        transition: all 0.2s; font-size: 1rem;
+    }
+    .form-control-premium:focus {
+        border-color: #d4af37; box-shadow: 0 0 0 4px rgba(212,175,55,0.15); outline: none;
+    }
+    .btn-submit-premium {
+        background: linear-gradient(135deg, #1a365d, #2c5282); color: white;
+        border: none; padding: 16px; border-radius: 12px; font-weight: 700;
+        font-size: 1rem; width: 100%; transition: all 0.3s;
+    }
+    .btn-submit-premium:hover { transform: translateY(-2px); }
+    .btn-cancelar { display: block; text-align: center; margin-top: 15px; color: #64748b; text-decoration: none; padding: 12px; }
+</style>
+
 <div class="container mt-4">
-    <div class="card border-0 shadow-sm" style="border-radius: 12px; max-width: 600px; margin: auto;">
-        <div class="card-body p-4">
-            <h3 class="mb-4" style="color: #1a365d;">Editar Reserva</h3>
-            <form asp-action="Editar" method="post">
-                <input type="hidden" asp-for="ReservaId" />
-                <input type="hidden" asp-for="UsuarioId" />
-                <input type="hidden" asp-for="Estado" />
-                <div class="mb-3">
-                    <label class="fw-bold">Fecha y Hora</label>
-                    <input asp-for="FechaHora" type="datetime-local" class="form-control" required />
-                </div>
-                <div class="mb-3">
-                    <label class="fw-bold">Cantidad de Personas</label>
-                    <input asp-for="CantidadPersonas" type="number" min="1" max="20" class="form-control" required />
-                </div>
-                <div class="mb-4">
-                    <label class="fw-bold">Notas</label>
-                    <textarea asp-for="Notas" class="form-control" rows="2"></textarea>
-                </div>
-                <button type="submit" class="btn btn-primary" style="background-color: #1a365d;">Guardar Cambios</button>
-                <a asp-action="MisReservas" class="btn btn-secondary">Cancelar</a>
-            </form>
+    <div class="form-card">
+        <div class="form-header">
+            <div class="form-header-icon"><i class="fa-solid fa-pen"></i></div>
+            <h2>Editar Reserva</h2>
+            <p>Modificá los detalles de tu reserva</p>
         </div>
+
+        <div class="codigo-box">
+            <div class="label">Código de Reserva</div>
+            <div class="valor">@Model.CodigoConfirmacion</div>
+        </div>
+
+        <form asp-action="Editar" method="post">
+            <input type="hidden" asp-for="ReservaId" />
+            <input type="hidden" asp-for="UsuarioId" />
+            <input type="hidden" asp-for="Estado" />
+            <input type="hidden" asp-for="CodigoConfirmacion" />
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="mb-4">
+                <label class="form-label-premium">Fecha y Hora</label>
+                <input asp-for="FechaHora" type="datetime-local" class="form-control form-control-premium" required />
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label-premium">Cantidad de Personas</label>
+                <input asp-for="CantidadPersonas" type="number" min="1" max="20" class="form-control form-control-premium" required />
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label-premium">Notas Adicionales</label>
+                <textarea asp-for="Notas" class="form-control form-control-premium" rows="3" placeholder="Ej: Mesa cerca de la ventana, cumpleaños, etc."></textarea>
+            </div>
+
+            <button type="submit" class="btn-submit-premium">
+                <i class="fa-solid fa-save me-2"></i> Guardar Cambios
+            </button>
+            <a asp-action="MisReservas" class="btn-cancelar">Cancelar</a>
+        </form>
     </div>
 </div>

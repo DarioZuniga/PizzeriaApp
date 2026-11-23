@@ -1,56 +1,65 @@
 @model IEnumerable<PizzeriaApp.Data.Entities.Producto>
 @{
     ViewData["Title"] = "Menú";
+    Layout = "_Layout";
 }
 
-<div class="container py-5">
-    <!-- Hero Section -->
-    <div class="text-center mb-5">
-        <h1 class="display-4 fw-bold mb-3" style="color: #1a365d;">
-            🍕 PizzeriaApp
-        </h1>
-        <p class="lead text-muted">
-            El mejor menú de la pizzería Las Perlas.
-        </p>
+<!-- Hero Section Elegante -->
+<div class="p-5 mb-5 text-white text-center" style="background: linear-gradient(rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.7)), url('https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=1920&auto=format&fit=crop') no-repeat center center; background-size: cover; border-radius: 20px; min-height: 400px; display: flex; align-items: center; justify-content: center;">
+    <div class="container-fluid py-5">
+        <h6 class="text-uppercase mb-2" style="color: var(--lp-gold); letter-spacing: 3px;">Bienvenido a Las Perlas</h6>
+        <h1 class="display-3 fw-bold mb-3" style="color: white;">El Arte de la Pizza</h1>
+        <p class="fs-5 mb-4 text-light">Ingredientes seleccionados, masa artesanal y un toque de distinción.</p>
+        <a asp-controller="Reserva" asp-action="Crear" class="btn btn-lp-primary btn-lg px-5 py-3">
+            <i class="fa-solid fa-calendar-check me-2"></i> Hacer una Reserva
+        </a>
     </div>
+</div>
 
-    <!-- Catálogo de Productos -->
-    <div class="row g-4">
-        @if (!Model.Any())
+<!-- Catálogo -->
+<div class="text-center mb-5">
+    <h2 class="fw-bold">Nuestro Menú Exclusivo</h2>
+    <p class="text-muted">Descubre los sabores que nos hacen únicos.</p>
+</div>
+
+<div class="row g-4">
+    @if (!Model.Any())
+    {
+        <div class="col-12 text-center py-5">
+            <h4 class="text-muted">Aún no hay productos en el menú.</h4>
+        </div>
+    }
+    else
+    {
+        @foreach (var producto in Model)
         {
-            <div class="col-12 text-center py-5">
-                <h4 class="text-muted">Aún no hay productos en el menú.</h4>
-                <p class="text-muted">Vuelve pronto para ver nuestras deliciosas pizzas.</p>
-            </div>
-        }
-        else
-        {
-            @foreach (var producto in Model)
-            {
-                <div class="col-lg-4 col-md-6">
-                    <div class="card h-100 border-0 shadow-sm" style="border-radius: 12px; overflow: hidden;">
-                        @if (!string.IsNullOrEmpty(producto.ImagenUrl))
-                        {
-                            <img src="@producto.ImagenUrl" class="card-img-top" alt="@producto.Nombre" style="height: 200px; object-fit: cover;" />
-                        }
-                        else
-                        {
-                            <div class="bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
-                                <i class="fa-solid fa-pizza-slice fa-4x text-muted"></i>
-                            </div>
-                        }
-                        <div class="card-body">
-                            <span class="badge bg-secondary mb-2">@producto.Categoria?.Nombre</span>
-                            <h5 class="card-title fw-bold" style="color: #1a365d;">@producto.Nombre</h5>
-                            <p class="card-text text-muted small">@producto.Descripcion</p>
+            <div class="col-lg-4 col-md-6">
+                <div class="card card-lp h-100">
+                    @if (!string.IsNullOrEmpty(producto.ImagenUrl))
+                    {
+                        <div style="overflow: hidden; height: 240px;">
+                            <img src="@producto.ImagenUrl" class="card-img-top" alt="@producto.Nombre" style="height: 100%; width: 100%; object-fit: cover; transition: transform 0.6s ease;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'" />
                         </div>
-                        <div class="card-footer bg-white border-0 d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0 fw-bold" style="color: #e53e3e;">₡@producto.Precio.ToString("N2")</h5>
-                            <a asp-controller="Producto" asp-action="Personalizar" asp-route-id="@producto.ProductoId" class="btn btn-sm btn-primary" style="background-color: #1a365d;"><i class="fa-solid fa-cart-plus me-1"></i> Personalizar</a>
+                    }
+                    else
+                    {
+                        <div class="bg-light d-flex align-items-center justify-content-center" style="height: 300px;">
+                            <i class="fa-solid fa-pizza-slice fa-5x text-muted"></i>
                         </div>
+                    }
+                    <div class="card-body p-4">
+                        <span class="badge badge-lp mb-3">@producto.Categoria?.Nombre</span>
+                        <h4 class="card-title fw-bold mb-2">@producto.Nombre</h4>
+                        <p class="card-text text-muted small mb-0">@producto.Descripcion</p>
+                    </div>
+                    <div class="card-footer bg-white border-0 p-4 pt-0 d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0 fw-bold" style="color: var(--lp-dark);">₡@producto.Precio.ToString("N2")</h4>
+                        <a asp-controller="Producto" asp-action="Personalizar" asp-route-id="@producto.ProductoId" class="btn btn-lp-primary">
+                            Personalizar
+                        </a>
                     </div>
                 </div>
-            }
+            </div>
         }
-    </div>
+    }
 </div>

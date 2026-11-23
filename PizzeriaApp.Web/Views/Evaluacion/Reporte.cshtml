@@ -1,0 +1,158 @@
+﻿@{
+    ViewData["Title"] = "Reporte de Reseñas";
+    int total = ViewBag.Total ?? 0;
+    double promedio = ViewBag.Promedio ?? 0;
+    int aprobadas = ViewBag.Aprobadas ?? 0;
+    int pendientes = ViewBag.Pendientes ?? 0;
+    int conRespuesta = ViewBag.ConRespuesta ?? 0;
+    var distribucion = ViewBag.Distribucion as Dictionary<int, int> ?? new Dictionary<int, int>();
+    var palabras = ViewBag.PalabrasClave as IEnumerable<dynamic> ?? new List<dynamic>();
+}
+
+<style>
+    .admin-header {
+        background: linear-gradient(135deg, #0f172a 0%, #1a365d 100%);
+        border-radius: 24px; padding: 35px; color: white; margin-bottom: 30px;
+        position: relative; overflow: hidden;
+    }
+    .admin-header::before {
+        content: '📊'; position: absolute; right: -20px; bottom: -40px;
+        font-size: 10rem; opacity: 0.08;
+    }
+    .admin-header h1 { font-size: 1.9rem; font-weight: 800; margin: 0; position: relative; }
+    .admin-header p { margin: 6px 0 0 0; opacity: 0.85; position: relative; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 25px; }
+    .stat-card {
+        background: white; border-radius: 16px; padding: 25px;
+        box-shadow: 0 8px 25px rgba(15,23,42,0.06); border: 1px solid #e2e8f0;
+        text-align: center;
+    }
+    .stat-card .valor { font-size: 2.2rem; font-weight: 800; color: #1a365d; line-height: 1; }
+    .stat-card .etiqueta { color: #64748b; font-size: 0.85rem; margin-top: 8px; }
+    .card-premium {
+        background: white; border-radius: 20px; padding: 30px;
+        box-shadow: 0 10px 30px rgba(15,23,42,0.08);
+        margin-bottom: 20px;
+    }
+    .card-premium h3 {
+        font-weight: 800; color: #1a365d; margin-bottom: 20px;
+        font-size: 1.2rem;
+    }
+    .distribucion-item { margin-bottom: 15px; }
+    .distribucion-header { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.9rem; }
+    .distribucion-header .num { font-weight: 800; color: #1a365d; }
+    .barra-progreso {
+        height: 12px; background: #e2e8f0; border-radius: 6px; overflow: hidden;
+    }
+    .barra-progreso .fill {
+        height: 100%; background: linear-gradient(90deg, #d4af37, #1a365d);
+        border-radius: 6px; transition: width 0.5s;
+    }
+    .nube-palabras { display: flex; flex-wrap: wrap; gap: 10px; }
+    .palabra-badge {
+        background: linear-gradient(135deg, #1a365d, #2c5282);
+        color: white; padding: 8px 16px; border-radius: 50px;
+        font-weight: 600; transition: all 0.2s;
+    }
+    .palabra-badge:hover { transform: scale(1.05); }
+    .palabra-badge .count {
+        background: rgba(255,255,255,0.2); padding: 2px 8px;
+        border-radius: 50px; margin-left: 6px; font-size: 0.8rem;
+    }
+    .resumen-lista { list-style: none; padding: 0; margin: 0; }
+    .resumen-lista li {
+        display: flex; justify-content: space-between; padding: 12px 0;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    .resumen-lista li:last-child { border-bottom: none; }
+    .resumen-lista .label { color: #64748b; }
+    .resumen-lista .valor { font-weight: 800; color: #1a365d; }
+</style>
+
+<div class="container mt-4">
+    <div class="admin-header">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <h1><i class="fa-solid fa-chart-simple me-2"></i>Reporte de Reseñas</h1>
+                <p>Análisis completo de las opiniones de tus clientes</p>
+            </div>
+            <a asp-action="Index" class="btn btn-outline-light" style="border-radius: 50px; padding: 12px 24px; font-weight: 700;">
+                <i class="fa-solid fa-arrow-left me-1"></i> Volver al Panel
+            </a>
+        </div>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="valor">@total</div>
+            <div class="etiqueta"><i class="fa-solid fa-comments me-1"></i> Total Reseñas</div>
+        </div>
+        <div class="stat-card">
+            <div class="valor" style="color: #d4af37;">@promedio.ToString("N1")</div>
+            <div class="etiqueta"><i class="fa-solid fa-star me-1"></i> Promedio / 10</div>
+        </div>
+        <div class="stat-card">
+            <div class="valor" style="color: #16a34a;">@aprobadas</div>
+            <div class="etiqueta"><i class="fa-solid fa-check me-1"></i> Aprobadas</div>
+        </div>
+        <div class="stat-card">
+            <div class="valor" style="color: #d97706;">@pendientes</div>
+            <div class="etiqueta"><i class="fa-solid fa-clock me-1"></i> Pendientes</div>
+        </div>
+        <div class="stat-card">
+            <div class="valor" style="color: #1e40af;">@conRespuesta</div>
+            <div class="etiqueta"><i class="fa-solid fa-reply me-1"></i> Con Respuesta</div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card-premium">
+                <h3><i class="fa-solid fa-chart-bar me-2"></i>Distribución de Calificaciones</h3>
+                @foreach (var kv in distribucion.OrderBy(k => k.Key))
+                {
+                    var porcentaje = total > 0 ? (kv.Value * 100.0 / total) : 0;
+                    <div class="distribucion-item">
+                        <div class="distribucion-header">
+                            <span><span class="num">@kv.Key</span>/10</span>
+                            <span>@kv.Value (@porcentaje.ToString("N0")%)</span>
+                        </div>
+                        <div class="barra-progreso">
+                            <div class="fill" style="width: @porcentaje%;"></div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card-premium">
+                <h3><i class="fa-solid fa-cloud me-2"></i>Palabras Más Mencionadas</h3>
+                @if (!palabras.Any())
+                {
+                    <p class="text-muted">No hay palabras suficientes para analizar.</p>
+                }
+                else
+                {
+                    <div class="nube-palabras">
+                        @foreach (var p in palabras)
+                        {
+                            <span class="palabra-badge">@p.Palabra <span class="count">@p.Cantidad</span></span>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="card-premium">
+        <h3><i class="fa-solid fa-list-check me-2"></i>Resumen General</h3>
+        <ul class="resumen-lista">
+            <li><span class="label">Total de reseñas</span><span class="valor">@total</span></li>
+            <li><span class="label">Reseñas aprobadas</span><span class="valor" style="color: #16a34a;">@aprobadas</span></li>
+            <li><span class="label">Reseñas pendientes</span><span class="valor" style="color: #d97706;">@pendientes</span></li>
+            <li><span class="label">Con respuesta del admin</span><span class="valor" style="color: #1e40af;">@conRespuesta</span></li>
+            <li><span class="label">Promedio general</span><span class="valor" style="color: #d4af37;">@promedio.ToString("N2") / 10</span></li>
+        </ul>
+    </div>
+</div>

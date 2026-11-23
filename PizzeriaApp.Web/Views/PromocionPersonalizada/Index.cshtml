@@ -1,0 +1,153 @@
+﻿@model IEnumerable<PizzeriaApp.Data.Entities.PromocionPersonalizada>
+@{
+    ViewData["Title"] = "Promociones Personalizadas";
+    int total = ViewBag.TotalPromos ?? 0;
+    int activas = ViewBag.PromosActivas ?? 0;
+    int aplicadas = ViewBag.TotalAplicadas ?? 0;
+    decimal descontado = ViewBag.TotalDescontado ?? 0m;
+}
+
+<style>
+    .admin-header {
+        background: linear-gradient(135deg, #0f172a 0%, #1a365d 100%);
+        border-radius: 24px; padding: 35px; color: white; margin-bottom: 30px;
+        position: relative; overflow: hidden;
+    }
+    .admin-header::before { content: '🎁'; position: absolute; right: -20px; bottom: -40px; font-size: 10rem; opacity: 0.08; }
+    .admin-header h1 { font-size: 1.9rem; font-weight: 800; margin: 0; position: relative; }
+    .admin-header p { margin: 6px 0 0 0; opacity: 0.85; position: relative; }
+    .btn-premium { background: linear-gradient(135deg, #d4af37, #b8941f); color: #0f172a; border: none; padding: 12px 24px; border-radius: 50px; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s; box-shadow: 0 8px 20px rgba(212,175,55,0.3); }
+    .btn-premium:hover { transform: translateY(-2px); color: #0f172a; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px; }
+    .stat-card { background: white; border-radius: 16px; padding: 25px; box-shadow: 0 8px 25px rgba(15,23,42,0.06); border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 15px; }
+    .stat-icon { width: 50px; height: 50px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; color: white; }
+    .stat-info h3 { font-size: 1.6rem; font-weight: 800; margin: 0; color: #1a365d; }
+    .stat-info p { margin: 0; color: #64748b; font-size: 0.85rem; }
+    .promos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px; }
+    .promo-card { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(15,23,42,0.08); border: 1px solid #e2e8f0; transition: all 0.3s; }
+    .promo-card:hover { transform: translateY(-5px); box-shadow: 0 20px 50px rgba(15,23,42,0.15); }
+    .promo-header { background: linear-gradient(135deg, #1a365d, #2c5282); padding: 25px; color: white; position: relative; }
+    .promo-badge { position: absolute; top: 15px; right: 15px; background: #d4af37; color: #0f172a; padding: 8px 16px; border-radius: 50px; font-weight: 800; font-size: 1.1rem; }
+    .promo-header h3 { font-size: 1.3rem; font-weight: 800; margin: 0 0 8px 0; padding-right: 80px; }
+    .promo-header p { margin: 0; opacity: 0.85; font-size: 0.9rem; }
+    .promo-body { padding: 20px; }
+    .criterio-box { background: #f8fafc; border-radius: 12px; padding: 15px; margin-bottom: 15px; }
+    .criterio-box .label { font-size: 0.75rem; color: #64748b; text-transform: uppercase; font-weight: 700; margin-bottom: 4px; }
+    .criterio-box .value { font-size: 1.1rem; font-weight: 800; color: #1a365d; }
+    .promo-stats { display: flex; justify-content: space-between; padding: 12px 0; border-top: 1px solid #e2e8f0; }
+    .promo-stat-item { text-align: center; flex: 1; }
+    .promo-stat-item .num { font-size: 1.2rem; font-weight: 800; color: #1a365d; }
+    .promo-stat-item .lbl { font-size: 0.75rem; color: #64748b; }
+    .promo-actions { display: flex; gap: 8px; padding: 15px 20px; border-top: 1px solid #e2e8f0; flex-wrap: wrap; }
+    .btn-accion { padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: 0.85rem; text-decoration: none; border: none; transition: all 0.2s; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+    .btn-editar { background: #dbeafe; color: #1e40af; }
+    .btn-editar:hover { background: #1e40af; color: white; }
+    .btn-toggle-on { background: #fef3c7; color: #d97706; }
+    .btn-toggle-off { background: #dcfce7; color: #16a34a; }
+    .btn-eliminar { background: #fee2e2; color: #dc2626; }
+    .btn-eliminar:hover { background: #dc2626; color: white; }
+</style>
+
+<div class="container mt-4">
+    <div class="admin-header">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <h1><i class="fa-solid fa-gift me-2"></i>Promociones Personalizadas</h1>
+                <p>Descuentos automáticos según el historial de cada cliente</p>
+            </div>
+            <div class="d-flex gap-2">
+                <a asp-action="Reporte" class="btn btn-outline-light" style="border-radius: 50px; padding: 12px 24px; font-weight: 700;">
+                    <i class="fa-solid fa-chart-simple me-1"></i> Reporte
+                </a>
+                <a asp-action="Crear" class="btn-premium">
+                    <i class="fa-solid fa-plus"></i> Nueva Promoción
+                </a>
+            </div>
+        </div>
+    </div>
+
+    @if (TempData["Mensaje"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" style="border-radius: 12px; border: none; background: #dcfce7; color: #16a34a;">
+            <i class="fa-solid fa-circle-check me-2"></i> @TempData["Mensaje"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: linear-gradient(135deg, #1a365d, #2c5282);"><i class="fa-solid fa-gift"></i></div>
+            <div class="stat-info"><h3>@total</h3><p>Total Promociones</p></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background: linear-gradient(135deg, #16a34a, #15803d);"><i class="fa-solid fa-check"></i></div>
+            <div class="stat-info"><h3>@activas</h3><p>Activas</p></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background: linear-gradient(135deg, #d97706, #b45309);"><i class="fa-solid fa-bullseye"></i></div>
+            <div class="stat-info"><h3>@aplicadas</h3><p>Veces Aplicadas</p></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background: linear-gradient(135deg, #dc2626, #b91c1c);"><i class="fa-solid fa-coins"></i></div>
+            <div class="stat-info"><h3>₡@descontado.ToString("N0")</h3><p>Total Descontado</p></div>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info text-center py-5" style="border-radius: 16px;">
+            <h4>No hay promociones personalizadas</h4>
+            <p class="mb-0">Creá la primera para premiar a tus clientes frecuentes.</p>
+        </div>
+    }
+    else
+    {
+        <div class="promos-grid">
+            @foreach (var p in Model)
+            {
+                <div class="promo-card">
+                    <div class="promo-header">
+                        <div class="promo-badge">@p.PorcentajeDescuento% OFF</div>
+                        <h3>@p.Nombre</h3>
+                        <p>@p.Descripcion</p>
+                    </div>
+                    <div class="promo-body">
+                        <div class="criterio-box">
+                            <div class="label">Criterio</div>
+                            <div class="value">@p.MinimoCompras compras en @p.DiasVentana días</div>
+                        </div>
+                        <div class="promo-stats">
+                            <div class="promo-stat-item">
+                                <div class="num">@p.VecesAplicada</div>
+                                <div class="lbl">Aplicada</div>
+                            </div>
+                            <div class="promo-stat-item">
+                                <div class="num">₡@p.MontoDescontado.ToString("N0")</div>
+                                <div class="lbl">Descontado</div>
+                            </div>
+                            <div class="promo-stat-item">
+                                <div class="num" style="color: @(p.Activa ? "#16a34a" : "#64748b");">@(p.Activa ? "Activa" : "Inactiva")</div>
+                                <div class="lbl">Estado</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="promo-actions">
+                        <a asp-action="Editar" asp-route-id="@p.PromocionPersonalizadaId" class="btn-accion btn-editar">
+                            <i class="fa-solid fa-pen"></i> Editar
+                        </a>
+                        <form asp-action="ToggleActiva" method="post" style="display:inline;">
+                            <input type="hidden" name="id" value="@p.PromocionPersonalizadaId" />
+                            <button type="submit" class="btn-accion @(p.Activa ? "btn-toggle-on" : "btn-toggle-off")">
+                                <i class="fa-solid @(p.Activa ? "fa-pause" : "fa-play")"></i> @(p.Activa ? "Pausar" : "Activar")
+                            </button>
+                        </form>
+                        <form asp-action="Eliminar" method="post" onsubmit="return confirm('¿Eliminar esta promoción?');" style="display:inline;">
+                            <input type="hidden" name="id" value="@p.PromocionPersonalizadaId" />
+                            <button type="submit" class="btn-accion btn-eliminar"><i class="fa-solid fa-trash"></i></button>
+                        </form>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

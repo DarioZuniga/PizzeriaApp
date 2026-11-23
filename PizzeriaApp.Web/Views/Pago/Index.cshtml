@@ -8,15 +8,22 @@
         <div class="col-lg-8">
             <div class="card border-0 shadow-sm" style="border-radius: 12px;">
                 <div class="card-body p-4">
-                    <h2 class="fw-bold text-center mb-4" style="color: #1a365d;">💳 Pasarela de Pago</h2>
-                    <p class="text-center text-muted">Pedido #@Model.PedidoId</p>
-                    <h1 class="text-center text-danger fw-bold mb-4">₡@(Model.Total.ToString("N2"))</h1>
+                    
+                    @if (TempData["Error"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fa-solid fa-triangle-exclamation me-2"></i> @TempData["Error"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+                    <p class="text-center text-muted">Pedido <strong>@($"PED-{Model.Fecha:yyyyMMdd}-{Model.PedidoId:D4}")</strong></p>
+                    <h1 class="text-center text-danger fw-bold mb-4">ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡@(Model.Total.ToString("N2"))</h1>
                     <hr />
 
                     <form asp-action="Procesar" method="post" id="formPago">
                         <input type="hidden" name="pedidoId" value="@Model.PedidoId" />
 
-                        <h5 class="fw-bold mb-3">Seleccione método de pago:</h5>
+                        <h5 class="fw-bold mb-3">Seleccione mÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â©todo de pago:</h5>
                         
                         <div class="row mb-4">
                             <div class="col-md-4">
@@ -49,12 +56,12 @@
                         <div id="formTarjeta" class="border rounded p-3 mb-4 bg-light">
                             <h6 class="fw-bold mb-3">Datos de la Tarjeta (Simulada)</h6>
                             <div class="mb-3">
-                                <label class="form-label">Número de Tarjeta</label>
+                                <label class="form-label">NÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Âºmero de Tarjeta</label>
                                 <input type="text" name="numeroTarjeta" id="numeroTarjeta" class="form-control" placeholder="1234 5678 9012 3456" maxlength="16" />
                             </div>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label class="form-label">Fecha Expiración</label>
+                                    <label class="form-label">Fecha ExpiraciÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³n</label>
                                     <input type="text" name="fechaExpira" id="fechaExpira" class="form-control" placeholder="MM/AA" maxlength="5" />
                                 </div>
                                 <div class="col-md-6 mb-3">
@@ -70,10 +77,10 @@
 
                         <!-- Formulario de SINPE -->
                         <div id="formSinpe" class="border rounded p-3 mb-4 bg-light" style="display:none;">
-                            <h6 class="fw-bold mb-3">Datos de SINPE Móvil</h6>
-                            <p class="small text-muted">Realice el pago al número <strong>8888-8888</strong> y ingrese el comprobante.</p>
+                            <h6 class="fw-bold mb-3">Datos de SINPE MÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³vil</h6>
+                            <p class="small text-muted">Realice el pago al nÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Âºmero <strong>8888-8888</strong> y ingrese el comprobante.</p>
                             <div class="mb-3">
-                                <label class="form-label">Número de Comprobante</label>
+                                <label class="form-label">NÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Âºmero de Comprobante</label>
                                 <input type="text" name="comprobanteSinpe" id="comprobanteSinpe" class="form-control" placeholder="Ej: 12345678" />
                             </div>
                         </div>
@@ -81,11 +88,11 @@
                         <!-- Contra Entrega -->
                         <div id="formContra" class="border rounded p-3 mb-4 bg-light" style="display:none;">
                             <h6 class="fw-bold mb-3">Pago Contra Entrega</h6>
-                            <p class="small text-muted">Pague en efectivo al recibir su pedido. El repartidor llevará el vuelto.</p>
+                            <p class="small text-muted">Pague en efectivo al recibir su pedido. El repartidor llevarÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ el vuelto.</p>
                         </div>
 
                         <button type="submit" class="btn btn-primary w-100 btn-lg" style="background-color: #1a365d;" id="btnPagar">
-                            Pagar ₡@(Model.Total.ToString("N2"))
+                            Pagar ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡@(Model.Total.ToString("N2"))
                         </button>
                     </form>
                 </div>

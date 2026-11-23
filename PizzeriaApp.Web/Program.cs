@@ -1,3 +1,4 @@
+﻿using PizzeriaApp.MVC.Services;
 using Microsoft.EntityFrameworkCore;
 using PizzeriaApp.Business.Interfaces;
 using PizzeriaApp.Business.Services;
@@ -28,9 +29,11 @@ namespace PizzeriaApp.MVC
             });
 
             builder.Services.AddDistributedMemoryCache();
-builder.Services.AddSession();
+            builder.Services.AddSession();
 
-builder.Services.AddControllersWithViews();
+            builder.Services.AddControllersWithViews();
+
+            builder.Services.AddScoped<PizzeriaApp.MVC.Services.FacturaService>();
 
             builder.Services.AddDbContext<PizzeriaAppDbContext>(options =>
                 options.UseSqlServer(
@@ -43,6 +46,7 @@ builder.Services.AddControllersWithViews();
 
             // Servicios
             builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<IEmailService, EmailService>();
 
             var app = builder.Build();
 
@@ -51,11 +55,21 @@ builder.Services.AddControllersWithViews();
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
+            else
+            {
+                // En Development: mostrar errores detallados (page amarilla con stack trace)
+                app.UseDeveloperExceptionPage();
+            }
 
-            app.UseHttpsRedirection();
+            // Solo usar HTTPS redirection en producción
+            if (!app.Environment.IsDevelopment())
+            {
+                app.UseHttpsRedirection();
+            }
+
             app.UseStaticFiles();
             app.UseRouting();
-app.UseSession();
+            app.UseSession();
             app.UseAuthentication();
             app.UseAuthorization();
 

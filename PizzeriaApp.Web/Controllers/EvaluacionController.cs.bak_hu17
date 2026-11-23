@@ -1,0 +1,89 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using PizzeriaApp.Data;
+using PizzeriaApp.Data.Entities;
+using System.Security.Claims;
+
+namespace PizzeriaApp.MVC.Controllers;
+
+[Authorize]
+public class EvaluacionController : Controller
+{
+    private readonly PizzeriaAppDbContext _context;
+    public EvaluacionController(PizzeriaAppDbContext context) { _context = context; }
+
+    private int GetUsuarioId() =>
+        int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+
+    [HttpGet]
+    public async Task<IActionResult> Crear(int pedidoId)
+    {
+        var usuarioId = GetUsuarioId();
+        var pedido = await _context.Pedidos
+            .FirstOrDefaultAsync(p => p.PedidoId == pedidoId && p.UsuarioId == usuarioId);
+        if (pedido == null)
+        {
+            TempData["Error"] = "Pedido no encontrado.";
+            return RedirectToAction("Historial", "Pedido");
+        }
+
+        var yaEvaluado = await _context.Evaluaciones.AnyAsync(e => e.PedidoId == pedidoId);
+        if (yaEvaluado)
+        {
+            TempData["Error"] = "Ya calificaste este pedido.";
+            return RedirectToAction("Historial", "Pedido");
+        }
+
+        ViewBag.PedidoId = pedidoId;
+        return View();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Crear(int pedidoId, int calificacion, string comentario)
+    {
+        var usuarioId = GetUsuarioId();
+
+        // C1: validar rango
+        if (calificacion < 1 || calificacion > 10)
+        {
+            ModelState.AddModelError("", "La calificación debe estar entre 1 y 10.");
+            ViewBag.PedidoId = pedidoId;
+            return View();
+        }
+
+        // Validar que el pedido sea del usuario
+        var pedido = await _context.Pedidos
+            .FirstOrDefaultAsync(p => p.PedidoId == pedidoId && p.UsuarioId == usuarioId);
+        if (pedido == null)
+        {
+            TempData["Error"] = "Pedido no encontrado.";
+            return RedirectToAction("Historial", "Pedido");
+        }
+
+        // C2: evitar duplicados
+        var yaEvaluado = await _context.Evaluaciones.AnyAsync(e => e.PedidoId == pedidoId);
+        if (yaEvaluado)
+        {
+            TempData["Error"] = "Ya calificaste este pedido.";
+            return RedirectToAction("Historial", "Pedido");
+        }
+
+        var evaluacion = new Evaluacion
+        {
+            PedidoId = pedidoId,
+            UsuarioId = usuarioId,
+            Calificacion = calificacion,
+            Comentario = comentario ?? string.Empty,
+            Aprobada = false,
+            Fecha = DateTime.Now
+        };
+
+        _context.Evaluaciones.Add(evaluacion);
+        await _context.SaveChangesAsync();
+
+        TempData["Mensaje"] = "¡Gracias por tu evaluación! Será revisada antes de publicarse.";
+        return RedirectToAction("Historial", "Pedido");
+    }
+}

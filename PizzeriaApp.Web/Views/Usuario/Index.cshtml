@@ -1,0 +1,121 @@
+﻿@model IEnumerable<PizzeriaApp.Data.Entities.Usuario>
+@{
+    ViewData["Title"] = "Gestión de Usuarios";
+    var admins = Model.Count(u => u.Rol?.Nombre == "Administrador");
+    var clientes = Model.Count(u => u.Rol?.Nombre == "Cliente");
+}
+
+<style>
+    .admin-header {
+        background: linear-gradient(135deg, #0f172a 0%, #1a365d 100%);
+        border-radius: 24px; padding: 35px; color: white; margin-bottom: 30px;
+        position: relative; overflow: hidden;
+    }
+    .admin-header::before {
+        content: '👥'; position: absolute; right: -20px; bottom: -40px;
+        font-size: 10rem; opacity: 0.08;
+    }
+    .admin-header h1 { font-size: 1.9rem; font-weight: 800; margin: 0; position: relative; }
+    .admin-header p { margin: 6px 0 0 0; opacity: 0.85; position: relative; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px; }
+    .stat-card {
+        background: white; border-radius: 16px; padding: 25px;
+        box-shadow: 0 8px 25px rgba(15,23,42,0.06); border: 1px solid #e2e8f0;
+        display: flex; align-items: center; gap: 15px;
+    }
+    .stat-icon {
+        width: 50px; height: 50px; border-radius: 14px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.3rem; flex-shrink: 0;
+    }
+    .stat-info h3 { font-size: 1.8rem; font-weight: 800; margin: 0; color: #1a365d; }
+    .stat-info p { margin: 0; color: #64748b; font-size: 0.85rem; }
+    .tabla-premium {
+        background: white; border-radius: 20px; overflow: hidden;
+        box-shadow: 0 10px 30px rgba(15,23,42,0.08);
+    }
+    .tabla-premium table { margin: 0; width: 100%; }
+    .tabla-premium thead { background: linear-gradient(135deg, #1a365d, #2c5282); color: white; }
+    .tabla-premium thead th { padding: 18px 20px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 700; border: none; }
+    .tabla-premium tbody td { padding: 18px 20px; border-bottom: 1px solid #e2e8f0; vertical-align: middle; }
+    .tabla-premium tbody tr:hover { background: #f8fafc; }
+    .avatar {
+        width: 42px; height: 42px; border-radius: 50%;
+        background: linear-gradient(135deg, #1a365d, #2c5282);
+        color: white; display: flex; align-items: center; justify-content: center;
+        font-weight: 800; font-size: 1rem;
+    }
+    .rol-badge {
+        padding: 6px 14px; border-radius: 50px; font-weight: 700; font-size: 0.75rem;
+    }
+    .rol-admin { background: #fef3c7; color: #d97706; }
+    .rol-cliente { background: #dbeafe; color: #1e40af; }
+    .estado-badge { padding: 6px 14px; border-radius: 50px; font-weight: 700; font-size: 0.75rem; }
+    .estado-activo { background: #dcfce7; color: #16a34a; }
+    .estado-inactivo { background: #fee2e2; color: #dc2626; }
+</style>
+
+<div class="container mt-4">
+    <div class="admin-header">
+        <h1><i class="fa-solid fa-users me-2"></i>Gestión de Usuarios</h1>
+        <p>Administrá los usuarios y sus roles</p>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: #dbeafe; color: #1e40af;"><i class="fa-solid fa-users"></i></div>
+            <div class="stat-info"><h3>@Model.Count()</h3><p>Total Usuarios</p></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background: #fef3c7; color: #d97706;"><i class="fa-solid fa-user-shield"></i></div>
+            <div class="stat-info"><h3>@admins</h3><p>Administradores</p></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background: #dbeafe; color: #1e40af;"><i class="fa-solid fa-user"></i></div>
+            <div class="stat-info"><h3>@clientes</h3><p>Clientes</p></div>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info text-center py-5" style="border-radius: 16px;">
+            <h4>No hay usuarios registrados</h4>
+        </div>
+    }
+    else
+    {
+        <div class="tabla-premium">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Usuario</th>
+                        <th>Correo</th>
+                        <th>Rol</th>
+                        <th>Registro</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var u in Model)
+                    {
+                        var inicial = u.NombreUsuario.Length > 0 ? u.NombreUsuario.Substring(0, 1).ToUpper() : "?";
+                        var esAdmin = u.Rol?.Nombre == "Administrador";
+                        var activo = u.Estado?.Nombre == "Activo" || u.EstadoId == 1;
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="avatar">@inicial</div>
+                                    <strong>@u.NombreUsuario</strong>
+                                </div>
+                            </td>
+                            <td>@u.Correo</td>
+                            <td><span class="rol-badge @(esAdmin ? "rol-admin" : "rol-cliente")">@u.Rol?.Nombre</span></td>
+                            <td><small class="text-muted">@u.FechaRegistro.ToString("dd/MM/yyyy")</small></td>
+                            <td><span class="estado-badge @(activo ? "estado-activo" : "estado-inactivo")">@(activo ? "Activo" : "Inactivo")</span></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

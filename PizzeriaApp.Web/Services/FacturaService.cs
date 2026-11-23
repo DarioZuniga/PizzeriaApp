@@ -1,0 +1,128 @@
+﻿using QuestPDF.Fluent;
+using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
+using PizzeriaApp.Data.Entities;
+
+namespace PizzeriaApp.MVC.Services;
+
+public class FacturaService
+{
+    public byte[] GenerarFacturaPdf(Pedido pedido)
+    {
+        QuestPDF.Settings.License = LicenseType.Community;
+
+        var numeroFactura = $"FAC-{pedido.Fecha:yyyyMMdd}-{pedido.PedidoId:D4}";
+        var numeroPedido = $"PED-{pedido.Fecha:yyyyMMdd}-{pedido.PedidoId:D4}";
+        var cliente = pedido.Usuario?.NombreUsuario ?? "Cliente";
+        var correo = pedido.Usuario?.Correo ?? "-";
+
+        var documento = Document.Create(container =>
+        {
+            container.Page(page =>
+            {
+                page.Size(PageSizes.A4);
+                page.Margin(2, Unit.Centimetre);
+                page.DefaultTextStyle(x => x.FontSize(10).FontFamily("Lato"));
+
+                // Header
+                page.Header().Column(col =>
+                {
+                    col.Item().Row(row =>
+                    {
+                        row.RelativeItem().Column(c =>
+                        {
+                            c.Item().Text("PIZZERÍA LAS PERLAS").FontSize(20).Bold().FontColor(Colors.Blue.Darken3);
+                            c.Item().Text("La experiencia gastronómica que mereces.").FontSize(9).FontColor(Colors.Grey.Darken2);
+                        });
+                        row.ConstantItem(200).Column(c =>
+                        {
+                            c.Item().AlignRight().Text("FACTURA ELECTRÓNICA").FontSize(14).Bold();
+                            c.Item().AlignRight().Text($"N° {numeroFactura}").FontSize(11);
+                            c.Item().AlignRight().Text($"Fecha: {pedido.Fecha:dd/MM/yyyy HH:mm}").FontSize(9);
+                        });
+                    });
+                    col.Item().PaddingTop(10).LineHorizontal(2).LineColor(Colors.Blue.Darken3);
+                });
+
+                // Contenido
+                page.Content().PaddingVertical(15).Column(col =>
+                {
+                    // Datos del cliente
+                    col.Item().PaddingBottom(10).Row(row =>
+                    {
+                        row.RelativeItem().Column(c =>
+                        {
+                            c.Item().Text("CLIENTE").Bold().FontSize(11);
+                            c.Item().Text(cliente);
+                            c.Item().Text(correo).FontColor(Colors.Grey.Darken2);
+                        });
+                        row.RelativeItem().Column(c =>
+                        {
+                            c.Item().Text("PEDIDO").Bold().FontSize(11);
+                            c.Item().Text(numeroPedido);
+                            c.Item().Text($"Estado: {pedido.Estado}").FontColor(Colors.Grey.Darken2);
+                            c.Item().Text($"Método de pago: {pedido.MetodoPago}").FontColor(Colors.Grey.Darken2);
+                        });
+                    });
+
+                    // Tabla de detalles
+                    col.Item().PaddingTop(10).Table(table =>
+                    {
+                        table.ColumnsDefinition(columns =>
+                        {
+                            columns.RelativeColumn(4);
+                            columns.RelativeColumn(1);
+                            columns.RelativeColumn(2);
+                            columns.RelativeColumn(2);
+                        });
+
+                        table.Header(header =>
+                        {
+                            header.Cell().Background(Colors.Blue.Darken3).Padding(5)
+                                .Text("Producto").FontColor(Colors.White).Bold().FontSize(10);
+                            header.Cell().Background(Colors.Blue.Darken3).Padding(5)
+                                .Text("Cant.").FontColor(Colors.White).Bold().FontSize(10);
+                            header.Cell().Background(Colors.Blue.Darken3).Padding(5)
+                                .Text("Precio").FontColor(Colors.White).Bold().FontSize(10);
+                            header.Cell().Background(Colors.Blue.Darken3).Padding(5)
+                                .Text("Total").FontColor(Colors.White).Bold().FontSize(10);
+                        });
+
+                        foreach (var d in pedido.Detalles)
+                        {
+                            table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(5)
+                                .Text(d.Producto?.Nombre ?? "Producto");
+                            table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(5)
+                                .Text(d.Cantidad.ToString());
+                            table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(5)
+                                .Text($"₡{d.PrecioUnitario:N2}");
+                            table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(5)
+                                .Text($"₡{(d.PrecioUnitario * d.Cantidad):N2}");
+                        }
+                    });
+
+                    // Totales
+                    col.Item().PaddingTop(15).AlignRight().Column(c =>
+                    {
+                        c.Item().Text($"Subtotal: ₡{pedido.Subtotal:N2}").FontSize(10);
+                        c.Item().Text($"IVA (13%): ₡{pedido.Impuestos:N2}").FontSize(10);
+                        c.Item().PaddingTop(5).Text($"TOTAL: ₡{pedido.Total:N2}").FontSize(14).Bold().FontColor(Colors.Blue.Darken3);
+                    });
+                });
+
+                // Footer
+                page.Footer().Column(col =>
+                {
+                    col.Item().LineHorizontal(1).LineColor(Colors.Grey.Lighten2);
+                    col.Item().PaddingTop(5).AlignCenter().Text(text =>
+                    {
+                        text.Span("Gracias por su compra · Pizzería Las Perlas · ").FontSize(8).FontColor(Colors.Grey.Darken2);
+                        text.Span("www.lasperlas.cr").FontSize(8).FontColor(Colors.Blue.Darken3);
+                    });
+                });
+            });
+        });
+
+        return documento.GeneratePdf();
+    }
+}

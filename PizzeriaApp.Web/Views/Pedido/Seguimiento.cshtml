@@ -1,6 +1,7 @@
-@model PizzeriaApp.Data.Entities.Pedido
+﻿@model PizzeriaApp.Data.Entities.Pedido
 @{
     ViewData["Title"] = "Seguimiento del Pedido";
+    var numeroPedido = $"PED-{Model.Fecha:yyyyMMdd}-{Model.PedidoId:D4}";
     string colorBadge = Model.Estado switch
     {
         "Pendiente" => "secondary",
@@ -15,12 +16,13 @@
 
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center">
-        <h2 style="color: #1a365d;">📦 Pedido #@Model.PedidoId</h2>
-        <a asp-action="Historial" class="btn btn-outline-secondary btn-sm">← Volver al Historial</a>
+        <h2 style="color: #1a365d;"><i class="fa-solid fa-box me-2"></i> Pedido @numeroPedido</h2>
+        <a asp-action="Historial" class="btn btn-outline-secondary btn-sm">
+            <i class="fa-solid fa-arrow-left me-1"></i> Volver al Historial
+        </a>
     </div>
     <hr />
 
-    <!-- Estado -->
     <div class="card border-0 shadow-sm mb-4" style="border-radius: 12px;">
         <div class="card-body">
             <div class="row">
@@ -40,7 +42,6 @@
         </div>
     </div>
 
-    <!-- Timeline de estados -->
     <div class="card border-0 shadow-sm mb-4" style="border-radius: 12px;">
         <div class="card-body">
             <h5 class="fw-bold mb-3">Progreso del Pedido</h5>
@@ -66,7 +67,6 @@
         </div>
     </div>
 
-    <!-- Detalle de productos -->
     <div class="card border-0 shadow-sm" style="border-radius: 12px;">
         <div class="card-body">
             <h5 class="fw-bold mb-3">Detalle del Pedido</h5>
@@ -85,9 +85,7 @@
                         @foreach (var detalle in Model.Detalles)
                         {
                             <tr>
-                                <td>
-                                    <strong>@detalle.Producto?.Nombre</strong>
-                                </td>
+                                <td><strong>@detalle.Producto?.Nombre</strong></td>
                                 <td>
                                     <small class="text-muted">
                                         @if (detalle.Tamano != null)
@@ -101,13 +99,9 @@
                                         @if (detalle.Ingredientes != null && detalle.Ingredientes.Any())
                                         {
                                             <span class="d-block">
-                                                <i class="fa-solid fa-plus me-1"></i>Extras: 
+                                                <i class="fa-solid fa-plus me-1"></i>Extras:
                                                 @string.Join(", ", detalle.Ingredientes.Select(i => i.Ingrediente?.Nombre))
                                             </span>
-                                        }
-                                        @if (!string.IsNullOrEmpty(detalle.Producto?.Descripcion))
-                                        {
-                                            <span class="d-block fst-italic">@detalle.Producto.Descripcion</span>
                                         }
                                     </small>
                                 </td>

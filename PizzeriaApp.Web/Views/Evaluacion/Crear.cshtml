@@ -1,20 +1,105 @@
-@{ ViewData["Title"] = "Evaluar Servicio"; }
+﻿@{
+    ViewData["Title"] = "Calificar Pedido";
+}
+
+<style>
+    .form-card {
+        background: white; border-radius: 24px; padding: 40px;
+        box-shadow: 0 15px 40px rgba(15,23,42,0.08); max-width: 650px; margin: 0 auto;
+    }
+    .form-header { text-align: center; margin-bottom: 35px; }
+    .form-header-icon {
+        width: 80px; height: 80px; border-radius: 24px;
+        background: linear-gradient(135deg, #d4af37, #b8941f);
+        display: flex; align-items: center; justify-content: center;
+        margin: 0 auto 20px; font-size: 2rem; color: white;
+        box-shadow: 0 15px 30px rgba(212,175,55,0.3);
+    }
+    .form-header h2 { font-weight: 800; color: #1a365d; margin-bottom: 5px; }
+    .form-header p { color: #64748b; margin: 0; }
+    .form-label-premium {
+        font-weight: 700; color: #1a365d; font-size: 0.9rem;
+        text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;
+    }
+    .calificacion-grid {
+        display: flex; justify-content: center; gap: 8px; margin: 20px 0;
+        flex-wrap: wrap;
+    }
+    .calificacion-btn {
+        width: 55px; height: 55px; border-radius: 14px;
+        border: 2px solid #e2e8f0; background: white;
+        font-weight: 800; font-size: 1.1rem; color: #64748b;
+        cursor: pointer; transition: all 0.2s;
+    }
+    .calificacion-btn:hover { border-color: #d4af37; transform: translateY(-3px); }
+    .calificacion-btn.selected {
+        background: linear-gradient(135deg, #d4af37, #b8941f);
+        color: white; border-color: #d4af37;
+        box-shadow: 0 10px 20px rgba(212,175,55,0.3);
+        transform: scale(1.1);
+    }
+    .form-control-premium {
+        padding: 14px 18px; border: 2px solid #e2e8f0; border-radius: 12px;
+        transition: all 0.2s; font-size: 1rem;
+    }
+    .form-control-premium:focus {
+        border-color: #d4af37; box-shadow: 0 0 0 4px rgba(212,175,55,0.15); outline: none;
+    }
+    .btn-submit-premium {
+        background: linear-gradient(135deg, #1a365d, #2c5282); color: white;
+        border: none; padding: 16px; border-radius: 12px; font-weight: 700;
+        font-size: 1rem; width: 100%; transition: all 0.3s;
+    }
+    .btn-submit-premium:hover { transform: translateY(-2px); }
+</style>
+
 <div class="container mt-4">
-    <div class="card border-0 shadow-sm" style="border-radius: 12px; max-width: 500px; margin: auto;">
-        <div class="card-body p-4 text-center">
-            <h3 class="mb-4" style="color: #1a365d;">⭐ Calificar Servicio</h3>
-            <form asp-action="Crear" method="post">
-                <input type="hidden" name="pedidoId" value="@ViewBag.PedidoId" />
-                <div class="mb-3">
-                    <label class="fw-bold">Calificación (1 al 10)</label>
-                    <input type="number" name="calificacion" min="1" max="10" class="form-control text-center fs-3" required />
-                </div>
-                <div class="mb-4">
-                    <label class="fw-bold">Comentario (Opcional)</label>
-                    <textarea name="comentario" class="form-control" rows="3"></textarea>
-                </div>
-                <button type="submit" class="btn btn-primary w-100" style="background-color: #1a365d;">Enviar Evaluación</button>
-            </form>
+    <div class="form-card">
+        <div class="form-header">
+            <div class="form-header-icon"><i class="fa-solid fa-star"></i></div>
+            <h2>Calificar Pedido</h2>
+            <p>Tu opinión nos ayuda a mejorar</p>
         </div>
+
+        <form asp-action="Crear" method="post">
+            <input type="hidden" name="pedidoId" value="@ViewBag.PedidoId" />
+            <input type="hidden" name="calificacion" id="calificacionInput" value="10" />
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="mb-4">
+                <label class="form-label-premium text-center d-block">¿Cómo calificás tu experiencia?</label>
+                <div class="calificacion-grid">
+                    @for (int i = 1; i <= 10; i++)
+                    {
+                        <button type="button" class="calificacion-btn @(i == 10 ? "selected" : "")" data-valor="@i">@i</button>
+                    }
+                </div>
+                <p class="text-center text-muted small">1 = Muy malo · 10 = Excelente</p>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label-premium">Comentario (Opcional)</label>
+                <textarea name="comentario" class="form-control form-control-premium" rows="4" placeholder="Contanos cómo fue tu experiencia..."></textarea>
+            </div>
+
+            <button type="submit" class="btn-submit-premium">
+                <i class="fa-solid fa-paper-plane me-2"></i> Enviar Calificación
+            </button>
+        </form>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        const botones = document.querySelectorAll('.calificacion-btn');
+        const input = document.getElementById('calificacionInput');
+
+        botones.forEach(btn => {
+            btn.addEventListener('click', () => {
+                botones.forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                input.value = btn.dataset.valor;
+            });
+        });
+    </script>
+}

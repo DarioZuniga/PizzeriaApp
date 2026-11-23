@@ -1,0 +1,98 @@
+﻿@model IEnumerable<PizzeriaApp.Data.Entities.PromocionPersonalizada>
+@{
+    ViewData["Title"] = "Reporte de Promociones";
+    var lista = Model.ToList();
+    int totalAplicadas = lista.Sum(p => p.VecesAplicada);
+    decimal totalDescontado = lista.Sum(p => p.MontoDescontado);
+}
+
+<style>
+    .admin-header { background: linear-gradient(135deg, #0f172a 0%, #1a365d 100%); border-radius: 24px; padding: 35px; color: white; margin-bottom: 30px; position: relative; overflow: hidden; }
+    .admin-header::before { content: '📊'; position: absolute; right: -20px; bottom: -40px; font-size: 10rem; opacity: 0.08; }
+    .admin-header h1 { font-size: 1.9rem; font-weight: 800; margin: 0; position: relative; }
+    .admin-header p { margin: 6px 0 0 0; opacity: 0.85; position: relative; }
+    .card-premium { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(15,23,42,0.08); margin-bottom: 20px; }
+    .tabla-premium { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(15,23,42,0.08); }
+    .tabla-premium table { margin: 0; width: 100%; }
+    .tabla-premium thead { background: linear-gradient(135deg, #1a365d, #2c5282); color: white; }
+    .tabla-premium thead th { padding: 18px 20px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 700; border: none; }
+    .tabla-premium tbody td { padding: 18px 20px; border-bottom: 1px solid #e2e8f0; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px; }
+    .stat-card { background: white; border-radius: 16px; padding: 25px; box-shadow: 0 8px 25px rgba(15,23,42,0.06); border: 1px solid #e2e8f0; text-align: center; }
+    .stat-card .valor { font-size: 2rem; font-weight: 800; color: #1a365d; line-height: 1; }
+    .stat-card .etiqueta { color: #64748b; font-size: 0.85rem; margin-top: 8px; }
+</style>
+
+<div class="container mt-4">
+    <div class="admin-header">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <h1><i class="fa-solid fa-chart-simple me-2"></i>Reporte de Promociones</h1>
+                <p>Impacto de cada promoción personalizada</p>
+            </div>
+            <a asp-action="Index" class="btn btn-outline-light" style="border-radius: 50px; padding: 12px 24px; font-weight: 700;">
+                <i class="fa-solid fa-arrow-left me-1"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="valor">@lista.Count</div>
+            <div class="etiqueta">Total Promociones</div>
+        </div>
+        <div class="stat-card">
+            <div class="valor">@lista.Count(p => p.Activa)</div>
+            <div class="etiqueta">Activas</div>
+        </div>
+        <div class="stat-card">
+            <div class="valor" style="color: #d97706;">@totalAplicadas</div>
+            <div class="etiqueta">Veces Aplicadas</div>
+        </div>
+        <div class="stat-card">
+            <div class="valor" style="color: #dc2626;">₡@totalDescontado.ToString("N0")</div>
+            <div class="etiqueta">Total Descontado</div>
+        </div>
+    </div>
+
+    @if (!lista.Any())
+    {
+        <div class="alert alert-info text-center py-5" style="border-radius: 16px;">
+            <h4>No hay datos para mostrar</h4>
+        </div>
+    }
+    else
+    {
+        <div class="tabla-premium">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Promoción</th>
+                        <th>Criterio</th>
+                        <th>% Descuento</th>
+                        <th>Aplicada</th>
+                        <th>Monto Descontado</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var p in lista.OrderByDescending(x => x.VecesAplicada))
+                    {
+                        <tr>
+                            <td><strong>@p.Nombre</strong></td>
+                            <td><small>@p.MinimoCompras compras / @p.DiasVentana días</small></td>
+                            <td><strong>@p.PorcentajeDescuento%</strong></td>
+                            <td>@p.VecesAplicada</td>
+                            <td><strong style="color: #dc2626;">₡@p.MontoDescontado.ToString("N0")</strong></td>
+                            <td>
+                                <span class="badge" style="background: @(p.Activa ? "#dcfce7" : "#f1f5f9"); color: @(p.Activa ? "#16a34a" : "#64748b"); padding: 6px 12px; border-radius: 50px;">
+                                    @(p.Activa ? "Activa" : "Inactiva")
+                                </span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

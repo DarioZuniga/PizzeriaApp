@@ -1,88 +1,407 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - PizzeriaApp</title>
+    <title>@ViewData["Title"] - Las Perlas</title>
+    <link rel="icon" type="image/png" href="~/favicon.png" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <style>
+        :root {
+            --lp-dark: #0f172a;
+            --lp-gold: #d4af37;
+            --lp-light: #f8fafc;
+            --lp-text: #334155;
+        }
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--lp-light);
+            color: var(--lp-text);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        h1, h2, h3, h4, h5, h6, .navbar-brand {
+            font-family: 'Playfair Display', serif;
+            color: var(--lp-dark);
+        }
+        .navbar {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            padding: 1rem 0;
+            transition: all 0.3s ease;
+        }
+        .navbar-brand {
+            font-weight: 600;
+            font-size: 1.8rem;
+            color: var(--lp-dark) !important;
+            letter-spacing: 1px;
+        }
+        .nav-link {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--lp-dark) !important;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 0 5px;
+            position: relative;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: var(--lp-gold);
+            transition: width 0.3s;
+        }
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        .btn-lp-primary {
+            background-color: var(--lp-dark);
+            color: white;
+            font-weight: 600;
+            border-radius: 50px;
+            padding: 10px 25px;
+            border: none;
+            transition: all 0.3s;
+        }
+        .btn-lp-primary:hover {
+            background-color: var(--lp-gold);
+            color: var(--lp-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3);
+        }
+        .btn-lp-outline {
+            border: 2px solid var(--lp-dark);
+            color: var(--lp-dark);
+            font-weight: 600;
+            border-radius: 50px;
+            padding: 10px 25px;
+            background: transparent;
+            transition: all 0.3s;
+        }
+        .btn-lp-outline:hover {
+            background-color: var(--lp-dark);
+            color: white;
+        }
+        .footer {
+            background-color: var(--lp-dark);
+            color: #94a3b8;
+            padding: 3rem 0;
+            margin-top: auto;
+        }
+        .footer h4 {
+            color: white;
+        }
+    </style>
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-light bg-white shadow-sm mb-3">
+        <nav class="navbar navbar-expand-lg navbar-light sticky-top">
             <div class="container">
-                <a class="navbar-brand fw-bold" asp-controller="Home" asp-action="Index" style="color: #1a365d;">
-                    <i class="fa-solid fa-pizza-slice me-1" style="color: #e53e3e;"></i> PizzeriaApp
+                <a class="navbar-brand" asp-controller="Home" asp-action="Index">
+                    <img src="~/favicon.png" alt="Logo" style="height: 40px; margin-right: 10px;" /> Las Perlas
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Index">Menú</a>
-                        </li>
-                        
-                        @if (User.IsInRole("Administrador"))
+                    <!-- ===== MENÚ IZQUIERDA ===== -->
+                    <ul class="navbar-nav flex-grow-1 ms-4">
+
+                        @if (!User.IsInRole("Administrador"))
                         {
-                            <li class="nav-item"><a class="nav-link text-dark" asp-controller="Producto" asp-action="Index">Productos</a></li>
-                            <li class="nav-item"><a class="nav-link text-dark" asp-controller="Pedido" asp-action="Gestion">Pedidos</a></li>
-                            <li class="nav-item"><a class="nav-link text-dark" asp-controller="Inventario" asp-action="Index">Inventario</a></li>
-                            <li class="nav-item"><a class="nav-link text-dark" asp-controller="Reserva" asp-action="Gestion">Reservas</a></li>
-                            <li class="nav-item"><a class="nav-link text-dark" asp-controller="Cupon" asp-action="Index">Cupones</a></li>
-                            <li class="nav-item"><a class="nav-link text-dark" asp-controller="Evento" asp-action="Index">Eventos</a></li>
-                            <li class="nav-item"><a class="nav-link text-dark" asp-controller="Moderacion" asp-action="Index">Comentarios</a></li>
+                            <!-- ===== CLIENTE / VISITANTE ===== -->
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Home" asp-action="Index">
+                                    <i class="fa-solid fa-pizza-slice me-1"></i> Pizzería
+                                </a>
+                            </li>
+
+                            @if (User.Identity?.IsAuthenticated == true)
+                            {
+                                <!-- Pedidos -->
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="fa-solid fa-utensils me-1"></i> Pedidos
+                                    </a>
+                                    <ul class="dropdown-menu shadow border-0 mt-2">
+                                        <li>
+                                            <a class="dropdown-item" asp-controller="Home" asp-action="Index">
+                                                <i class="fa-solid fa-book-open me-2"></i> Ver Menú
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" asp-controller="Carrito" asp-action="Index">
+                                                <i class="fa-solid fa-bag-shopping me-2"></i> Mi Carrito
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" asp-controller="Pedido" asp-action="Historial">
+                                                <i class="fa-solid fa-clock-rotate-left me-2"></i> Mis Pedidos
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+
+                                <!-- Reservas -->
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="fa-solid fa-calendar-days me-1"></i> Reservas
+                                    </a>
+                                    <ul class="dropdown-menu shadow border-0 mt-2">
+                                        <li>
+                                            <a class="dropdown-item" asp-controller="Reserva" asp-action="Crear">
+                                                <i class="fa-solid fa-plus me-2"></i> Nueva Reserva
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" asp-controller="Reserva" asp-action="MisReservas">
+                                                <i class="fa-solid fa-list-check me-2"></i> Mis Reservas
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+
+                                <!-- Mi Cuenta -->
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="fa-solid fa-user me-1"></i> Mi Cuenta
+                                    </a>
+                                    <ul class="dropdown-menu shadow border-0 mt-2">
+                                        <li>
+                                            <a class="dropdown-item" asp-controller="Account" asp-action="Profile">
+                                                <i class="fa-solid fa-user-circle me-2"></i> Mi Perfil
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" asp-controller="Puntos" asp-action="Index">
+                                                <i class="fa-solid fa-star me-2"></i> Mis Puntos
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" asp-controller="Direccion" asp-action="Index">
+                                                <i class="fa-solid fa-location-dot me-2"></i> Mis Direcciones
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" asp-controller="Notificaciones" asp-action="Index">
+                                                <i class="fa-solid fa-bell me-2"></i> Mis Notificaciones
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            }
                         }
-                        
-                        @if (User.Identity?.IsAuthenticated == true && !User.IsInRole("Administrador"))
+                        else
                         {
-                            <li class="nav-item"><a class="nav-link text-dark" asp-controller="Pedido" asp-action="Historial">Mis Pedidos</a></li>
-                            <li class="nav-item"><a class="nav-link text-dark" asp-controller="Reserva" asp-action="MisReservas">Mis Reservas</a></li>
-                            <li class="nav-item"><a class="nav-link text-dark" asp-controller="Direccion" asp-action="Index">Mis Direcciones</a></li>
+                            <!-- ===== ADMINISTRADOR ===== -->
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Admin" asp-action="Index">
+                                    <i class="fa-solid fa-gauge me-1"></i> Dashboard
+                                </a>
+                            </li>
+
+                            <!-- Pedidos -->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fa-solid fa-receipt me-1"></i> Pedidos
+                                </a>
+                                <ul class="dropdown-menu shadow border-0 mt-2">
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Pedido" asp-action="Gestion">
+                                            <i class="fa-solid fa-list me-2"></i> Gestión de Pedidos
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Reserva" asp-action="Gestion">
+                                            <i class="fa-solid fa-calendar-check me-2"></i> Gestión de Reservas
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Evaluacion" asp-action="Index">
+                                            <i class="fa-solid fa-star me-2"></i> Moderar Reseñas
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+
+                            <!-- Catálogo -->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fa-solid fa-box me-1"></i> Catálogo
+                                </a>
+                                <ul class="dropdown-menu shadow border-0 mt-2">
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Producto" asp-action="Index">
+                                            <i class="fa-solid fa-pizza-slice me-2"></i> Productos
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Cupon" asp-action="Index">
+                                            <i class="fa-solid fa-ticket me-2"></i> Cupones
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Evento" asp-action="Index">
+                                            <i class="fa-solid fa-calendar-star me-2"></i> Eventos
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="PromocionPersonalizada" asp-action="Index">
+                                            <i class="fa-solid fa-gift me-2"></i> Promociones Personalizadas
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+
+                            <!-- Inventario -->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fa-solid fa-boxes-stacked me-1"></i> Inventario
+                                </a>
+                                <ul class="dropdown-menu shadow border-0 mt-2">
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Inventario" asp-action="Index">
+                                            <i class="fa-solid fa-cubes me-2"></i> Ver Insumos
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Inventario" asp-action="CrearInsumo">
+                                            <i class="fa-solid fa-plus me-2"></i> Nuevo Insumo
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Inventario" asp-action="ConteoFisico">
+                                            <i class="fa-solid fa-clipboard-check me-2"></i> Conteo Físico
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Inventario" asp-action="Movimientos" asp-route-id="0">
+                                            <i class="fa-solid fa-arrow-right-arrow-left me-2"></i> Movimientos
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+
+                            <!-- Reportes -->
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Reporte" asp-action="Index">
+                                    <i class="fa-solid fa-chart-simple me-1"></i> Reportes
+                                </a>
+                            </li>
+
+                            <!-- Usuarios -->
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Usuario" asp-action="Index">
+                                    <i class="fa-solid fa-users me-1"></i> Usuarios
+                                </a>
+                            </li>
+
+                            <!-- Configuración -->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fa-solid fa-gear me-1"></i> Configuración
+                                </a>
+                                <ul class="dropdown-menu shadow border-0 mt-2">
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Reserva" asp-action="Configuracion">
+                                            <i class="fa-solid fa-clock me-2"></i> Horarios y Límites
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
                         }
                     </ul>
-                    
-                    <ul class="navbar-nav">
+
+                    <!-- ===== MENÚ DERECHA ===== -->
+                    <ul class="navbar-nav align-items-center">
+
                         @if (User.Identity?.IsAuthenticated == true)
                         {
+                            <!-- Campanita de notificaciones -->
+                            <li class="nav-item dropdown me-2" id="liCampanita">
+                                <a class="nav-link position-relative" href="#" id="dropdownNotif" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fa-solid fa-bell fa-lg"></i>
+                                    <span id="badgeNotif" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display:none;">
+                                        0
+                                    </span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="dropdownNotif" style="min-width: 320px; max-height: 400px; overflow-y: auto;">
+                                    <li class="d-flex justify-content-between align-items-center px-3 py-2 border-bottom">
+                                        <strong>Notificaciones</strong>
+                                        <a href="/Notificaciones" class="text-decoration-none small">Ver todas</a>
+                                    </li>
+                                    <li id="listaNotif">
+                                        <div class="text-center text-muted p-3 small">Cargando...</div>
+                                    </li>
+                                </ul>
+                            </li>
+
+                            <!-- Carrito solo para clientes -->
                             @if (!User.IsInRole("Administrador"))
                             {
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-controller="Carrito" asp-action="Index">
-                                        <i class="fa-solid fa-cart-shopping"></i> Carrito
+                                <li class="nav-item me-3">
+                                    <a class="nav-link position-relative" asp-controller="Carrito" asp-action="Index">
+                                        <i class="fa-solid fa-bag-shopping fa-lg"></i>
                                     </a>
                                 </li>
                             }
-                            
+
+                            <!-- Avatar usuario -->
                             <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
-                                    <i class="fa-solid fa-user-circle me-1"></i> @User.Identity.Name
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                    <i class="fa-solid fa-user-astronaut me-1"></i> @User.Identity.Name
                                 </a>
-                                <ul class="dropdown-menu dropdown-menu-end">
-                                    <li><a class="dropdown-item" asp-controller="Account" asp-action="Logout">Cerrar Sesión</a></li>
+                                <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
+                                    @if (User.IsInRole("Administrador"))
+                                    {
+                                        <li><a class="dropdown-item" asp-controller="Admin" asp-action="Index"><i class="fa-solid fa-gauge me-2"></i> Panel Admin</a></li>
+                                        <li><a class="dropdown-item" asp-controller="Reporte" asp-action="Index"><i class="fa-solid fa-chart-simple me-2"></i> Reportes</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                    }
+                                    else
+                                    {
+                                        <li><a class="dropdown-item" asp-controller="Account" asp-action="Profile"><i class="fa-solid fa-user me-2"></i> Mi Perfil</a></li>
+                                        <li><a class="dropdown-item" asp-controller="Puntos" asp-action="Index"><i class="fa-solid fa-star me-2"></i> Mis Puntos</a></li>
+                                        <li><a class="dropdown-item" asp-controller="Direccion" asp-action="Index"><i class="fa-solid fa-location-dot me-2"></i> Mis Direcciones</a></li>
+                                        <li><a class="dropdown-item" asp-controller="Notificaciones" asp-action="Index"><i class="fa-solid fa-bell me-2"></i> Mis Notificaciones</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                    }
+                                    <li><a class="dropdown-item text-danger" asp-controller="Account" asp-action="Logout"><i class="fa-solid fa-right-from-bracket me-2"></i> Cerrar Sesión</a></li>
                                 </ul>
                             </li>
                         }
                         else
                         {
-                            <li class="nav-item"><a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Iniciar Sesión</a></li>
-                            <li class="nav-item"><a class="nav-link text-dark" asp-controller="Account" asp-action="Register">Registrarse</a></li>
+                            <li class="nav-item me-2"><a class="btn btn-lp-outline btn-sm" asp-controller="Account" asp-action="Login">Iniciar Sesión</a></li>
+                            <li class="nav-item"><a class="btn btn-lp-primary btn-sm" asp-controller="Account" asp-action="Register">Registrarse</a></li>
                         }
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
-    <div class="container">
+    <div class="container mt-4 flex-grow-1">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted mt-5">
-        <div class="container text-center py-3">
-            &copy; 2026 PizzeriaApp - Pizzería Las Perlas
+    <footer class="footer">
+        <div class="container text-center">
+            <h4 class="mb-3"><img src="~/favicon.png" alt="Logo" style="height: 30px; margin-right: 10px; filter: brightness(0) invert(1);" /> Las Perlas</h4>
+            <p class="mb-1">La experiencia gastronÃ³mica que mereces.</p>
+            <p class="mb-0 text-muted" style="font-size: 0.9rem;">&copy; 2026 PizzeriaApp - PizzerÃ­a Las Perlas.</p>
         </div>
     </footer>
 
@@ -90,5 +409,43 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+    <script>
+        // Campanita de notificaciones
+        async function actualizarNotificaciones() {
+            const badge = document.getElementById('badgeNotif');
+            const lista = document.getElementById('listaNotif');
+            if (!badge) return;
+
+            try {
+                const r1 = await fetch('/Notificaciones/ContarNoLeidas');
+                const c = await r1.json();
+                if (c.count > 0) {
+                    badge.textContent = c.count > 99 ? '99+' : c.count;
+                    badge.style.display = 'inline-block';
+                } else {
+                    badge.style.display = 'none';
+                }
+
+                const r2 = await fetch('/Notificaciones/Ultimas');
+                const items = await r2.json();
+                if (items.length === 0) {
+                    lista.innerHTML = '<div class="text-center text-muted p-3 small">Sin notificaciones</div>';
+                } else {
+                    lista.innerHTML = items.map(n => `
+                        <div class="px-3 py-2 border-bottom small ${n.leida ? '' : 'bg-light'}">
+                            ${n.leida ? '' : '<span class="badge bg-primary me-1">Nueva</span>'}
+                            <div>${n.mensaje}</div>
+                            <small class="text-muted">${n.fecha}</small>
+                        </div>
+                    `).join('');
+                }
+            } catch (e) { /* silencio */ }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            actualizarNotificaciones();
+            setInterval(actualizarNotificaciones, 30000); // cada 30s
+        });
+    </script>
 </body>
 </html>

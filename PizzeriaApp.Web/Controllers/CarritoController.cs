@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using PizzeriaApp.Data;
 using PizzeriaApp.Data.Entities;
 using PizzeriaApp.MVC.Models;
@@ -35,8 +35,8 @@ public class CarritoController : Controller
         return View(carrito);
     }
 
-        [HttpPost]
-    public async Task<IActionResult> Agregar(int productoId, int cantidad, int? tamanoId, int? tipoMasaId, List<int>? ingredientesIds, decimal? precioFinal = null)
+            [HttpPost]
+    public async Task<IActionResult> Agregar(int productoId, int cantidad, int? tamanoId, int? tipoMasaId, List<int>? ingredientesIds, string? notas = null)
     {
         var producto = await _context.Productos.FindAsync(productoId);
         if (producto == null) return NotFound();
@@ -51,22 +51,23 @@ public class CarritoController : Controller
             Cantidad = cantidad,
             TamanoId = tamanoId,
             TipoMasaId = tipoMasaId,
-            IngredientesIds = ingredientesIds ?? new List<int>()
+            IngredientesIds = ingredientesIds ?? new List<int>(),
+            Notas = notas
         };
 
-        // Calcular precio del tamaño
+        // Calcular precio del tamaÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â±o (Factor multiplicador)
         if (tamanoId.HasValue)
         {
             var tamano = await _context.Tamanos.FindAsync(tamanoId.Value);
             if (tamano != null)
             {
                 item.TamanoNombre = tamano.Nombre;
-                // El factor de precio se suma como un extra (ej. Grande = +30% del precio base)
-                item.PrecioTamano = producto.Precio * (tamano.FactorPrecio - 1);
+                // Ejemplo: Si la pizza cuesta 5000 y el factor es 1.3 (Grande), el precio del tamaÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â±o extra es 1500
+                item.PrecioTamano = producto.Precio * (tamano.FactorPrecio - 1); 
             }
         }
 
-        // Calcular precio del tipo de masa
+        // Calcular precio de la masa
         if (tipoMasaId.HasValue)
         {
             var tipoMasa = await _context.TiposMasa.FindAsync(tipoMasaId.Value);
@@ -94,6 +95,20 @@ public class CarritoController : Controller
     }
 
     [HttpPost]
+    public IActionResult ActualizarCantidad(int index, int cantidad)
+    {
+        var carrito = ObtenerCarrito();
+        if (index >= 0 && index < carrito.Count)
+        {
+            if (cantidad < 1) cantidad = 1;
+            if (cantidad > 99) cantidad = 99;
+            carrito[index].Cantidad = cantidad;
+            GuardarCarrito(carrito);
+        }
+        return RedirectToAction("Index");
+    }
+
+    [HttpPost]
     public IActionResult Eliminar(int index)
     {
         var carrito = ObtenerCarrito();
@@ -104,8 +119,27 @@ public class CarritoController : Controller
         }
         return RedirectToAction("Index");
     }
-
     [HttpPost]
+    public IActionResult EliminarIngrediente(int itemIndex, int ingredienteId)
+    {
+        var carrito = ObtenerCarrito();
+        if (itemIndex >= 0 && itemIndex < carrito.Count)
+        {
+            var item = carrito[itemIndex];
+            var ingrediente = _context.Ingredientes.Find(ingredienteId);
+            
+            if (ingrediente != null && item.IngredientesIds.Contains(ingredienteId))
+            {
+                item.IngredientesIds.Remove(ingredienteId);
+                item.IngredientesNombres.Remove(ingrediente.Nombre);
+                item.PrecioIngredientes -= ingrediente.PrecioExtra;
+                GuardarCarrito(carrito);
+            }
+        }
+        return RedirectToAction("Index");
+    }
+
+        [HttpPost]
     public async Task<IActionResult> ConfirmarPedido()
     {
         var carrito = ObtenerCarrito();
@@ -116,7 +150,41 @@ public class CarritoController : Controller
         decimal impuestos = subtotal * 0.13m;
         decimal total = subtotal + impuestos;
 
-        // Crear pedido
+        // Crear pedido        // HU_20: Verificar promoción personalizada
+        var usuarioId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0");
+        decimal descuentoPromocional = 0;
+        PromocionPersonalizada? promoAplicada = null;
+
+        if (usuarioId > 0)
+        {
+            var promosActivas = await _context.PromocionesPersonalizadas.Where(p => p.Activa).ToListAsync();
+            var fechaLimite = DateTime.Now.AddDays(-30);
+            var comprasCliente = await _context.Pedidos
+                .CountAsync(p => p.UsuarioId == usuarioId && p.Fecha >= fechaLimite && p.Estado != "Cancelado");
+
+            // Verificar si el cliente cumple algún criterio
+            foreach (var promo in promosActivas)
+            {
+                var fechaVentana = DateTime.Now.AddDays(-promo.DiasVentana);
+                var comprasEnVentana = await _context.Pedidos
+                    .CountAsync(p => p.UsuarioId == usuarioId && p.Fecha >= fechaVentana && p.Estado != "Cancelado");
+
+                if (comprasEnVentana >= promo.MinimoCompras)
+                {
+                    descuentoPromocional = subtotal * (promo.PorcentajeDescuento / 100m);
+                    promoAplicada = promo;
+                    break;
+                }
+            }
+        }
+
+        // Aplicar descuento al total
+        if (descuentoPromocional > 0)
+        {
+            total -= descuentoPromocional;
+            if (total < 0) total = 0;
+        }
+
         var pedido = new Pedido
         {
             UsuarioId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0"),
@@ -133,12 +201,16 @@ public class CarritoController : Controller
         // Crear detalles
         foreach (var item in carrito)
         {
+            // Precio real por unidad: base + tamaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±o + masa + ingredientes
+            var precioUnitarioReal = item.PrecioBase + item.PrecioTamano + item.PrecioMasa + item.PrecioIngredientes;
+            if (precioUnitarioReal < 0) precioUnitarioReal = 0;
+
             var detalle = new DetallePedido
             {
                 PedidoId = pedido.PedidoId,
                 ProductoId = item.ProductoId,
                 Cantidad = item.Cantidad,
-                PrecioUnitario = item.PrecioBase,
+                PrecioUnitario = precioUnitarioReal,
                 TamanoId = item.TamanoId,
                 TipoMasaId = item.TipoMasaId
             };
@@ -146,15 +218,22 @@ public class CarritoController : Controller
             _context.DetallesPedido.Add(detalle);
             await _context.SaveChangesAsync();
 
-            // Crear ingredientes del detalle
-            foreach (var ingId in item.IngredientesIds)
+            // Crear ingredientes del detalle con el precio real de BD (no hardcodeado)
+            if (item.IngredientesIds.Any())
             {
-                _context.DetallePedidoIngredientes.Add(new DetallePedidoIngrediente
+                var ingredientesDb = await _context.Ingredientes
+                    .Where(i => item.IngredientesIds.Contains(i.IngredienteId))
+                    .ToListAsync();
+
+                foreach (var ing in ingredientesDb)
                 {
-                    DetallePedidoId = detalle.DetallePedidoId,
-                    IngredienteId = ingId,
-                    PrecioExtra = 500m
-                });
+                    _context.DetallePedidoIngredientes.Add(new DetallePedidoIngrediente
+                    {
+                        DetallePedidoId = detalle.DetallePedidoId,
+                        IngredienteId = ing.IngredienteId,
+                        PrecioExtra = ing.PrecioExtra
+                    });
+                }
             }
         }
 
@@ -166,7 +245,7 @@ public class CarritoController : Controller
         return RedirectToAction("Index", "Pago", new { pedidoId = pedido.PedidoId });
     }
     
-    // Acción temporal para el Pago (HU_09)
+    // AcciÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³n temporal para el Pago (HU_09)
     public IActionResult Pago(int pedidoId)
     {
         return Content($"Redirigiendo a pago del pedido {pedidoId}. (En el siguiente paso se implementa la pasarela simulada).");

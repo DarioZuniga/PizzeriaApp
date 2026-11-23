@@ -28,4 +28,35 @@ public class EventoController : Controller
         }
         return View(evento);
     }
+    [HttpGet]
+    public async Task<IActionResult> Editar(int id)
+    {
+        var evento = await _context.Eventos.FindAsync(id);
+        if (evento == null) return NotFound();
+        return View(evento);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Editar(Evento evento)
+    {
+        if (ModelState.IsValid)
+        {
+            _context.Eventos.Update(evento);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+        return View(evento);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Cancelar(int id)
+    {
+        var evento = await _context.Eventos.FindAsync(id);
+        if (evento != null)
+        {
+            evento.Activo = false;
+            await _context.SaveChangesAsync();
+        }
+        return RedirectToAction(nameof(Index));
+    }
 }

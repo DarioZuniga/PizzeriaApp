@@ -1,0 +1,112 @@
+﻿@model IEnumerable<PizzeriaApp.Data.Entities.PuntoRecompensa>
+@{
+    ViewData["Title"] = "Mis Puntos";
+    var saldo = ViewBag.Saldo as int? ?? 0;
+    var totalGanados = Model.Where(p => p.Puntos > 0).Sum(p => p.Puntos);
+    var totalUsados = Math.Abs(Model.Where(p => p.Puntos < 0).Sum(p => p.Puntos));
+}
+
+<style>
+    .puntos-header {
+        background: linear-gradient(135deg, #1a365d 0%, #2c5282 60%, #d4af37 200%);
+        border-radius: 24px; padding: 50px 40px; color: white; margin-bottom: 30px;
+        text-align: center; position: relative; overflow: hidden;
+    }
+    .puntos-header::before {
+        content: '⭐'; position: absolute; top: -20px; left: -20px;
+        font-size: 12rem; opacity: 0.1;
+    }
+    .puntos-header::after {
+        content: '✨'; position: absolute; bottom: -30px; right: -20px;
+        font-size: 10rem; opacity: 0.1;
+    }
+    .saldo-display { position: relative; z-index: 1; }
+    .saldo-label { font-size: 0.9rem; opacity: 0.85; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; }
+    .saldo-valor {
+        font-size: 5rem; font-weight: 900; line-height: 1;
+        background: linear-gradient(135deg, #ffffff, #d4af37);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    .saldo-info { font-size: 0.9rem; opacity: 0.85; margin-top: 10px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px; }
+    .stat-card {
+        background: white; border-radius: 16px; padding: 25px;
+        box-shadow: 0 8px 25px rgba(15,23,42,0.06); border: 1px solid #e2e8f0;
+        display: flex; align-items: center; gap: 15px;
+    }
+    .stat-icon {
+        width: 50px; height: 50px; border-radius: 14px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.3rem; flex-shrink: 0;
+    }
+    .stat-info h3 { font-size: 1.8rem; font-weight: 800; margin: 0; color: #1a365d; }
+    .stat-info p { margin: 0; color: #64748b; font-size: 0.85rem; }
+    .historial-card {
+        background: white; border-radius: 20px; padding: 30px;
+        box-shadow: 0 10px 30px rgba(15,23,42,0.08);
+    }
+    .historial-item {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 18px 0; border-bottom: 1px solid #e2e8f0;
+    }
+    .historial-item:last-child { border-bottom: none; }
+    .historial-fecha { color: #64748b; font-size: 0.85rem; }
+    .historial-motivo { font-weight: 600; color: #1e293b; margin-top: 4px; }
+    .puntos-badge {
+        padding: 8px 16px; border-radius: 50px; font-weight: 800; font-size: 1rem;
+    }
+    .puntos-pos { background: #dcfce7; color: #16a34a; }
+    .puntos-neg { background: #fee2e2; color: #dc2626; }
+</style>
+
+<div class="container mt-4">
+    <div class="puntos-header">
+        <div class="saldo-display">
+            <div class="saldo-label"><i class="fa-solid fa-star me-2"></i>Saldo Actual</div>
+            <div class="saldo-valor">@saldo</div>
+            <div class="saldo-info">puntos disponibles · 1 punto por cada ₡1.000 en compras</div>
+        </div>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: #dcfce7; color: #16a34a;"><i class="fa-solid fa-arrow-up"></i></div>
+            <div class="stat-info"><h3>@totalGanados</h3><p>Total Ganados</p></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background: #fee2e2; color: #dc2626;"><i class="fa-solid fa-arrow-down"></i></div>
+            <div class="stat-info"><h3>@totalUsados</h3><p>Total Canjeados</p></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background: #dbeafe; color: #1e40af;"><i class="fa-solid fa-list"></i></div>
+            <div class="stat-info"><h3>@Model.Count()</h3><p>Movimientos</p></div>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info text-center py-5" style="border-radius: 16px;">
+            <h4>No tenés puntos todavía</h4>
+            <p class="mb-0">Hacé tu primer pedido y empezá a acumular.</p>
+        </div>
+    }
+    else
+    {
+        <div class="historial-card">
+            <h3 style="font-weight: 800; color: #1a365d; margin-bottom: 20px;"><i class="fa-solid fa-clock-rotate-left me-2"></i>Historial de Puntos</h3>
+            @foreach (var p in Model)
+            {
+                <div class="historial-item">
+                    <div>
+                        <div class="historial-fecha"><i class="fa-regular fa-calendar me-1"></i>@p.Fecha.ToString("dd/MM/yyyy HH:mm")</div>
+                        <div class="historial-motivo">@p.Motivo</div>
+                    </div>
+                    <div class="puntos-badge @(p.Puntos >= 0 ? "puntos-pos" : "puntos-neg")">
+                        @(p.Puntos >= 0 ? "+" : "")@p.Puntos
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

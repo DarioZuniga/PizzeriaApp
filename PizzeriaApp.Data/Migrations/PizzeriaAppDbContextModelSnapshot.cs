@@ -57,6 +57,10 @@ namespace PizzeriaApp.Data.Migrations
                     b.Property<bool>("Activo")
                         .HasColumnType("bit");
 
+                    b.Property<string>("DiasCierre")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<TimeSpan>("HoraApertura")
                         .HasColumnType("time");
 
@@ -278,6 +282,9 @@ namespace PizzeriaApp.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EvaluacionId"));
 
+                    b.Property<bool>("Aprobada")
+                        .HasColumnType("bit");
+
                     b.Property<int>("Calificacion")
                         .HasColumnType("int");
 
@@ -288,12 +295,23 @@ namespace PizzeriaApp.Data.Migrations
                     b.Property<DateTime>("Fecha")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime?>("FechaRespuesta")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("PedidoId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RespuestaAdmin")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("UsuarioId")
                         .HasColumnType("int");
 
                     b.HasKey("EvaluacionId");
 
                     b.HasIndex("PedidoId");
+
+                    b.HasIndex("UsuarioId");
 
                     b.ToTable("Evaluaciones", (string)null);
                 });
@@ -656,6 +674,10 @@ namespace PizzeriaApp.Data.Migrations
                     b.Property<int>("CantidadPersonas")
                         .HasColumnType("int");
 
+                    b.Property<string>("CodigoConfirmacion")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Estado")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -710,7 +732,7 @@ namespace PizzeriaApp.Data.Migrations
                         new
                         {
                             RolId = 2,
-                            Descripcion = "Cliente de la pizzería",
+                            Descripcion = "Cliente de la pizzerÃ­a",
                             Nombre = "Usuario"
                         });
                 });
@@ -917,7 +939,14 @@ namespace PizzeriaApp.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("PizzeriaApp.Data.Entities.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.Navigation("Pedido");
+
+                    b.Navigation("Usuario");
                 });
 
             modelBuilder.Entity("PizzeriaApp.Data.Entities.MovimientoInventario", b =>

@@ -1,0 +1,267 @@
+﻿@model PizzeriaApp.Data.Entities.Producto
+@{
+    ViewData["Title"] = "Personalizar " + Model.Nombre;
+    var ingredientes = ViewBag.Ingredientes as List<PizzeriaApp.Data.Entities.Ingrediente>;
+    var tamanos = ViewBag.Tamanos as List<PizzeriaApp.Data.Entities.Tamano>;
+    var tiposMasa = ViewBag.TiposMasa as List<PizzeriaApp.Data.Entities.TipoMasa>;
+}
+
+<style>
+    .personalizar-wrapper { padding: 30px 0; }
+    .producto-header {
+        background: linear-gradient(135deg, #0f172a 0%, #1a365d 100%);
+        border-radius: 24px; padding: 40px; color: white; margin-bottom: 30px;
+        position: relative; overflow: hidden;
+    }
+    .producto-header::before { content: '🍕'; position: absolute; right: -20px; bottom: -40px; font-size: 12rem; opacity: 0.08; transform: rotate(-15deg); }
+    .producto-header h1 { font-size: 2.2rem; font-weight: 800; margin: 0; position: relative; }
+    .producto-header p { margin: 8px 0 0 0; opacity: 0.85; position: relative; }
+    .step-card {
+        background: white; border-radius: 20px; padding: 30px; margin-bottom: 20px;
+        box-shadow: 0 10px 30px rgba(15,23,42,0.06); border: 1px solid #e2e8f0;
+    }
+    .step-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+    .step-number {
+        width: 40px; height: 40px; border-radius: 12px;
+        background: linear-gradient(135deg, #d4af37, #b8941f); color: white;
+        display: flex; align-items: center; justify-content: center;
+        font-weight: 800; font-size: 1.2rem; flex-shrink: 0;
+    }
+    .step-title { font-size: 1.2rem; font-weight: 700; color: #1a365d; margin: 0; }
+    .step-subtitle { font-size: 0.85rem; color: #64748b; margin: 0; }
+    .tamano-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+    .tamano-card {
+        background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 16px;
+        padding: 20px 15px; text-align: center; cursor: pointer; transition: all 0.3s;
+    }
+    .tamano-card:hover { border-color: #d4af37; transform: translateY(-3px); }
+    .tamano-card.selected { background: linear-gradient(135deg, #1a365d, #2c5282); color: white; border-color: #1a365d; }
+    .tamano-icono { font-size: 2rem; margin-bottom: 8px; display: block; }
+    .tamano-nombre { font-weight: 700; font-size: 0.95rem; margin-bottom: 4px; }
+    .tamano-precio { font-size: 0.8rem; opacity: 0.8; }
+    .masa-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
+    .masa-card {
+        background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 14px;
+        padding: 15px 18px; cursor: pointer; transition: all 0.3s;
+        display: flex; justify-content: space-between; align-items: center;
+    }
+    .masa-card:hover { border-color: #d4af37; }
+    .masa-card.selected { background: #1a365d; color: white; border-color: #1a365d; }
+    .masa-nombre { font-weight: 600; font-size: 0.95rem; }
+    .masa-precio { font-size: 0.8rem; background: #d4af37; color: #0f172a; padding: 2px 8px; border-radius: 50px; font-weight: 700; }
+    .ingredientes-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+    .ingrediente-item {
+        background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 12px;
+        padding: 12px 15px; cursor: pointer; transition: all 0.25s;
+        display: flex; justify-content: space-between; align-items: center; user-select: none;
+    }
+    .ingrediente-item:hover { border-color: #d4af37; }
+    .ingrediente-item.selected { background: #fef3c7; border-color: #d4af37; }
+    .ingrediente-item input { display: none; }
+    .ingrediente-nombre { font-weight: 600; font-size: 0.9rem; color: #1e293b; }
+    .ingrediente-precio { font-weight: 700; color: #d4af37; font-size: 0.85rem; }
+    .check-icon { width: 22px; height: 22px; border-radius: 50%; border: 2px solid #cbd5e0; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+    .ingrediente-item.selected .check-icon { background: #d4af37; border-color: #d4af37; color: white; }
+    .precio-sticky {
+        position: sticky; top: 20px; background: white; border-radius: 20px;
+        padding: 30px; box-shadow: 0 15px 40px rgba(15,23,42,0.12); border: 1px solid #e2e8f0;
+    }
+    .precio-sticky h3 { color: #1a365d; font-weight: 800; margin-bottom: 20px; }
+    .desglose-item { display: flex; justify-content: space-between; padding: 8px 0; font-size: 0.9rem; color: #64748b; border-bottom: 1px dashed #e2e8f0; }
+    .desglose-item:last-child { border-bottom: none; }
+    .desglose-item span:last-child { font-weight: 700; color: #1e293b; }
+    .precio-total { background: linear-gradient(135deg, #1a365d, #2c5282); color: white; padding: 20px; border-radius: 14px; text-align: center; margin-bottom: 20px; }
+    .precio-total .label { font-size: 0.85rem; opacity: 0.85; text-transform: uppercase; letter-spacing: 1px; }
+    .precio-total .value { font-size: 2.2rem; font-weight: 800; margin: 0; line-height: 1.2; }
+    .btn-agregar {
+        background: linear-gradient(135deg, #d4af37, #b8941f); color: #0f172a; border: none;
+        padding: 18px; border-radius: 14px; font-weight: 800; font-size: 1.05rem; width: 100%;
+        transition: all 0.3s; box-shadow: 0 10px 25px rgba(212,175,55,0.3);
+    }
+    .btn-agregar:hover { transform: translateY(-2px); color: #0f172a; }
+</style>
+
+<div class="container personalizar-wrapper">
+    <div class="producto-header">
+        <h1>@Model.Nombre</h1>
+        <p><i class="fa-solid fa-quote-left me-2"></i>@Model.Descripcion</p>
+    </div>
+
+    <form asp-controller="Carrito" asp-action="Agregar" method="post" id="formPersonalizar">
+        <input type="hidden" name="productoId" value="@Model.ProductoId" />
+        <input type="hidden" name="cantidad" value="1" />
+        <input type="hidden" id="precioFinalInput" name="precioFinal" value="@Model.Precio" />
+        <input type="hidden" id="tamanoInput" name="tamanoId" value="" />
+        <input type="hidden" id="masaInput" name="tipoMasaId" value="" />
+
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-number">1</div>
+                        <div><h3 class="step-title">Elegí el tamaño</h3><p class="step-subtitle">Seleccioná el tamaño de tu pizza</p></div>
+                    </div>
+                    <div class="tamano-grid">
+                        <div class="tamano-card selected" data-tamano-id="" data-factor="1">
+                            <span class="tamano-icono">🍕</span>
+                            <div class="tamano-nombre">Estándar</div>
+                            <div class="tamano-precio">₡@Model.Precio.ToString("N0")</div>
+                        </div>
+                        @if (tamanos != null)
+                        {
+                            @foreach (var t in tamanos)
+                            {
+                                var precioTamano = Model.Precio * t.FactorPrecio;
+                                <div class="tamano-card" data-tamano-id="@t.TamanoId" data-factor="@t.FactorPrecio">
+                                    <span class="tamano-icono">🍕</span>
+                                    <div class="tamano-nombre">@t.Nombre</div>
+                                    <div class="tamano-precio">₡@precioTamano.ToString("N0")</div>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-number">2</div>
+                        <div><h3 class="step-title">Tipo de masa</h3><p class="step-subtitle">Seleccioná la base de tu pizza</p></div>
+                    </div>
+                    <div class="masa-grid">
+                        <div class="masa-card selected" data-masa-id="" data-precio="0">
+                            <span class="masa-nombre">Estándar</span>
+                            <span class="masa-precio">Incluida</span>
+                        </div>
+                        @if (tiposMasa != null)
+                        {
+                            @foreach (var m in tiposMasa)
+                            {
+                                <div class="masa-card" data-masa-id="@m.TipoMasaId" data-precio="@m.PrecioExtra">
+                                    <span class="masa-nombre">@m.Nombre</span>
+                                    <span class="masa-precio">+₡@m.PrecioExtra.ToString("N0")</span>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-number">3</div>
+                        <div><h3 class="step-title">Ingredientes extra</h3><p class="step-subtitle">Agregá los ingredientes que quieras</p></div>
+                    </div>
+                    <div class="ingredientes-grid">
+                        @if (ingredientes != null)
+                        {
+                            @foreach (var ing in ingredientes)
+                            {
+                                <label class="ingrediente-item" data-ingrediente-id="@ing.IngredienteId">
+                                    <div>
+                                        <div class="ingrediente-nombre">@ing.Nombre</div>
+                                        <div class="ingrediente-precio">+₡@ing.PrecioExtra.ToString("N0")</div>
+                                    </div>
+                                    <div class="check-icon"><i class="fa-solid fa-check" style="font-size: 0.7rem; opacity: 0;"></i></div>
+                                    <input type="checkbox" name="ingredientesIds" value="@ing.IngredienteId" data-precio="@ing.PrecioExtra" class="ingrediente-check" />
+                                </label>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="precio-sticky">
+                    <h3><i class="fa-solid fa-receipt me-2"></i>Resumen</h3>
+                    <div class="desglose-item"><span>Precio base</span><span>₡@Model.Precio.ToString("N0")</span></div>
+                    <div class="desglose-item"><span>Tamaño</span><span id="precioTamanoDesglose">₡0</span></div>
+                    <div class="desglose-item"><span>Masa</span><span id="precioMasaDesglose">₡0</span></div>
+                    <div class="desglose-item"><span>Ingredientes</span><span id="precioIngredientesDesglose">₡0</span></div>
+                    <div class="precio-total mt-3">
+                        <div class="label">Total</div>
+                        <h2 class="value" id="precioTotal">₡@Model.Precio.ToString("N0")</h2>
+                    </div>
+                    <button type="submit" class="btn-agregar">
+                        <i class="fa-solid fa-cart-plus me-2"></i> Agregar al Carrito
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        const precioBase = @Model.Precio;
+        const tamanoCards = document.querySelectorAll('.tamano-card');
+        const masaCards = document.querySelectorAll('.masa-card');
+        const ingredienteItems = document.querySelectorAll('.ingrediente-item');
+        const tamanoInput = document.getElementById('tamanoInput');
+        const masaInput = document.getElementById('masaInput');
+        const precioTotalEl = document.getElementById('precioTotal');
+        const precioFinalInput = document.getElementById('precioFinalInput');
+        const precioTamanoDesglose = document.getElementById('precioTamanoDesglose');
+        const precioMasaDesglose = document.getElementById('precioMasaDesglose');
+        const precioIngredientesDesglose = document.getElementById('precioIngredientesDesglose');
+
+        let tamanoActual = { factor: 1, id: '' };
+        let masaActual = { precio: 0, id: '' };
+
+        tamanoCards.forEach(card => {
+            card.addEventListener('click', () => {
+                tamanoCards.forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                tamanoActual.factor = parseFloat(card.dataset.factor);
+                tamanoActual.id = card.dataset.tamanoId;
+                tamanoInput.value = card.dataset.tamanoId;
+                actualizarPrecios();
+            });
+        });
+
+        masaCards.forEach(card => {
+            card.addEventListener('click', () => {
+                masaCards.forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                masaActual.precio = parseFloat(card.dataset.precio);
+                masaActual.id = card.dataset.masaId;
+                masaInput.value = card.dataset.masaId;
+                actualizarPrecios();
+            });
+        });
+
+        ingredienteItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                const check = item.querySelector('.ingrediente-check');
+                const icon = item.querySelector('.check-icon i');
+                check.checked = !check.checked;
+                if (check.checked) {
+                    item.classList.add('selected');
+                    icon.style.opacity = '1';
+                } else {
+                    item.classList.remove('selected');
+                    icon.style.opacity = '0';
+                }
+                actualizarPrecios();
+            });
+        });
+
+        function actualizarPrecios() {
+            const precioConTamano = precioBase * tamanoActual.factor;
+            const diffTamano = precioConTamano - precioBase;
+            const precioMasa = masaActual.precio;
+
+            let precioIngredientes = 0;
+            ingredienteItems.forEach(item => {
+                const check = item.querySelector('.ingrediente-check');
+                if (check.checked) precioIngredientes += parseFloat(check.dataset.precio);
+            });
+
+            const total = precioConTamano + precioMasa + precioIngredientes;
+            precioTamanoDesglose.textContent = (diffTamano >= 0 ? '+' : '') + '₡' + diffTamano.toFixed(0);
+            precioMasaDesglose.textContent = (precioMasa > 0 ? '+' : '') + '₡' + precioMasa.toFixed(0);
+            precioIngredientesDesglose.textContent = (precioIngredientes > 0 ? '+' : '') + '₡' + precioIngredientes.toFixed(0);
+            precioTotalEl.textContent = '₡' + total.toFixed(0);
+            precioFinalInput.value = total.toFixed(2);
+        }
+    </script>
+}

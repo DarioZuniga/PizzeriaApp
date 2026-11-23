@@ -1,27 +1,162 @@
-@model PizzeriaApp.Data.Entities.ConfiguracionReserva
-@{ ViewData["Title"] = "Configuración de Reservas"; }
+﻿@model PizzeriaApp.Data.Entities.ConfiguracionReserva
+@{
+    ViewData["Title"] = "Configuración de Reservas";
+    var diasSemana = new[] { "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo" };
+    var diasCerrados = string.IsNullOrWhiteSpace(Model.DiasCierre)
+        ? new List<string>()
+        : Model.DiasCierre.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList();
+}
+
+<style>
+    .admin-header {
+        background: linear-gradient(135deg, #0f172a 0%, #1a365d 100%);
+        border-radius: 24px; padding: 35px; color: white; margin-bottom: 30px;
+        position: relative; overflow: hidden;
+    }
+    .admin-header::before {
+        content: '⚙️'; position: absolute; right: -20px; bottom: -40px;
+        font-size: 10rem; opacity: 0.08;
+    }
+    .admin-header h1 { font-size: 1.9rem; font-weight: 800; margin: 0; position: relative; }
+    .admin-header p { margin: 6px 0 0 0; opacity: 0.85; position: relative; }
+    .form-card {
+        background: white; border-radius: 24px; padding: 40px;
+        box-shadow: 0 15px 40px rgba(15,23,42,0.08); max-width: 700px; margin: 0 auto;
+    }
+    .form-label-premium {
+        font-weight: 700; color: #1a365d; font-size: 0.9rem;
+        text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;
+    }
+    .form-control-premium {
+        padding: 14px 18px; border: 2px solid #e2e8f0; border-radius: 12px;
+        transition: all 0.2s; font-size: 1rem;
+    }
+    .form-control-premium:focus {
+        border-color: #d4af37; box-shadow: 0 0 0 4px rgba(212,175,55,0.15); outline: none;
+    }
+    .dias-grid {
+        display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 10px; margin-top: 10px;
+    }
+    .dia-check {
+        background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 12px;
+        padding: 12px; text-align: center; cursor: pointer;
+        transition: all 0.2s; user-select: none;
+    }
+    .dia-check:hover { border-color: #d4af37; }
+    .dia-check.selected {
+        background: linear-gradient(135deg, #1a365d, #2c5282);
+        color: white; border-color: #1a365d;
+    }
+    .dia-check input { display: none; }
+    .dia-check .dia-nombre { font-weight: 700; font-size: 0.9rem; }
+    .btn-submit-premium {
+        background: linear-gradient(135deg, #1a365d, #2c5282); color: white;
+        border: none; padding: 16px; border-radius: 12px; font-weight: 700;
+        font-size: 1rem; width: 100%; transition: all 0.3s;
+    }
+    .btn-submit-premium:hover { transform: translateY(-2px); }
+</style>
+
 <div class="container mt-4">
-    <div class="card border-0 shadow-sm" style="border-radius: 12px; max-width: 600px; margin: auto;">
-        <div class="card-body p-4">
-            <h3 class="mb-4" style="color: #1a365d;">Configuración de Reservas</h3>
-            @if (TempData["Mensaje"] != null) { <div class="alert alert-success">@TempData["Mensaje"]</div> }
-            
-            <form asp-action="Configuracion" method="post">
-                <input type="hidden" asp-for="ConfiguracionReservaId" />
-                <div class="mb-3">
-                    <label class="fw-bold">Límite de Reservas por Día</label>
-                    <input asp-for="LimiteReservasPorDia" type="number" class="form-control" required />
-                </div>
-                <div class="mb-3">
-                    <label class="fw-bold">Hora de Apertura</label>
-                    <input asp-for="HoraApertura" type="time" class="form-control" required />
-                </div>
-                <div class="mb-4">
-                    <label class="fw-bold">Hora de Cierre</label>
-                    <input asp-for="HoraCierre" type="time" class="form-control" required />
-                </div>
-                <button type="submit" class="btn btn-primary" style="background-color: #1a365d;">Guardar Configuración</button>
-            </form>
+    <div class="admin-header">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <h1><i class="fa-solid fa-gear me-2"></i>Configuración de Reservas</h1>
+                <p>Horarios, límites y días de cierre</p>
+            </div>
+            <a asp-action="Gestion" class="btn btn-outline-light" style="border-radius: 50px; padding: 12px 24px; font-weight: 700;">
+                <i class="fa-solid fa-arrow-left me-1"></i> Ver Reservas
+            </a>
         </div>
     </div>
+
+    @if (TempData["Mensaje"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" style="border-radius: 12px; border: none; background: #dcfce7; color: #16a34a;">
+            <i class="fa-solid fa-circle-check me-2"></i> @TempData["Mensaje"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" style="border-radius: 12px; border: none; background: #fee2e2; color: #dc2626;">
+            <i class="fa-solid fa-triangle-exclamation me-2"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="form-card">
+        <form asp-action="Configuracion" method="post">
+            <input type="hidden" asp-for="ConfiguracionReservaId" />
+
+            <div class="mb-4">
+                <label class="form-label-premium"><i class="fa-solid fa-users me-1"></i> Límite de Reservas por Día</label>
+                <input asp-for="LimiteReservasPorDia" type="number" min="1" class="form-control form-control-premium" required />
+                <small class="text-muted">Cantidad máxima de reservas permitidas en un mismo día.</small>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <label class="form-label-premium"><i class="fa-solid fa-clock me-1"></i> Hora de Apertura</label>
+                    <input asp-for="HoraApertura" type="time" class="form-control form-control-premium" required />
+                </div>
+                <div class="col-md-6 mb-4">
+                    <label class="form-label-premium"><i class="fa-solid fa-clock me-1"></i> Hora de Cierre</label>
+                    <input asp-for="HoraCierre" type="time" class="form-control form-control-premium" required />
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label-premium"><i class="fa-solid fa-calendar-xmark me-1"></i> Días de Cierre</label>
+                <small class="text-muted d-block mb-2">Seleccioná los días en los que NO se aceptan reservas.</small>
+                <div class="dias-grid">
+                    @foreach (var dia in diasSemana)
+                    {
+                        var marcado = diasCerrados.Contains(dia, StringComparer.OrdinalIgnoreCase);
+                        <div class="dia-check @(marcado ? "selected" : "")" data-dia="@dia">
+                            <div class="dia-nombre">@dia</div>
+                            <input type="checkbox" class="dia-input" value="@dia" @(marcado ? "checked" : "") />
+                        </div>
+                    }
+                </div>
+                <input type="hidden" asp-for="DiasCierre" id="diasCierreInput" />
+            </div>
+
+            <button type="submit" class="btn-submit-premium">
+                <i class="fa-solid fa-save me-2"></i> Guardar Configuración
+            </button>
+        </form>
+    </div>
 </div>
+
+@section Scripts {
+    <script>
+        const diasChecks = document.querySelectorAll('.dia-check');
+        const diasInput = document.getElementById('diasCierreInput');
+
+        function actualizarDias() {
+            const seleccionados = [];
+            diasChecks.forEach(d => {
+                const check = d.querySelector('.dia-input');
+                if (check.checked) {
+                    d.classList.add('selected');
+                    seleccionados.push(check.value);
+                } else {
+                    d.classList.remove('selected');
+                }
+            });
+            diasInput.value = seleccionados.join(',');
+        }
+
+        diasChecks.forEach(d => {
+            d.addEventListener('click', () => {
+                const check = d.querySelector('.dia-input');
+                check.checked = !check.checked;
+                actualizarDias();
+            });
+        });
+
+        actualizarDias();
+    </script>
+}

@@ -12,10 +12,12 @@ namespace PizzeriaApp.MVC.Controllers;
 public class AccountController : Controller
 {
     private readonly IAuthService _authService;
+    private readonly IEmailService _emailService;
 
-    public AccountController(IAuthService authService)
+    public AccountController(IAuthService authService, IEmailService emailService)
     {
         _authService = authService;
+        _emailService = emailService;
     }
 
     [HttpGet]
@@ -68,7 +70,7 @@ public class AccountController : Controller
             NombreUsuario = model.NombreUsuario,
             Correo = model.Email,
             EstadoId = 1,
-            RolId = 2
+            RolId = 2 // Cliente
         };
 
         try
@@ -101,24 +103,21 @@ public class AccountController : Controller
         {
             var token = Convert.ToHexString(RandomNumberGenerator.GetBytes(32));
             var enlaceRecuperacion = await _authService.GuardarTokenRecuperacionAsync(usuario.UsuarioId, token);
-
-            TempData["CorreoSimulado"] = correo;
-            TempData["EnlaceRecuperacion"] = enlaceRecuperacion;
-
-            return RedirectToAction("CorreoEnviado");
+            
+            string urlCompleta = $"{Request.Scheme}://{Request.Host}{enlaceRecuperacion}";
+            string cuerpo = $"<h3>Recuperación de Contraseña</h3><p>Haz clic en el siguiente enlace:</p><a href='{urlCompleta}'>Restablecer Contraseña</a>";
+            
+            try {
+                await _emailService.EnviarCorreoAsync(correo, "Recuperación de Contraseña - Las Perlas", cuerpo);
+                TempData["Mensaje"] = "Se ha enviado un enlace a tu correo.";
+            } catch {
+                TempData["Mensaje"] = "Error al enviar el correo. Verifica la configuración SMTP.";
+            }
+            return RedirectToAction("Login");
         }
-
-        TempData["CorreoSimulado"] = correo;
-        TempData["EnlaceRecuperacion"] = null;
-        return RedirectToAction("CorreoEnviado");
-    }
-
-    [HttpGet]
-    public IActionResult CorreoEnviado()
-    {
-        ViewBag.Correo = TempData["CorreoSimulado"];
-        ViewBag.Enlace = TempData["EnlaceRecuperacion"];
-        return View();
+        
+        TempData["Mensaje"] = "Si el correo existe, recibirás un enlace.";
+        return RedirectToAction("Login");
     }
 
     [HttpGet]

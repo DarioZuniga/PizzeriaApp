@@ -1,89 +1,84 @@
-@{
-    ViewData["Title"] = "Panel de Administración";
-}
+﻿@{ ViewData["Title"] = "Panel de Administración"; }
 
-<div class="container-fluid px-4 py-4">
+<style>
+    .admin-hero {
+        background: linear-gradient(135deg, #0f172a 0%, #1a365d 50%, #2c5282 100%);
+        border-radius: 24px; padding: 60px 40px; color: white; margin-bottom: 30px;
+        text-align: center; position: relative; overflow: hidden;
+    }
+    .admin-hero::before { content: '⚡'; position: absolute; top: -20px; left: -20px; font-size: 12rem; opacity: 0.08; }
+    .admin-hero::after { content: '🍕'; position: absolute; bottom: -30px; right: -20px; font-size: 10rem; opacity: 0.08; }
+    .admin-hero h1 { font-size: 2.5rem; font-weight: 900; margin: 0 0 10px 0; position: relative; }
+    .admin-hero p { font-size: 1.1rem; opacity: 0.85; margin: 0; position: relative; }
+    .admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+    .admin-card {
+        background: white; border-radius: 20px; padding: 30px;
+        box-shadow: 0 10px 30px rgba(15,23,42,0.08); border: 1px solid #e2e8f0;
+        transition: all 0.3s; text-decoration: none; display: block; color: inherit;
+    }
+    .admin-card:hover { transform: translateY(-5px); box-shadow: 0 20px 50px rgba(15,23,42,0.15); color: inherit; }
+    .admin-icon {
+        width: 60px; height: 60px; border-radius: 16px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.5rem; color: white; margin-bottom: 20px;
+    }
+    .admin-card h3 { font-weight: 800; color: #1a365d; font-size: 1.2rem; margin: 0 0 8px 0; }
+    .admin-card p { color: #64748b; margin: 0; font-size: 0.9rem; }
+</style>
 
-    <div class="mb-4">
-        <h2 class="fw-bold text-white">
-            <i class="fa-solid fa-screwdriver-wrench text-success me-2"></i>
-            Panel de Administración
-        </h2>
-        <p class="text-secondary mb-0">
-            Gestiona los módulos principales de PizzeriaApp.
-        </p>
+<div class="container mt-4">
+    <div class="admin-hero">
+        <h1><i class="fa-solid fa-gauge me-2"></i>Panel de Administración</h1>
+        <p>Accedé rápidamente a todas las herramientas de gestión</p>
     </div>
 
-    <div class="row g-4">
+    <div class="admin-grid">
+        <a asp-controller="Producto" asp-action="Index" class="admin-card">
+            <div class="admin-icon" style="background: linear-gradient(135deg, #d4af37, #b8941f);"><i class="fa-solid fa-pizza-slice"></i></div>
+            <h3>Productos</h3>
+            <p>Gestioná el menú de la pizzería</p>
+        </a>
 
-        <div class="col-xl-3 col-md-6">
-            <a asp-controller="Categoria" asp-action="Index" class="admin-module-card">
-                <i class="fa-solid fa-layer-group"></i>
-                <h5>Categorías</h5>
-                <span>Organización del foro</span>
-            </a>
-        </div>
+        <a asp-controller="Pedido" asp-action="Gestion" class="admin-card">
+            <div class="admin-icon" style="background: linear-gradient(135deg, #1a365d, #2c5282);"><i class="fa-solid fa-receipt"></i></div>
+            <h3>Pedidos</h3>
+            <p>Ver y actualizar el estado de pedidos</p>
+        </a>
 
-        <div class="col-xl-3 col-md-6">
-            <a asp-controller="Liga" asp-action="Index" class="admin-module-card">
-                <i class="fa-solid fa-trophy"></i>
-                <h5>Ligas</h5>
-                <span>Competencias y torneos</span>
-            </a>
-        </div>
+        <a asp-controller="Reserva" asp-action="Gestion" class="admin-card">
+            <div class="admin-icon" style="background: linear-gradient(135deg, #16a34a, #15803d);"><i class="fa-solid fa-calendar-check"></i></div>
+            <h3>Reservas</h3>
+            <p>Gestionar las reservas de mesas</p>
+        </a>
 
-        <div class="col-xl-3 col-md-6">
-            <a asp-controller="Equipo" asp-action="Index" class="admin-module-card">
-                <i class="fa-solid fa-shield-halved"></i>
-                <h5>Equipos</h5>
-                <span>Clubes de fútbol</span>
-            </a>
-        </div>
+        <a asp-controller="Inventario" asp-action="Index" class="admin-card">
+            <div class="admin-icon" style="background: linear-gradient(135deg, #d97706, #b45309);"><i class="fa-solid fa-boxes-stacked"></i></div>
+            <h3>Inventario</h3>
+            <p>Control de stock de insumos</p>
+        </a>
 
-        <div class="col-xl-3 col-md-6">
-            <a asp-controller="Jugador" asp-action="Index" class="admin-module-card">
-                <i class="fa-solid fa-person-running"></i>
-                <h5>Jugadores</h5>
-                <span>Plantillas y futbolistas</span>
-            </a>
-        </div>
+        <a asp-controller="Cupon" asp-action="Index" class="admin-card">
+            <div class="admin-icon" style="background: linear-gradient(135deg, #dc2626, #b91c1c);"><i class="fa-solid fa-ticket"></i></div>
+            <h3>Cupones</h3>
+            <p>Administrar códigos de descuento</p>
+        </a>
 
-        <div class="col-xl-3 col-md-6">
-            <a asp-controller="Tema" asp-action="Index" class="admin-module-card">
-                <i class="fa-solid fa-comments"></i>
-                <h5>Temas</h5>
-                <span>Publicaciones del foro</span>
-            </a>
-        </div>
+        <a asp-controller="Evento" asp-action="Index" class="admin-card">
+            <div class="admin-icon" style="background: linear-gradient(135deg, #7c3aed, #6d28d9);"><i class="fa-solid fa-calendar-star"></i></div>
+            <h3>Eventos</h3>
+            <p>Crear y gestionar eventos especiales</p>
+        </a>
 
-        <div class="col-xl-3 col-md-6">
-            <a asp-controller="Respuesta" asp-action="Index" class="admin-module-card">
-                <i class="fa-solid fa-reply"></i>
-                <h5>Respuestas</h5>
-                <span>Comentarios de usuarios</span>
-            </a>
-        </div>
+        <a asp-controller="Evaluacion" asp-action="Index" class="admin-card">
+            <div class="admin-icon" style="background: linear-gradient(135deg, #d4af37, #b8941f);"><i class="fa-solid fa-star"></i></div>
+            <h3>Reseñas</h3>
+            <p>Moderar y responder comentarios</p>
+        </a>
 
-        <div class="col-xl-3 col-md-6">
-            <a asp-controller="Etiqueta" asp-action="Index" class="admin-module-card">
-                <i class="fa-solid fa-tags"></i>
-                <h5>Etiquetas</h5>
-                <span>Clasificación de temas</span>
-            </a>
-        </div>
-
-        <div class="col-xl-3 col-md-6">
-            <a asp-controller="Reporte"
-               asp-action="Index"
-               class="admin-module-card">
-
-                <i class="fa-solid fa-triangle-exclamation"></i>
-
-                <h5>Reportes</h5>
-
-                <span>Moderación de contenido</span>
-            </a>
-        </div>
-
+        <a asp-controller="Usuario" asp-action="Index" class="admin-card">
+            <div class="admin-icon" style="background: linear-gradient(135deg, #1e40af, #1e3a8a);"><i class="fa-solid fa-users"></i></div>
+            <h3>Usuarios</h3>
+            <p>Administrar usuarios y roles</p>
+        </a>
     </div>
 </div>

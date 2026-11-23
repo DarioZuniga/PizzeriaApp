@@ -7,4 +7,6 @@ public class ConfiguracionReserva
     public TimeSpan HoraApertura { get; set; } = new TimeSpan(11, 0, 0);
     public TimeSpan HoraCierre { get; set; } = new TimeSpan(22, 0, 0);
     public bool Activo { get; set; } = true;
+    // Días de cierre separados por coma, ej: "Domingo,Lunes"
+    public string DiasCierre { get; set; } = string.Empty;
 }

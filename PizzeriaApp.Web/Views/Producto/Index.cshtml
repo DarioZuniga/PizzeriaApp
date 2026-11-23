@@ -1,70 +1,167 @@
-@model IEnumerable<PizzeriaApp.Data.Entities.Producto>
+﻿@model IEnumerable<PizzeriaApp.Data.Entities.Producto>
 @{
     ViewData["Title"] = "Gestión de Productos";
+    var activos = Model.Count(p => p.Activo);
+    var inactivos = Model.Count(p => !p.Activo);
 }
 
+<style>
+    .admin-header {
+        background: linear-gradient(135deg, #0f172a 0%, #1a365d 100%);
+        border-radius: 24px; padding: 35px; color: white; margin-bottom: 30px;
+        position: relative; overflow: hidden;
+    }
+    .admin-header::before {
+        content: '🍕'; position: absolute; right: -20px; bottom: -40px;
+        font-size: 10rem; opacity: 0.08;
+    }
+    .admin-header h1 { font-size: 1.9rem; font-weight: 800; margin: 0; position: relative; }
+    .admin-header p { margin: 6px 0 0 0; opacity: 0.85; position: relative; }
+    .btn-premium {
+        background: linear-gradient(135deg, #d4af37, #b8941f); color: #0f172a;
+        border: none; padding: 12px 24px; border-radius: 50px; font-weight: 700;
+        text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+        transition: all 0.3s; box-shadow: 0 8px 20px rgba(212,175,55,0.3);
+    }
+    .btn-premium:hover { transform: translateY(-2px); color: #0f172a; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px; }
+    .stat-card {
+        background: white; border-radius: 16px; padding: 25px;
+        box-shadow: 0 8px 25px rgba(15,23,42,0.06); border: 1px solid #e2e8f0;
+        display: flex; align-items: center; gap: 15px;
+    }
+    .stat-icon {
+        width: 50px; height: 50px; border-radius: 14px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.3rem; flex-shrink: 0;
+    }
+    .stat-info h3 { font-size: 1.8rem; font-weight: 800; margin: 0; color: #1a365d; }
+    .stat-info p { margin: 0; color: #64748b; font-size: 0.85rem; }
+    .productos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+    .producto-card {
+        background: white; border-radius: 20px; overflow: hidden;
+        box-shadow: 0 10px 30px rgba(15,23,42,0.08);
+        transition: all 0.3s; border: 1px solid #e2e8f0;
+    }
+    .producto-card:hover { transform: translateY(-5px); box-shadow: 0 20px 50px rgba(15,23,42,0.15); }
+    .producto-imagen {
+        height: 180px; background: linear-gradient(135deg, #1a365d, #2c5282);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 4rem; position: relative; overflow: hidden;
+    }
+    .producto-imagen img { width: 100%; height: 100%; object-fit: cover; }
+    .estado-badge {
+        position: absolute; top: 15px; right: 15px;
+        padding: 6px 14px; border-radius: 50px; font-weight: 700; font-size: 0.75rem;
+        backdrop-filter: blur(10px);
+    }
+    .estado-activo { background: rgba(220,252,231,0.95); color: #16a34a; }
+    .estado-inactivo { background: rgba(241,245,249,0.95); color: #64748b; }
+    .producto-body { padding: 20px; }
+    .producto-categoria {
+        display: inline-block; background: #fef3c7; color: #d97706;
+        padding: 4px 12px; border-radius: 50px; font-size: 0.75rem;
+        font-weight: 700; text-transform: uppercase; margin-bottom: 10px;
+    }
+    .producto-nombre { font-size: 1.2rem; font-weight: 800; color: #1a365d; margin: 0 0 8px 0; }
+    .producto-descripcion { color: #64748b; font-size: 0.85rem; margin-bottom: 15px; min-height: 40px; }
+    .producto-footer { display: flex; justify-content: space-between; align-items: center; }
+    .producto-precio { font-size: 1.4rem; font-weight: 800; color: #1a365d; }
+    .producto-acciones { display: flex; gap: 8px; }
+    .btn-accion {
+        width: 38px; height: 38px; border-radius: 10px; border: none;
+        display: flex; align-items: center; justify-content: center;
+        transition: all 0.2s; cursor: pointer; text-decoration: none;
+    }
+    .btn-editar { background: #dbeafe; color: #1e40af; }
+    .btn-editar:hover { background: #1e40af; color: white; }
+    .btn-eliminar { background: #fee2e2; color: #dc2626; }
+    .btn-eliminar:hover { background: #dc2626; color: white; }
+</style>
+
 <div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 style="color: #1a365d;"><i class="fa-solid fa-pizza-slice me-2"></i>Productos</h2>
-        <a asp-action="Create" class="btn btn-primary" style="background-color: #1a365d;">
-            <i class="fa-solid fa-plus me-2"></i>Nuevo Producto
-        </a>
+    <div class="admin-header">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <h1><i class="fa-solid fa-pizza-slice me-2"></i>Gestión de Productos</h1>
+                <p>Administrá el menú de la pizzería</p>
+            </div>
+            <a asp-action="Create" class="btn-premium">
+                <i class="fa-solid fa-plus"></i> Nuevo Producto
+            </a>
+        </div>
     </div>
 
     @if (TempData["Mensaje"] != null)
     {
-        <div class="alert alert-success">@TempData["Mensaje"]</div>
+        <div class="alert alert-success alert-dismissible fade show" style="border-radius: 12px; border: none; background: #dcfce7; color: #16a34a;">
+            <i class="fa-solid fa-circle-check me-2"></i> @TempData["Mensaje"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
     }
 
-    <div class="card border-0 shadow-sm" style="border-radius: 12px;">
-        <div class="card-body p-0">
-            <table class="table table-hover mb-0">
-                <thead style="background-color: #f7fafc;">
-                    <tr>
-                        <th class="ps-4">Nombre</th>
-                        <th>Categoría</th>
-                        <th>Precio</th>
-                        <th>Estado</th>
-                        <th class="text-end pe-4">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model)
-                    {
-                        <tr>
-                            <td class="ps-4 fw-bold">@item.Nombre</td>
-                            <td>@item.Categoria?.Nombre</td>
-                            <td>₡@item.Precio.ToString("N2")</td>
-                            <td>
-                                @if (item.Activo)
-                                {
-                                    <span class="badge bg-success">Activo</span>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-danger">Inactivo</span>
-                                }
-                            </td>
-                            <td class="text-end pe-4">
-                                <a asp-action="Edit" asp-route-id="@item.ProductoId" class="btn btn-sm btn-outline-primary">
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: #dbeafe; color: #1e40af;"><i class="fa-solid fa-pizza-slice"></i></div>
+            <div class="stat-info"><h3>@Model.Count()</h3><p>Total Productos</p></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background: #dcfce7; color: #16a34a;"><i class="fa-solid fa-check"></i></div>
+            <div class="stat-info"><h3>@activos</h3><p>Activos</p></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background: #f1f5f9; color: #64748b;"><i class="fa-solid fa-ban"></i></div>
+            <div class="stat-info"><h3>@inactivos</h3><p>Inactivos</p></div>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info text-center py-5" style="border-radius: 16px;">
+            <h4>No hay productos registrados</h4>
+            <p class="mb-0">Creá el primer producto para empezar a armar tu menú.</p>
+        </div>
+    }
+    else
+    {
+        <div class="productos-grid">
+            @foreach (var p in Model)
+            {
+                <div class="producto-card">
+                    <div class="producto-imagen">
+                        @if (!string.IsNullOrEmpty(p.ImagenUrl))
+                        {
+                            <img src="@p.ImagenUrl" alt="@p.Nombre" />
+                        }
+                        else
+                        {
+                            <span>🍕</span>
+                        }
+                        <span class="estado-badge @(p.Activo ? "estado-activo" : "estado-inactivo")">
+                            @(p.Activo ? "Activo" : "Inactivo")
+                        </span>
+                    </div>
+                    <div class="producto-body">
+                        <span class="producto-categoria">@p.Categoria?.Nombre</span>
+                        <h3 class="producto-nombre">@p.Nombre</h3>
+                        <p class="producto-descripcion">@p.Descripcion</p>
+                        <div class="producto-footer">
+                            <div class="producto-precio">₡@p.Precio.ToString("N0")</div>
+                            <div class="producto-acciones">
+                                <a asp-action="Edit" asp-route-id="@p.ProductoId" class="btn-accion btn-editar" title="Editar">
                                     <i class="fa-solid fa-pen"></i>
                                 </a>
-                                <form asp-action="Delete" asp-route-id="@item.ProductoId" method="post" class="d-inline" onsubmit="return confirm('¿Eliminar este producto?');">
-                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                <form asp-action="Delete" method="post" onsubmit="return confirm('¿Eliminar este producto?');" style="display:inline;">
+                                    <input type="hidden" name="id" value="@p.ProductoId" />
+                                    <button type="submit" class="btn-accion btn-eliminar" title="Eliminar">
                                         <i class="fa-solid fa-trash"></i>
                                     </button>
                                 </form>
-                            </td>
-                        </tr>
-                    }
-                    @if (!Model.Any())
-                    {
-                        <tr>
-                            <td colspan="5" class="text-center py-4 text-muted">No hay productos registrados.</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
         </div>
-    </div>
+    }
 </div>

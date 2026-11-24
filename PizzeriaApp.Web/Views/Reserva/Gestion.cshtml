@@ -4,6 +4,7 @@
     var pendientes = Model.Count(r => r.Estado == "Pendiente");
     var confirmadas = Model.Count(r => r.Estado == "Confirmada");
     var canceladas = Model.Count(r => r.Estado == "Cancelada");
+    var rechazadas = Model.Count(r => r.Estado == "Rechazada");
     var hoy = Model.Count(r => r.FechaHora.Date == DateTime.Today && r.Estado != "Cancelada");
 }
 
@@ -80,6 +81,14 @@
         </div>
     }
 
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            <i class="fa-solid fa-triangle-exclamation me-2"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
     <div class="stats-grid">
         <div class="stat-card">
             <div class="stat-icon" style="background: #dbeafe; color: #1e40af;"><i class="fa-solid fa-calendar"></i></div>
@@ -96,6 +105,10 @@
         <div class="stat-card">
             <div class="stat-icon" style="background: #fce7f3; color: #be185d;"><i class="fa-solid fa-calendar-day"></i></div>
             <div class="stat-info"><h3>@hoy</h3><p>Para Hoy</p></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background: #fee2e2; color: #dc2626;"><i class="fa-solid fa-ban"></i></div>
+            <div class="stat-info"><h3>@rechazadas</h3><p>Rechazadas</p></div>
         </div>
     </div>
 
@@ -118,6 +131,7 @@
                         <th>Código</th>
                         <th>Estado</th>
                         <th>Notas</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -135,6 +149,32 @@
                             <td><span class="codigo-badge">@r.CodigoConfirmacion</span></td>
                             <td><span class="badge-estado" style="@estadoBadge">@r.Estado</span></td>
                             <td><small class="text-muted">@(string.IsNullOrEmpty(r.Notas) ? "—" : r.Notas)</small></td>
+                            <td>
+                                @if (r.Estado == "Pendiente")
+                                {
+                                    <div class="d-flex gap-2 flex-wrap">
+                                        <form asp-action="Confirmar" method="post">
+                                            <input type="hidden" name="id" value="@r.ReservaId" />
+                                            <button type="submit" class="btn btn-sm btn-success"
+                                                    onclick="return confirm('¿Confirmar esta reserva?');">
+                                                <i class="fa-solid fa-check me-1"></i> Confirmar
+                                            </button>
+                                        </form>
+
+                                        <form asp-action="Rechazar" method="post">
+                                            <input type="hidden" name="id" value="@r.ReservaId" />
+                                            <button type="submit" class="btn btn-sm btn-danger"
+                                                    onclick="return confirm('¿Rechazar esta reserva?');">
+                                                <i class="fa-solid fa-xmark me-1"></i> Rechazar
+                                            </button>
+                                        </form>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Sin acciones</span>
+                                }
+                            </td>
                         </tr>
                     }
                 </tbody>

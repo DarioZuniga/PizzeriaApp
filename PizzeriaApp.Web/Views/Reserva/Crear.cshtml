@@ -1,4 +1,4 @@
-@{
+﻿@{
     ViewData["Title"] = "Nueva Reserva";
 }
 
@@ -6,29 +6,195 @@
     <div class="card border-0 shadow-sm" style="border-radius: 12px; max-width: 600px; margin: auto;">
         <div class="card-body p-4">
             <h3 class="mb-4" style="color: #1a365d;">Reservar Mesa</h3>
-            <form asp-action="Crear" method="post">
+
+            <form asp-action="Crear" method="post" id="formReserva">
                 <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-                
+
                 <div class="mb-3">
-                    <label class="form-label fw-bold">Fecha y Hora</label>
-                    <input type="datetime-local" name="fechaHora" class="form-control" required />
+                    <label for="fechaSeleccionada" class="form-label fw-bold">Fecha</label>
+                    <input type="date"
+                           id="fechaSeleccionada"
+                           class="form-control"
+                           required />
+                    <small class="text-muted">Seleccioná el día de tu reserva.</small>
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label fw-bold">Cantidad de Personas</label>
-                    <input type="number" name="cantidadPersonas" class="form-control" min="1" max="20" required />
+                    <label for="horarioSeleccionado" class="form-label fw-bold">Horario disponible</label>
+                    <select id="horarioSeleccionado" class="form-select" required disabled>
+                        <option value="">Primero seleccioná una fecha</option>
+                    </select>
+                    <div id="mensajeHorarios" class="form-text" aria-live="polite">
+                        Los horarios se cargarán al seleccionar una fecha.
+                    </div>
+                </div>
+
+                <input type="hidden" name="fechaHora" id="fechaHora" />
+
+                <div class="mb-3">
+                    <label for="cantidadPersonas" class="form-label fw-bold">Cantidad de Personas</label>
+                    <input type="number"
+                           id="cantidadPersonas"
+                           name="cantidadPersonas"
+                           class="form-control"
+                           min="1"
+                           max="20"
+                           step="1"
+                           required />
+                    <small class="text-muted">Se permiten reservas de 1 a 20 personas.</small>
                 </div>
 
                 <div class="mb-4">
-                    <label class="form-label fw-bold">Notas (Opcional)</label>
-                    <textarea name="notas" class="form-control" rows="2" placeholder="Ej: Mesa cerca de la ventana"></textarea>
+                    <label for="notas" class="form-label fw-bold">Notas (Opcional)</label>
+                    <textarea id="notas"
+                              name="notas"
+                              class="form-control"
+                              rows="2"
+                              maxlength="500"
+                              placeholder="Ej: Mesa cerca de la ventana"></textarea>
                 </div>
 
                 <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-primary" style="background-color: #1a365d;">Reservar</button>
+                    <button type="submit"
+                            id="btnReservar"
+                            class="btn btn-primary"
+                            style="background-color: #1a365d;"
+                            disabled>
+                        Reservar
+                    </button>
                     <a asp-action="MisReservas" class="btn btn-secondary">Cancelar</a>
                 </div>
             </form>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const fechaInput = document.getElementById("fechaSeleccionada");
+            const horarioSelect = document.getElementById("horarioSeleccionado");
+            const fechaHoraInput = document.getElementById("fechaHora");
+            const mensaje = document.getElementById("mensajeHorarios");
+            const formulario = document.getElementById("formReserva");
+            const cantidadInput = document.getElementById("cantidadPersonas");
+            const boton = document.getElementById("btnReservar");
+
+            const urlHorarios = '@Url.Action("ObtenerHorariosDisponibles", "Reserva")';
+
+            function fechaLocalActual() {
+                const ahora = new Date();
+                const anio = ahora.getFullYear();
+                const mes = String(ahora.getMonth() + 1).padStart(2, "0");
+                const dia = String(ahora.getDate()).padStart(2, "0");
+                return `${anio}-${mes}-${dia}`;
+            }
+
+            fechaInput.min = fechaLocalActual();
+
+            function limpiarHorarios(texto) {
+                horarioSelect.innerHTML = "";
+                const opcion = document.createElement("option");
+                opcion.value = "";
+                opcion.textContent = texto;
+                horarioSelect.appendChild(opcion);
+
+                horarioSelect.disabled = true;
+                fechaHoraInput.value = "";
+                boton.disabled = true;
+            }
+
+            fechaInput.addEventListener("change", async function () {
+                const fecha = fechaInput.value;
+
+                limpiarHorarios("Cargando horarios...");
+                mensaje.textContent = "";
+
+                if (!fecha) {
+                    mensaje.textContent = "Seleccioná una fecha.";
+                    return;
+                }
+
+                mensaje.textContent = "Consultando disponibilidad...";
+
+                try {
+                    const parametros = new URLSearchParams({ fecha: fecha });
+                    const respuesta = await fetch(`${urlHorarios}?${parametros.toString()}`);
+
+                    if (!respuesta.ok) {
+                        throw new Error("No fue posible consultar los horarios.");
+                    }
+
+                    const datos = await respuesta.json();
+
+                    if (!Array.isArray(datos)) {
+                        mensaje.textContent = datos.error || "No se pudieron obtener los horarios.";
+                        limpiarHorarios("No hay horarios disponibles");
+                        return;
+                    }
+
+                    if (datos.length === 0) {
+                        limpiarHorarios("No hay horarios disponibles");
+                        mensaje.textContent = "No hay horarios disponibles para esta fecha. Probá con otro día.";
+                        return;
+                    }
+
+                    horarioSelect.innerHTML = "";
+
+                    const primeraOpcion = document.createElement("option");
+                    primeraOpcion.value = "";
+                    primeraOpcion.textContent = "Seleccioná un horario";
+                    horarioSelect.appendChild(primeraOpcion);
+
+                    datos.forEach(function (hora) {
+                        const opcion = document.createElement("option");
+                        opcion.value = hora;
+                        opcion.textContent = hora;
+                        horarioSelect.appendChild(opcion);
+                    });
+
+                    horarioSelect.disabled = false;
+                    mensaje.textContent = `${datos.length} horario(s) disponible(s).`;
+                }
+                catch (error) {
+                    limpiarHorarios("Error al cargar horarios");
+                    mensaje.textContent = error.message || "Ocurrió un error al consultar la disponibilidad.";
+                }
+            });
+
+            horarioSelect.addEventListener("change", function () {
+                if (fechaInput.value && horarioSelect.value) {
+                    fechaHoraInput.value = `${fechaInput.value}T${horarioSelect.value}`;
+                    boton.disabled = false;
+                } else {
+                    fechaHoraInput.value = "";
+                    boton.disabled = true;
+                }
+            });
+
+            cantidadInput.addEventListener("input", function () {
+                const cantidad = Number(cantidadInput.value);
+                cantidadInput.setCustomValidity(
+                    Number.isInteger(cantidad) && cantidad >= 1 && cantidad <= 20
+                        ? ""
+                        : "Ingresá una cantidad entre 1 y 20 personas."
+                );
+            });
+
+            formulario.addEventListener("submit", function (evento) {
+                if (!fechaHoraInput.value) {
+                    evento.preventDefault();
+                    mensaje.textContent = "Seleccioná una fecha y un horario disponible.";
+                    return;
+                }
+
+                const cantidad = Number(cantidadInput.value);
+
+                if (!Number.isInteger(cantidad) || cantidad < 1 || cantidad > 20) {
+                    evento.preventDefault();
+                    cantidadInput.reportValidity();
+                }
+            });
+        });
+    </script>
+}

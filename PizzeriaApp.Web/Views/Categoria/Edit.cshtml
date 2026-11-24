@@ -1,0 +1,53 @@
+﻿@model PizzeriaApp.Data.Entities.Categoria
+@{
+    ViewData["Title"] = "Editar Categoría";
+}
+
+<div class="container mt-4 mb-5">
+    <div class="card border-0 shadow-sm mx-auto" style="max-width:700px;border-radius:22px;">
+        <div class="card-body p-4 p-md-5">
+            <div class="text-center mb-4">
+                <div class="mb-3 text-primary"><i class="fa-solid fa-pen-to-square fa-3x"></i></div>
+                <h2 class="fw-bold">Editar Categoría</h2>
+                <p class="text-muted">Modificá la información de @Model.Nombre</p>
+            </div>
+
+            <form asp-action="Edit" asp-route-id="@Model.CategoriaId" method="post">
+                <input type="hidden" asp-for="CategoriaId" />
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="mb-4">
+                    <label asp-for="Nombre" class="form-label fw-bold">Nombre</label>
+                    <input asp-for="Nombre" class="form-control form-control-lg"
+                           maxlength="50" />
+                    <span asp-validation-for="Nombre" class="text-danger"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Descripcion" class="form-label fw-bold">Descripción</label>
+                    <textarea asp-for="Descripcion" class="form-control"
+                              rows="4" maxlength="300"></textarea>
+                    <span asp-validation-for="Descripcion" class="text-danger"></span>
+                </div>
+
+                <div class="form-check form-switch mb-4">
+                    <input asp-for="Activo" class="form-check-input" type="checkbox" />
+                    <label asp-for="Activo" class="form-check-label fw-bold">
+                        Categoría activa
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-dark btn-lg w-100">
+                    <i class="fa-solid fa-save me-2"></i>Guardar Cambios
+                </button>
+                <a asp-action="Index" class="btn btn-link text-secondary w-100 mt-2">
+                    Cancelar
+                </a>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

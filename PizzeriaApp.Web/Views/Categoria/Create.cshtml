@@ -1,0 +1,46 @@
+﻿@model PizzeriaApp.Data.Entities.Categoria
+@{
+    ViewData["Title"] = "Nueva Categoría";
+}
+
+<div class="container mt-4 mb-5">
+    <div class="card border-0 shadow-sm mx-auto" style="max-width:700px;border-radius:22px;">
+        <div class="card-body p-4 p-md-5">
+            <div class="text-center mb-4">
+                <div class="mb-3 text-warning"><i class="fa-solid fa-tags fa-3x"></i></div>
+                <h2 class="fw-bold">Nueva Categoría</h2>
+                <p class="text-muted">Agregá una categoría al catálogo</p>
+            </div>
+
+            <form asp-action="Create" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="mb-4">
+                    <label asp-for="Nombre" class="form-label fw-bold">Nombre</label>
+                    <input asp-for="Nombre" class="form-control form-control-lg"
+                           maxlength="50" placeholder="Ej: Pizzas" />
+                    <span asp-validation-for="Nombre" class="text-danger"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Descripcion" class="form-label fw-bold">Descripción</label>
+                    <textarea asp-for="Descripcion" class="form-control"
+                              rows="4" maxlength="300"
+                              placeholder="Descripción de la categoría"></textarea>
+                    <span asp-validation-for="Descripcion" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn btn-dark btn-lg w-100">
+                    <i class="fa-solid fa-check me-2"></i>Crear Categoría
+                </button>
+                <a asp-action="Index" class="btn btn-link text-secondary w-100 mt-2">
+                    Cancelar
+                </a>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

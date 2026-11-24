@@ -1,0 +1,159 @@
+﻿@model IEnumerable<PizzeriaApp.Data.Entities.Categoria>
+@{
+    ViewData["Title"] = "Gestión de Categorías";
+    var activas = Model.Count(c => c.Activo);
+    var inactivas = Model.Count(c => !c.Activo);
+}
+
+<style>
+    .admin-header {
+        background: linear-gradient(135deg, #0f172a, #1a365d);
+        border-radius: 24px; padding: 35px; color: white; margin-bottom: 30px;
+    }
+    .admin-header h1 { color: white; font-size: 1.9rem; font-weight: 800; margin: 0; }
+    .admin-header p { margin: 6px 0 0; opacity: .85; }
+    .btn-premium {
+        background: linear-gradient(135deg, #d4af37, #b8941f);
+        color: #0f172a; border: none; padding: 12px 24px;
+        border-radius: 50px; font-weight: 700; text-decoration: none;
+    }
+    .stat-card {
+        background: white; border-radius: 16px; padding: 22px;
+        box-shadow: 0 8px 25px rgba(15,23,42,.06);
+        border: 1px solid #e2e8f0; margin-bottom: 20px;
+    }
+    .stat-card h3 { color: #1a365d; font-weight: 800; margin: 0; }
+    .stat-card p { color: #64748b; margin: 0; }
+    .tabla-card {
+        background: white; border-radius: 20px; padding: 24px;
+        box-shadow: 0 10px 30px rgba(15,23,42,.06);
+        border: 1px solid #e2e8f0;
+    }
+    .btn-editar {
+        background: #dbeafe; color: #1e40af;
+        border: 0; border-radius: 9px; padding: 8px 12px;
+        text-decoration: none;
+    }
+    .btn-estado {
+        border: 0; border-radius: 9px; padding: 8px 12px;
+    }
+</style>
+
+<div class="container mt-4 mb-5">
+    <div class="admin-header">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <h1><i class="fa-solid fa-tags me-2"></i>Gestión de Categorías</h1>
+                <p>Organizá las categorías del catálogo de Las Perlas</p>
+            </div>
+            <a asp-action="Create" class="btn-premium">
+                <i class="fa-solid fa-plus me-2"></i>Nueva Categoría
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["Mensaje"] != null)
+    {
+        <div class="alert alert-info alert-dismissible fade show">
+            @TempData["Mensaje"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="stat-card">
+                <h3>@Model.Count()</h3>
+                <p>Total de categorías</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card">
+                <h3 class="text-success">@activas</h3>
+                <p>Categorías activas</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card">
+                <h3 class="text-secondary">@inactivas</h3>
+                <p>Categorías inactivas</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="tabla-card">
+        @if (!Model.Any())
+        {
+            <div class="text-center py-5">
+                <i class="fa-solid fa-tags fa-3x text-secondary mb-3"></i>
+                <h4>No hay categorías registradas</h4>
+                <p class="text-muted">Creá la primera categoría para organizar tus productos.</p>
+                <a asp-action="Create" class="btn btn-dark">Crear categoría</a>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Descripción</th>
+                            <th>Productos</th>
+                            <th>Estado</th>
+                            <th class="text-end">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var categoria in Model)
+                    {
+                        <tr>
+                            <td class="fw-bold">@categoria.Nombre</td>
+                            <td>@categoria.Descripcion</td>
+                            <td>
+                                <span class="badge bg-light text-dark">
+                                    @categoria.Productos.Count
+                                </span>
+                            </td>
+                            <td>
+                                @if (categoria.Activo)
+                                {
+                                    <span class="badge bg-success">Activa</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Inactiva</span>
+                                }
+                            </td>
+                            <td class="text-end">
+                                <a asp-action="Edit" asp-route-id="@categoria.CategoriaId"
+                                   class="btn-editar" title="Editar">
+                                    <i class="fa-solid fa-pen"></i>
+                                </a>
+
+                                <form asp-action="ToggleActivo" method="post"
+                                      class="d-inline"
+                                      onsubmit="return confirm('¿Cambiar el estado de esta categoría?');">
+                                    <input type="hidden" name="id" value="@categoria.CategoriaId" />
+                                    @if (categoria.Activo)
+                                    {
+                                        <button type="submit" class="btn-estado btn btn-outline-danger btn-sm">
+                                            <i class="fa-solid fa-ban me-1"></i>Desactivar
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button type="submit" class="btn-estado btn btn-outline-success btn-sm">
+                                            <i class="fa-solid fa-check me-1"></i>Activar
+                                        </button>
+                                    }
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>

@@ -524,6 +524,13 @@ namespace PizzeriaApp.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PedidoId"));
 
+                    b.Property<string>("CodigoCupon")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Descuento")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<string>("Estado")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -794,7 +801,7 @@ namespace PizzeriaApp.Data.Migrations
                         new
                         {
                             RolId = 2,
-                            Descripcion = "Cliente de la pizzerÃ­a",
+                            Descripcion = "Cliente de la pizzería",
                             Nombre = "Usuario"
                         });
                 });

@@ -1,14 +1,27 @@
 ﻿@model List<PizzeriaApp.MVC.Models.CarritoItem>
 @{
     ViewData["Title"] = "Mi Carrito";
-    var subtotal = Model.Sum(i => i.PrecioTotal);
-    var impuestos = subtotal * 0.13m;
-    var total = subtotal + impuestos;
+    var subtotal = (decimal)(ViewBag.Subtotal ?? 0m);
+    var impuestos = (decimal)(ViewBag.Impuestos ?? 0m);
+    var total = (decimal)(ViewBag.Total ?? 0m);
+    var descuento = (decimal)(ViewBag.Descuento ?? 0m);
+    var codigoCupon = ViewBag.CodigoCupon as string;
+    var porcentajeCupon = (decimal)(ViewBag.PorcentajeCupon ?? 0m);
 }
 
 <div class="container mt-4">
     <h2 style="color: #1a365d;">🛒 Mi Carrito</h2>
     <hr />
+
+    @if (TempData["ErrorCupon"] != null)
+    {
+        <div class="alert alert-danger">@TempData["ErrorCupon"]</div>
+    }
+
+    @if (TempData["ExitoCupon"] != null)
+    {
+        <div class="alert alert-success">@TempData["ExitoCupon"]</div>
+    }
 
     @if (!Model.Any())
     {
@@ -24,22 +37,32 @@
             <div class="col-lg-8">
                 <div class="card border-0 shadow-sm" style="border-radius: 12px;">
                     <div class="card-body">
-                        @foreach (var item in Model)
+                        @for (var index = 0; index < Model.Count; index++)
                         {
+                            var item = Model[index];
                             <div class="d-flex justify-content-between border-bottom py-3">
                                 <div>
                                     <h5 class="fw-bold mb-1">@item.Nombre</h5>
                                     <p class="small text-muted mb-0">
-                                        @if (!string.IsNullOrEmpty(item.TamanoNombre)) { <span>Tamaño: @item.TamanoNombre. </span> }
-                                        @if (!string.IsNullOrEmpty(item.TipoMasaNombre)) { <span>Masa: @item.TipoMasaNombre. </span> }
-                                        @if (item.IngredientesNombres.Any()) { <span>Ingredientes: @string.Join(", ", item.IngredientesNombres)</span> }
+                                        @if (!string.IsNullOrEmpty(item.TamanoNombre))
+                                        {
+                                            <span>Tamaño: @item.TamanoNombre. </span>
+                                        }
+                                        @if (!string.IsNullOrEmpty(item.TipoMasaNombre))
+                                        {
+                                            <span>Masa: @item.TipoMasaNombre. </span>
+                                        }
+                                        @if (item.IngredientesNombres.Any())
+                                        {
+                                            <span>Ingredientes: @string.Join(", ", item.IngredientesNombres)</span>
+                                        }
                                     </p>
                                     <small>Cantidad: @item.Cantidad</small>
                                 </div>
                                 <div class="text-end">
-                                    <h5 class="fw-bold text-danger">₡@(item.PrecioTotal.ToString("N2"))</h5>
+                                    <h5 class="fw-bold text-danger">₡@item.PrecioTotal.ToString("N2")</h5>
                                     <form asp-action="Eliminar" method="post">
-                                        <input type="hidden" name="index" value="@Model.IndexOf(item)" />
+                                        <input type="hidden" name="index" value="@index" />
                                         <button type="submit" class="btn btn-sm btn-outline-danger mt-2">Eliminar</button>
                                     </form>
                                 </div>
@@ -48,26 +71,68 @@
                     </div>
                 </div>
             </div>
+
             <div class="col-lg-4">
                 <div class="card border-0 shadow-sm" style="border-radius: 12px;">
                     <div class="card-body">
-                        <h4 class="fw-bold">Resumen</h4>
+                        <h4 class="fw-bold">Cupón de descuento</h4>
+
+                        @if (string.IsNullOrEmpty(codigoCupon))
+                        {
+                            <form asp-action="AplicarCupon" method="post">
+                                <div class="input-group mb-2">
+                                    <input type="text"
+                                           name="codigo"
+                                           class="form-control"
+                                           placeholder="Ingresá tu código"
+                                           maxlength="50"
+                                           required />
+                                    <button type="submit" class="btn btn-outline-primary">Aplicar</button>
+                                </div>
+                            </form>
+                        }
+                        else
+                        {
+                            <div class="alert alert-success py-2">
+                                <strong>@codigoCupon</strong>
+                                <div>@porcentajeCupon% de descuento aplicado</div>
+                            </div>
+                            <form asp-action="QuitarCupon" method="post" class="mb-3">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Quitar cupón</button>
+                            </form>
+                        }
+
                         <hr />
+                        <h4 class="fw-bold">Resumen</h4>
+
                         <div class="d-flex justify-content-between mb-2">
                             <span>Subtotal:</span>
-                            <span>₡@(subtotal.ToString("N2"))</span>
+                            <span>₡@subtotal.ToString("N2")</span>
                         </div>
+
+                        @if (descuento > 0)
+                        {
+                            <div class="d-flex justify-content-between mb-2 text-success">
+                                <span>Descuento:</span>
+                                <span>-₡@descuento.ToString("N2")</span>
+                            </div>
+                        }
+
                         <div class="d-flex justify-content-between mb-2">
                             <span>IVA (13%):</span>
-                            <span>₡@(impuestos.ToString("N2"))</span>
+                            <span>₡@impuestos.ToString("N2")</span>
                         </div>
+
                         <hr />
                         <div class="d-flex justify-content-between fw-bold fs-5 mb-3">
                             <span>Total:</span>
-                            <span class="text-danger">₡@(total.ToString("N2"))</span>
+                            <span class="text-danger">₡@total.ToString("N2")</span>
                         </div>
+
                         <form asp-action="ConfirmarPedido" method="post">
-                            <button type="submit" class="btn btn-primary w-100 btn-lg" style="background-color: #1a365d;">Confirmar Pedido</button>
+                            <button type="submit" class="btn btn-primary w-100 btn-lg" style="background-color: #1a365d;">
+                                Confirmar Pedido
+                            </button>
                         </form>
                     </div>
                 </div>

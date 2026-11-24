@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using PizzeriaApp.Data.Entities;
 
 namespace PizzeriaApp.Data;
@@ -77,10 +77,10 @@ public class PizzeriaAppDbContext : DbContext
         }
 
         // ==========================================
-        // PRECISIÓN DE PROPIEDADES DECIMALES
+        // PRECISIÃ“N DE PROPIEDADES DECIMALES
         // ==========================================
 
-        // DINERO: 18 dígitos, 2 decimales
+        // DINERO: 18 dÃ­gitos, 2 decimales
         modelBuilder.Entity<DetalleOrdenCompra>().Property(x => x.PrecioUnitario).HasPrecision(18, 2);
         modelBuilder.Entity<DetallePedido>().Property(x => x.PrecioUnitario).HasPrecision(18, 2);
         modelBuilder.Entity<DetallePedidoIngrediente>().Property(x => x.PrecioExtra).HasPrecision(18, 2);
@@ -91,23 +91,24 @@ public class PizzeriaAppDbContext : DbContext
         modelBuilder.Entity<Pedido>().Property(x => x.Subtotal).HasPrecision(18, 2);
         modelBuilder.Entity<Pedido>().Property(x => x.Impuestos).HasPrecision(18, 2);
         modelBuilder.Entity<Pedido>().Property(x => x.Total).HasPrecision(18, 2);
+        modelBuilder.Entity<Pedido>().Property(x => x.Descuento).HasPrecision(18, 2);
         modelBuilder.Entity<Producto>().Property(x => x.Precio).HasPrecision(18, 2);
         modelBuilder.Entity<PromocionPersonalizada>().Property(x => x.MontoDescontado).HasPrecision(18, 2);
         modelBuilder.Entity<TipoMasa>().Property(x => x.PrecioExtra).HasPrecision(18, 2);
 
-        // PORCENTAJES: 5 dígitos, 2 decimales
+        // PORCENTAJES: 5 dÃ­gitos, 2 decimales
         modelBuilder.Entity<Cupon>().Property(x => x.PorcentajeDescuento).HasPrecision(5, 2);
         modelBuilder.Entity<Evento>().Property(x => x.PorcentajeDescuento).HasPrecision(5, 2);
         modelBuilder.Entity<PromocionPersonalizada>().Property(x => x.PorcentajeDescuento).HasPrecision(5, 2);
 
-        // CANTIDADES E INVENTARIO: 18 dígitos, 3 decimales
+        // CANTIDADES E INVENTARIO: 18 dÃ­gitos, 3 decimales
         modelBuilder.Entity<DetalleOrdenCompra>().Property(x => x.Cantidad).HasPrecision(18, 3);
         modelBuilder.Entity<Insumo>().Property(x => x.StockActual).HasPrecision(18, 3);
         modelBuilder.Entity<Insumo>().Property(x => x.StockMinimo).HasPrecision(18, 3);
         modelBuilder.Entity<MovimientoInventario>().Property(x => x.Cantidad).HasPrecision(18, 3);
         modelBuilder.Entity<RecetaIngrediente>().Property(x => x.CantidadRequerida).HasPrecision(18, 3);
 
-        // FACTOR DE PRECIO: 8 dígitos, 4 decimales
+        // FACTOR DE PRECIO: 8 dÃ­gitos, 4 decimales
         modelBuilder.Entity<Tamano>().Property(x => x.FactorPrecio).HasPrecision(8, 4);
 
         SeedData(modelBuilder);
@@ -123,7 +124,7 @@ public class PizzeriaAppDbContext : DbContext
 
         modelBuilder.Entity<Rol>().HasData(
             new Rol { RolId = 1, Nombre = "Administrador", Descripcion = "Control total del sistema" },
-            new Rol { RolId = 2, Nombre = "Usuario", Descripcion = "Cliente de la pizzerÃ­a" }
+            new Rol { RolId = 2, Nombre = "Usuario", Descripcion = "Cliente de la pizzer\u00eda" }
         );
     }
 }

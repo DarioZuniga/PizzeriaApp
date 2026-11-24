@@ -1,4 +1,4 @@
-namespace PizzeriaApp.Data.Entities;
+﻿namespace PizzeriaApp.Data.Entities;
 
 public class Pedido
 {
@@ -9,6 +9,8 @@ public class Pedido
     public decimal Subtotal { get; set; }
     public decimal Impuestos { get; set; }
     public decimal Total { get; set; }
+    public string? CodigoCupon { get; set; }
+    public decimal Descuento { get; set; }
     public string Estado { get; set; } = "Pendiente"; // Pendiente, Pagado, EnPreparacion, EnCamino, Entregado, Cancelado
     public string MetodoPago { get; set; } = string.Empty; // Tarjeta, SINPE, ContraEntrega
     

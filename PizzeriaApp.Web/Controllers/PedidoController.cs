@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PizzeriaApp.Data;
 using PizzeriaApp.Data.Entities;
@@ -70,11 +70,25 @@ public class PedidoController : Controller
     public async Task<IActionResult> CambiarEstado(int pedidoId, string nuevoEstado)
     {
         var pedido = await _context.Pedidos.FindAsync(pedidoId);
+
         if (pedido != null)
         {
-            pedido.Estado = nuevoEstado;
-            await _context.SaveChangesAsync();
+            var estadoAnterior = pedido.Estado;
+
+            if (!string.Equals(estadoAnterior, nuevoEstado, StringComparison.OrdinalIgnoreCase))
+            {
+                pedido.Estado = nuevoEstado;
+
+                _context.Notificaciones.Add(new Notificacion
+                {
+                    UsuarioId = pedido.UsuarioId,
+                    Mensaje = $"El estado de tu pedido #{pedido.PedidoId} cambió de {estadoAnterior} a {nuevoEstado}."
+                });
+
+                await _context.SaveChangesAsync();
+            }
         }
+
         return RedirectToAction(nameof(Gestion));
     }
 

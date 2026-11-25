@@ -46,9 +46,13 @@ public class PromocionPersonalizadaController : Controller
             promo.FechaCreacion = DateTime.Now;
             _context.PromocionesPersonalizadas.Add(promo);
             await _context.SaveChangesAsync();
+
+            await NotificarClientesElegiblesAsync(promo);
+
             TempData["Mensaje"] = $"Promoción '{promo.Nombre}' creada correctamente.";
             return RedirectToAction(nameof(Index));
         }
+
         return View(promo);
     }
 
@@ -85,12 +89,18 @@ public class PromocionPersonalizadaController : Controller
     public async Task<IActionResult> ToggleActiva(int id)
     {
         var promo = await _context.PromocionesPersonalizadas.FindAsync(id);
+
         if (promo != null)
         {
             promo.Activa = !promo.Activa;
             await _context.SaveChangesAsync();
+
+            if (promo.Activa)
+                await NotificarClientesElegiblesAsync(promo);
+
             TempData["Mensaje"] = $"Promoción '{promo.Nombre}' {(promo.Activa ? "activada" : "desactivada")}.";
         }
+
         return RedirectToAction(nameof(Index));
     }
 
@@ -116,4 +126,38 @@ public class PromocionPersonalizadaController : Controller
             .ToListAsync();
         return View(promos);
     }
-}
+
+    private async Task NotificarClientesElegiblesAsync(PromocionPersonalizada promo)
+    {
+        if (!promo.Activa)
+            return;
+
+        var fechaDesde = DateTime.Now.AddDays(-promo.DiasVentana);
+
+        var usuariosConComprasSuficientes = await _context.Pedidos
+            .Where(p => p.Fecha >= fechaDesde && p.Estado != "Cancelado")
+            .GroupBy(p => p.UsuarioId)
+            .Where(g => g.Count() >= promo.MinimoCompras)
+            .Select(g => g.Key)
+            .ToListAsync();
+
+        if (!usuariosConComprasSuficientes.Any())
+            return;
+
+        var clientesIds = await _context.Usuarios
+            .Where(u => u.RolId == 2 && usuariosConComprasSuficientes.Contains(u.UsuarioId))
+            .Select(u => u.UsuarioId)
+            .ToListAsync();
+
+        foreach (var clienteId in clientesIds)
+        {
+            _context.Notificaciones.Add(new Notificacion
+            {
+                UsuarioId = clienteId,
+                Mensaje = $"¡Hay una promoción para vos! {promo.Nombre}: {promo.Descripcion}. Descuento: {promo.PorcentajeDescuento}%."
+            });
+        }
+
+        if (clientesIds.Any())
+            await _context.SaveChangesAsync();
+    }}

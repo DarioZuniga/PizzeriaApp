@@ -51,6 +51,45 @@ public class ReservaController : Controller
         };
 
         _context.Reservas.Add(reserva);
+
+        // Notificar a todos los administradores
+        var administradoresIds = await _context.Usuarios
+            .Where(u => u.RolId == 1)
+            .Select(u => u.UsuarioId)
+            .ToListAsync();
+
+        foreach (var administradorId in administradoresIds)
+        {
+            _context.Notificaciones.Add(new Notificacion
+            {
+                UsuarioId = administradorId,
+                Mensaje = $"Nueva solicitud de reserva {reserva.CodigoConfirmacion} para {reserva.FechaHora:dd/MM/yyyy HH:mm} ({reserva.CantidadPersonas} personas)."
+            });
+        }
+        var configuracionAlerta = await _context.ConfiguracionesReserva.FirstOrDefaultAsync();
+
+        if (configuracionAlerta != null && configuracionAlerta.LimiteReservasPorDia > 0)
+        {
+            var reservasActuales = await _context.Reservas.CountAsync(r =>
+                r.FechaHora.Date == fechaHora.Date &&
+                (r.Estado == "Pendiente" || r.Estado == "Confirmada"));
+
+            var totalConNuevaReserva = reservasActuales + 1;
+            var umbralAlerta = (int)Math.Ceiling(configuracionAlerta.LimiteReservasPorDia * 0.80);
+
+            if (totalConNuevaReserva == umbralAlerta)
+            {
+                foreach (var administradorId in administradoresIds)
+                {
+                    _context.Notificaciones.Add(new Notificacion
+                    {
+                        UsuarioId = administradorId,
+                        Mensaje = $"Alerta: las reservas del {fechaHora:dd/MM/yyyy} alcanzaron el 80% del límite diario ({totalConNuevaReserva} de {configuracionAlerta.LimiteReservasPorDia})."
+                    });
+                }
+            }
+        }
+
         await _context.SaveChangesAsync();
 
         TempData["Mensaje"] = "Solicitud enviada. Tu reserva está pendiente de confirmación por el administrador.";
@@ -143,6 +182,21 @@ public class ReservaController : Controller
         }
 
         reserva.Estado = "Cancelada";
+
+        var administradoresIds = await _context.Usuarios
+            .Where(u => u.RolId == 1)
+            .Select(u => u.UsuarioId)
+            .ToListAsync();
+
+        foreach (var administradorId in administradoresIds)
+        {
+            _context.Notificaciones.Add(new Notificacion
+            {
+                UsuarioId = administradorId,
+                Mensaje = $"El cliente canceló la reserva {reserva.CodigoConfirmacion} para {reserva.FechaHora:dd/MM/yyyy HH:mm}."
+            });
+        }
+
         await _context.SaveChangesAsync();
 
         TempData["Mensaje"] = "La solicitud de reserva fue cancelada.";
@@ -195,9 +249,30 @@ public class ReservaController : Controller
             return View(reserva);
         }
 
+        var cambioReal = reserva.FechaHora != fechaHora ||
+                         reserva.CantidadPersonas != cantidadPersonas ||
+                         !string.Equals(reserva.Notas, notas?.Trim() ?? string.Empty, StringComparison.Ordinal);
+
         reserva.FechaHora = fechaHora;
         reserva.CantidadPersonas = cantidadPersonas;
         reserva.Notas = notas?.Trim() ?? string.Empty;
+
+        if (cambioReal)
+        {
+            var administradoresIds = await _context.Usuarios
+                .Where(u => u.RolId == 1)
+                .Select(u => u.UsuarioId)
+                .ToListAsync();
+
+            foreach (var administradorId in administradoresIds)
+            {
+                _context.Notificaciones.Add(new Notificacion
+                {
+                    UsuarioId = administradorId,
+                    Mensaje = $"El cliente modificó la reserva {reserva.CodigoConfirmacion}. Nueva fecha: {reserva.FechaHora:dd/MM/yyyy HH:mm}. Personas: {reserva.CantidadPersonas}."
+                });
+            }
+        }
 
         await _context.SaveChangesAsync();
 
@@ -248,6 +323,12 @@ public class ReservaController : Controller
         }
 
         reserva.Estado = "Confirmada";
+
+        _context.Notificaciones.Add(new Notificacion
+        {
+            UsuarioId = reserva.UsuarioId,
+            Mensaje = $"Tu reserva {reserva.CodigoConfirmacion} para el {reserva.FechaHora:dd/MM/yyyy HH:mm} ha sido confirmada."
+        });
         await _context.SaveChangesAsync();
 
         TempData["Mensaje"] = $"La reserva {reserva.CodigoConfirmacion} fue confirmada.";
@@ -274,6 +355,12 @@ public class ReservaController : Controller
         }
 
         reserva.Estado = "Rechazada";
+
+        _context.Notificaciones.Add(new Notificacion
+        {
+            UsuarioId = reserva.UsuarioId,
+            Mensaje = $"Tu reserva {reserva.CodigoConfirmacion} para el {reserva.FechaHora:dd/MM/yyyy HH:mm} ha sido rechazada."
+        });
         await _context.SaveChangesAsync();
 
         TempData["Mensaje"] = $"La reserva {reserva.CodigoConfirmacion} fue rechazada.";
@@ -313,6 +400,12 @@ public class ReservaController : Controller
         var existente = await _context.ConfiguracionesReserva
             .FirstOrDefaultAsync(c => c.ConfiguracionReservaId == config.ConfiguracionReservaId);
 
+        var cambioHorario = existente != null &&
+            (existente.HoraApertura != config.HoraApertura ||
+             existente.HoraCierre != config.HoraCierre ||
+             !string.Equals(existente.DiasCierre ?? string.Empty, config.DiasCierre ?? string.Empty, StringComparison.OrdinalIgnoreCase) ||
+             existente.Activo != config.Activo);
+
         if (existente == null)
         {
             _context.ConfiguracionesReserva.Add(config);
@@ -324,6 +417,23 @@ public class ReservaController : Controller
             existente.HoraCierre = config.HoraCierre;
             existente.DiasCierre = config.DiasCierre ?? string.Empty;
             existente.Activo = config.Activo;
+        }
+
+        if (cambioHorario)
+        {
+            var clientesIds = await _context.Usuarios
+                .Where(u => u.RolId == 2)
+                .Select(u => u.UsuarioId)
+                .ToListAsync();
+
+            foreach (var clienteId in clientesIds)
+            {
+                _context.Notificaciones.Add(new Notificacion
+                {
+                    UsuarioId = clienteId,
+                    Mensaje = $"El horario de atención ha cambiado. Apertura: {config.HoraApertura}, cierre: {config.HoraCierre}, días de cierre: {config.DiasCierre}. Revisá los horarios antes de realizar tu reserva."
+                });
+            }
         }
 
         await _context.SaveChangesAsync();
